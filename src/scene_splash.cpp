@@ -15,7 +15,7 @@ void SceneSplash::OnTerminate(){
 }
 
 void SceneSplash::OnUpdate(float deltaTime){
-    if (IsKeyPressed(KEY_SPACE)) {
+    if (m_game->m_inputController.IsButtonSelect) {
         m_game->ChangeScene("tama", true);
     }
 }

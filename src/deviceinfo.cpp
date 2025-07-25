@@ -1,6 +1,7 @@
 #include "deviceinfo.hpp"
+#include "game.hpp"
 
-DeviceInfo::DeviceInfo(ResourceManager& resourceManager) : m_resourceManager(resourceManager) {
+DeviceInfo::DeviceInfo(Game* game) : m_game(game) {
     m_deviceButtons[0].position = { 255 + (64*2 * 0), 654, 49*2, 49*2 };
     m_deviceButtons[1].position = { 255 + (64*2 * 1), 654, 49*2, 49*2 };
     m_deviceButtons[2].position = { 255 + (64*2 * 2), 654, 49*2, 49*2 };
@@ -25,10 +26,32 @@ void DeviceInfo::OnUpdate(float deltaTime) {
     m_hoverId = -1;
 }
 
+void DeviceInfo::OnHandleInput() {
+    if (!IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        return;
+    }
+
+    switch (m_hoverId) {
+        case -1: return;
+        case 0: {
+            m_game->m_inputController.EnableButtonUp();
+        } break;
+        case 1: {
+            m_game->m_inputController.EnableButtonBack();
+        } break;
+        case 2: {
+            m_game->m_inputController.EnableButtonSelect();
+        } break;
+        case 3: {
+            m_game->m_inputController.EnableButtonDown();
+        } break;
+    }
+}
+
 void DeviceInfo::OnRender() {
-    Texture& deviceTexture = m_resourceManager.GetTexture("textures/device.png");
-    Texture& deviceButtonTexture = m_resourceManager.GetTexture("textures/device_button.png");
-    Font& deviceFont = m_resourceManager.GetFont("fonts/symbola.ttf", m_deviceButtonFontSize, "🡇🡅➕⮌");
+    Texture& deviceTexture = m_game->m_resourceManager.GetTexture("textures/device.png");
+    Texture& deviceButtonTexture = m_game->m_resourceManager.GetTexture("textures/device_button.png");
+    Font& deviceFont = m_game->m_resourceManager.GetFont("fonts/symbola.ttf", m_deviceButtonFontSize, "🡇🡅➕⮌");
 
     DrawTexture(deviceTexture, 0, 0, WHITE);
 

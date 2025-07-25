@@ -10,17 +10,13 @@
 #include "scene_tama.hpp"
 
 void Game::OnInitialize() {
-    m_deviceInfo = new DeviceInfo(m_resourceManager);
-
     SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
     InitWindow(1007, 817, "Tamamatch3");
 
     m_audioManager = new AudioManager(m_resourceManager);
     m_audioManager->OnInitialize();
 
-    #ifndef DEBUG_BUILD
-        SetExitKey(KEY_NULL);
-    #endif
+    m_deviceInfo = new DeviceInfo(this);
 
     m_scanlineShader = LoadShader(nullptr, "resources/shaders/scanlines.frag");
 
@@ -31,6 +27,9 @@ void Game::OnInitialize() {
     m_renderTexture = LoadRenderTexture(640, 480);
 
     SetTargetFPS(60);
+    #ifndef DEBUG_BUILD
+        SetExitKey(KEY_NULL);
+    #endif
 }
 
 void Game::OnTerminate(){
@@ -113,6 +112,8 @@ void Game::OnHandleInput() {
     if (currentScene != nullptr) {
         currentScene->OnHandleInput({ 0.0f, 0.0f });
     }
+
+    m_deviceInfo->OnHandleInput();
 }
 
 void Game::OnUpdate() {

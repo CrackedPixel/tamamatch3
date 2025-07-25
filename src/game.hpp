@@ -10,14 +10,14 @@
 
 struct Game {
     public:
-        ResourceManager m_resourceManager;
-        SceneManager m_sceneManager;
-        RenderTexture m_renderTexture;
-        InputController m_inputController;
-        GlobalGameData m_gameData;
-        AudioManager* m_audioManager;
-        TransitionManager m_transitionManager;
-        DeviceInfo* m_deviceInfo;
+    ResourceManager m_resourceManager = {};
+        SceneManager m_sceneManager = {};
+        RenderTexture m_renderTexture = {};
+        InputController m_inputController = {};
+        GlobalGameData m_gameData = {};
+        TransitionManager m_transitionManager = {};
+        AudioManager* m_audioManager = nullptr;
+        DeviceInfo* m_deviceInfo = nullptr;
 
     private:
         bool m_mouseHeld = false;
