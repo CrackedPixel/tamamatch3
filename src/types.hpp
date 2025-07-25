@@ -1,0 +1,57 @@
+#pragma once
+
+enum struct PET_STAGES {
+    NEWBORN,
+    TODDLER,
+    ADOLESCENT,
+    ADULT,
+};
+
+enum struct PET_STATES {
+    HEALTHY,
+    HUNGRY,
+    SAD,
+    BORED,
+    DIRTY,
+    TANKDIRTY,
+    ILLNESS,
+    SLEEPING,
+};
+
+enum struct PET_ATTRIBUTES {
+    HUNGER,
+    HAPPINESS,
+    BOREDOM,
+    HYGIENE,
+    TANKHYGIENE,
+    HEALTH,
+    GROWTH,
+    SLEEPINESS,
+};
+
+enum struct OUTFIT_SLOTS {
+    HAT,
+    GLASSES,
+    SHIRT,
+    MISC1,
+    MISC2,
+};
+
+enum struct CURSOR_TYPES {
+    NORMAL,
+    INVALID,
+    FOOD,
+    SAD,
+    BORED,
+    DIRTY,
+    TANKDIRTY,
+    ILLNESS,
+};
+
+enum struct ITEM_TYPES {
+    FOOD,
+    TOY,
+    HYGIENE,
+    TANK,
+    ILLNESS,
+};
