@@ -10,5 +10,5 @@ struct SceneSplash : public Scene {
     void OnUpdate(float deltaTime);
     void OnRender();
     void OnRenderUI();
-    void OnHandleInput(Vector2 mousePos);
+    bool OnHandleInput(Vector2 mousePos);
 };

@@ -5,7 +5,7 @@
 struct Game;
 
 struct DeviceInfo {
-    void OnHandleInput();
+    bool OnHandleInput();
     void OnUpdate(float deltaTime);
     void OnRender();
 

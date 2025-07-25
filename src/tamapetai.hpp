@@ -1,0 +1,33 @@
+#pragma once
+
+#include "raylib.h"
+
+struct Game;
+
+struct TamaPetAI {
+    TamaPetAI(Game* game) : m_game(game){}
+
+    void OnInitialize();
+    void OnUpdate(float deltaTime);
+    bool OnHandleInput(Vector2 mousePosition);
+    void OnRender();
+
+private:
+    float GetOffsetFromState();
+    void ProcessAI();
+    void ProcessMovement();
+    void SetNewPetTarget(int newX, int newY);
+    void SetNewPetTarget(Vector2 destination);
+
+private:
+    static constexpr const int MAX_ANIMATION_STEPS = 3;
+    Game* m_game = nullptr;
+    float m_currentTimer = 0.0f;
+    int m_lastFrameCounter = 0;
+    int m_animationStep = 0;
+    int m_petDirection = 1;
+    float m_petSpeed = 40.0f;
+    Vector2 m_petPosition = { 320.0f, 240.0f };
+    Vector2 m_petTarget = m_petPosition;
+    rlRectangle m_petBounds = { 32.0f, 100.0f, 640 - 32, 480 - 100 - 64 };
+};

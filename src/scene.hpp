@@ -12,7 +12,7 @@ struct Scene {
     virtual void OnUpdate(float deltaTime) = 0;
     virtual void OnRender() = 0;
     virtual void OnRenderUI() = 0;
-    virtual void OnHandleInput(Vector2 mousePos) = 0;
+    virtual bool OnHandleInput(Vector2 mousePos) = 0;
 
 protected:
     Game* m_game;

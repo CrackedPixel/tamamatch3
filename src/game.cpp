@@ -10,8 +10,10 @@
 #include "scene_tama.hpp"
 
 void Game::OnInitialize() {
-    SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
+    // SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
     InitWindow(1007, 817, "Tamamatch3");
+
+    m_gameData.OnInitialize();
 
     m_audioManager = new AudioManager(m_resourceManager);
     m_audioManager->OnInitialize();
@@ -66,20 +68,28 @@ void Game::OnHandleInput() {
 
     m_inputController.OnHandleInput();
 
+    if (IsKeyPressed(KEY_H)) {
+        m_renderScanlines = !m_renderScanlines;
+    }
+
     if (
         IsKeyPressed(KEY_W)
         || IsKeyPressed(KEY_A)
         || IsKeyPressed(KEY_UP)
+        || IsKeyPressed(KEY_LEFT)
         ) {
         m_inputController.EnableButtonUp();
+        return;
     }
 
     if (
         IsKeyPressed(KEY_S)
         || IsKeyPressed(KEY_D)
         || IsKeyPressed(KEY_DOWN)
+        || IsKeyPressed(KEY_RIGHT)
         ) {
         m_inputController.EnableButtonDown();
+        return;
     }
 
     if (
@@ -88,6 +98,7 @@ void Game::OnHandleInput() {
         || IsKeyPressed(KEY_BACKSPACE)
         ) {
         m_inputController.EnableButtonBack();
+        return;
     }
 
     if (
@@ -96,6 +107,7 @@ void Game::OnHandleInput() {
         || IsKeyPressed(KEY_KP_ENTER)
         ) {
         m_inputController.EnableButtonSelect();
+        return;
     }
 
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -108,12 +120,18 @@ void Game::OnHandleInput() {
         // m_mouseHeld = false;
     }
 
-    Scene* currentScene = m_sceneManager.GetCurrentScene();
-    if (currentScene != nullptr) {
-        currentScene->OnHandleInput({ 0.0f, 0.0f });
+    bool deviceResult = m_deviceInfo->OnHandleInput();
+    if (deviceResult) {
+        return;
     }
 
-    m_deviceInfo->OnHandleInput();
+    Scene* currentScene = m_sceneManager.GetCurrentScene();
+    if (currentScene != nullptr) {
+        bool sceneResult = currentScene->OnHandleInput(GetMousePosition());
+        if (sceneResult) {
+            return;
+        }
+    }
 }
 
 void Game::OnUpdate() {
@@ -170,10 +188,16 @@ void Game::OnRender() {
     }
 
     if (currentScene != nullptr) {
-        BeginShaderMode(m_scanlineShader);
-        SetShaderValue(m_scanlineShader, GetShaderLocation(m_scanlineShader, "time"), &m_gameTime, SHADER_UNIFORM_FLOAT);
+        if (m_renderScanlines) {
+            BeginShaderMode(m_scanlineShader);
+            SetShaderValue(m_scanlineShader, GetShaderLocation(m_scanlineShader, "time"), &m_gameTime, SHADER_UNIFORM_FLOAT);
+        }
+
         DrawTexturePro(m_renderTexture.texture, { 0, 0, 640, -480 }, { 184, 174, 640, 480}, { 0.0f, 0.0f }, 0.0f, WHITE);
-        EndShaderMode();
+
+        if (m_renderScanlines) {
+            EndShaderMode();
+        }
     }
 
     m_deviceInfo->OnRender();

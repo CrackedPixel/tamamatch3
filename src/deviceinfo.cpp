@@ -26,24 +26,28 @@ void DeviceInfo::OnUpdate(float deltaTime) {
     m_hoverId = -1;
 }
 
-void DeviceInfo::OnHandleInput() {
-    if (!IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-        return;
+bool DeviceInfo::OnHandleInput() {
+    if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        return false;
     }
 
     switch (m_hoverId) {
-        case -1: return;
+        case -1: return false;
         case 0: {
             m_game->m_inputController.EnableButtonUp();
+            return true;
         } break;
         case 1: {
             m_game->m_inputController.EnableButtonBack();
+            return true;
         } break;
         case 2: {
             m_game->m_inputController.EnableButtonSelect();
+            return true;
         } break;
         case 3: {
             m_game->m_inputController.EnableButtonDown();
+            return true;
         } break;
     }
 }

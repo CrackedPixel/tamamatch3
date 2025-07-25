@@ -10,7 +10,7 @@
 
 struct Game {
     public:
-    ResourceManager m_resourceManager = {};
+        ResourceManager m_resourceManager = {};
         SceneManager m_sceneManager = {};
         RenderTexture m_renderTexture = {};
         InputController m_inputController = {};
@@ -27,6 +27,7 @@ struct Game {
         Vector2 m_lastWindowPos = {};
         Vector2 m_dragOffset = {};
         std::string m_nextSceneName = "";
+        bool m_renderScanlines = true;
 
     public:
         void OnInitialize();

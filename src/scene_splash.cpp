@@ -4,8 +4,6 @@
 #include "game.hpp"
 
 void SceneSplash::OnInitialize(){
-    printf("initialize splash\n");
-    fflush(stdout);
     m_game->m_transitionManager.FadeIn();
     m_game->m_audioManager->PlayTrack("music/menu.ogg");
 }
@@ -28,6 +26,6 @@ void SceneSplash::OnRenderUI(){
 
 }
 
-void SceneSplash::OnHandleInput(Vector2 mousePos) {
-
+bool SceneSplash::OnHandleInput(Vector2 mousePos) {
+    return false;
 }

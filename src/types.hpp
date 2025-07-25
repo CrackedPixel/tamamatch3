@@ -1,57 +1,53 @@
 #pragma once
 
-enum struct PET_STAGES {
-    NEWBORN,
-    TODDLER,
-    ADOLESCENT,
-    ADULT,
+#include <vector>
+#include <unordered_map>
+#include <string>
+
+#include "raylib.h"
+#include "enums.hpp"
+
+struct Pet {
+    PET_STAGES stage = PET_STAGES::NEWBORN;
+    PET_STATES state = PET_STATES::HEALTHY;
+    std::unordered_map<PET_ATTRIBUTES, float> attributes = {};
+    std::unordered_map<OUTFIT_SLOTS, int> outfitData = {};
+    std::unordered_map<OUTFIT_SLOTS, Color> outfitTint = {};
+    int petTint = 0;
+    int wallpaperId = 0;
+
+    Pet(std::vector<Color> petTintList) {
+        attributes[PET_ATTRIBUTES::HUNGER] = 0.0f;
+        attributes[PET_ATTRIBUTES::HAPPINESS] = 1.0f;
+        attributes[PET_ATTRIBUTES::BOREDOM] = 0.0f;
+        attributes[PET_ATTRIBUTES::HYGIENE] = 1.0f;
+        attributes[PET_ATTRIBUTES::TANKHYGIENE] = 1.0f;
+        attributes[PET_ATTRIBUTES::HEALTH] = 1.0f;
+        attributes[PET_ATTRIBUTES::GROWTH] = 0.0f;
+
+        // TODO: randomize?
+        petTint = GetRandomValue(0, petTintList.size()-1);
+    }
 };
 
-enum struct PET_STATES {
-    HEALTHY,
-    HUNGRY,
-    SAD,
-    BORED,
-    DIRTY,
-    TANKDIRTY,
-    ILLNESS,
-    SLEEPING,
+struct Item {
+    PET_STAGES requiredStage;
+    int cursorId;
+    int outfitId;
 };
 
-enum struct PET_ATTRIBUTES {
-    HUNGER,
-    HAPPINESS,
-    BOREDOM,
-    HYGIENE,
-    TANKHYGIENE,
-    HEALTH,
-    GROWTH,
-    SLEEPINESS,
+struct CursorData {
+    std::string texturePath;
+    rlRectangle texturePosition;
 };
 
-enum struct OUTFIT_SLOTS {
-    HAT,
-    GLASSES,
-    SHIRT,
-    MISC1,
-    MISC2,
+struct OutfitStageData {
+    std::string texturePath;
+    rlRectangle texturePosition;
+    Vector2 offset;
+    Vector2 scale;
 };
 
-enum struct CURSOR_TYPES {
-    NORMAL,
-    INVALID,
-    FOOD,
-    SAD,
-    BORED,
-    DIRTY,
-    TANKDIRTY,
-    ILLNESS,
-};
-
-enum struct ITEM_TYPES {
-    FOOD,
-    TOY,
-    HYGIENE,
-    TANK,
-    ILLNESS,
+struct OutfitData {
+    std::unordered_map<PET_STAGES, OutfitStageData> stageData = {};
 };
