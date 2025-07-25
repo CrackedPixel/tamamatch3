@@ -15,9 +15,12 @@ struct TamaPetAI {
 private:
     float GetOffsetFromState();
     void ProcessAI();
-    void ProcessMovement();
+    void ProcessMovement(float deltaTime);
+    void ProcessAttributes();
+    void AIMovement();
     void SetNewPetTarget(int newX, int newY);
     void SetNewPetTarget(Vector2 destination);
+    void ClampRange(float& value);
 
 private:
     static constexpr const int MAX_ANIMATION_STEPS = 3;

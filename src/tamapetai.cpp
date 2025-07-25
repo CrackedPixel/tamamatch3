@@ -8,6 +8,14 @@ void TamaPetAI::OnInitialize() {
 }
 
 void TamaPetAI::OnUpdate(float deltaTime) {
+    Pet& petData = m_game->m_gameData.GetCurrentPet();
+
+    if (petData.state == PET_STATES::DED) {
+        m_animationStep = 0;
+        return;
+    }
+
+    petData.attributes[PET_ATTRIBUTES::GROWTH] += deltaTime * m_game->m_gameData.gameSpeed;
     m_currentTimer += deltaTime * m_game->m_gameData.gameSpeed;
 
     if (static_cast<int>(m_currentTimer / 0.5f) > m_lastFrameCounter) {
@@ -15,38 +23,7 @@ void TamaPetAI::OnUpdate(float deltaTime) {
         ProcessAI();
     }
 
-    if (m_petPosition.x < m_petTarget.x) {
-        m_petDirection = -1;
-
-        m_petPosition.x += deltaTime * m_petSpeed;
-        if (m_petPosition.x > m_petTarget.x) {
-            m_petPosition.x = m_petTarget.x;
-        }
-    }
-
-    if (m_petPosition.x > m_petTarget.x) {
-        m_petDirection = 1;
-
-        m_petPosition.x -= deltaTime * m_petSpeed;
-        if (m_petPosition.x < m_petTarget.x) {
-            m_petPosition.x = m_petTarget.x;
-        }
-    }
-
-
-    if (m_petPosition.y < m_petTarget.y) {
-        m_petPosition.y += deltaTime * m_petSpeed;
-        if (m_petPosition.y > m_petTarget.y) {
-            m_petPosition.y = m_petTarget.y;
-        }
-    }
-
-    if (m_petPosition.y > m_petTarget.y) {
-        m_petPosition.y -= deltaTime * m_petSpeed;
-        if (m_petPosition.y < m_petTarget.y) {
-            m_petPosition.y = m_petTarget.y;
-        }
-    }
+    ProcessMovement(deltaTime);
 }
 
 bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
@@ -83,49 +60,72 @@ void TamaPetAI::OnRender() {
 
     Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png");
 
-    DrawTexturePro(
-       petTexture,
-       { m_animationStep * (petTexture.width * 0.25f), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), 64 },
-       { m_petPosition.x, m_petPosition.y, petTexture.width * 0.25f, 64.0f},
-       { 0.0f, 0.0f },
-       0.0f,
-       m_game->m_gameData.PetTintList[petData.petTint] // TBD
-    );
-
-    if (m_petDirection == -1) {
+    if (petData.state == PET_STATES::DED) {
         DrawTexturePro(
-            faceTexture,
-            m_game->m_gameData.GetCurrentFace(),
-            { m_petPosition.x + m_game->m_gameData.GetCurrentPetWidth() - 42, m_petPosition.y, 64, 64},
-            { 0.0f, 0.0f },
-            0.0f,
-            WHITE
-            );
+           petTexture,
+           { m_animationStep * (petTexture.width * 0.25f), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), -64 },
+           { m_petPosition.x, m_petPosition.y, petTexture.width * 0.25f, 64.0f},
+           { 0.0f, 0.0f },
+           0.0f,
+           m_game->m_gameData.PetTintList[petData.petTint] // TBD
+        );
     } else {
         DrawTexturePro(
-            faceTexture,
-            m_game->m_gameData.GetCurrentFace(),
-            { m_petPosition.x, m_petPosition.y, 64, 64},
+            petTexture,
+            { m_animationStep * (petTexture.width * 0.25f), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), 64 },
+            { m_petPosition.x, m_petPosition.y, petTexture.width * 0.25f, 64.0f},
             { 0.0f, 0.0f },
             0.0f,
-            WHITE
+            m_game->m_gameData.PetTintList[petData.petTint] // TBD
         );
+    }
+
+    if (m_petDirection == -1) {
+        if (petData.state == PET_STATES::DED) {
+            DrawTexturePro(
+                faceTexture,
+                {m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height * -1},
+                { m_petPosition.x + m_game->m_gameData.GetCurrentPetWidth() - 42, m_petPosition.y, 64, 64},
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        } else {
+            DrawTexturePro(
+                faceTexture,
+                m_game->m_gameData.GetCurrentFace(),
+                { m_petPosition.x + m_game->m_gameData.GetCurrentPetWidth() - 42, m_petPosition.y, 64, 64},
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        }
+    } else {
+        if (petData.state == PET_STATES::DED) {
+            DrawTexturePro(
+                faceTexture,
+                {m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height * -1},
+                { m_petPosition.x, m_petPosition.y, 64, 64},
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        } else {
+            DrawTexturePro(
+                faceTexture,
+                m_game->m_gameData.GetCurrentFace(),
+                { m_petPosition.x, m_petPosition.y, 64, 64},
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        }
     }
 }
 
 float TamaPetAI::GetOffsetFromState() {
     return 0.0f;
 }
-
-// void OnInitialize() {
-//     attributes[PET_ATTRIBUTES::HUNGER] = 0.0f;
-//     attributes[PET_ATTRIBUTES::HAPPINESS] = 1.0f;
-//     attributes[PET_ATTRIBUTES::BOREDOM] = 0.0f;
-//     attributes[PET_ATTRIBUTES::HYGIENE] = 1.0f;
-//     attributes[PET_ATTRIBUTES::TANKHYGIENE] = 1.0f;
-//     attributes[PET_ATTRIBUTES::HEALTH] = 1.0f;
-//     attributes[PET_ATTRIBUTES::GROWTH] = 0.0f;
-// }
 
 void TamaPetAI::ProcessAI() {
     m_animationStep += 1;
@@ -135,11 +135,137 @@ void TamaPetAI::ProcessAI() {
     }
 
     if (m_lastFrameCounter % 10 == 0) {
-        ProcessMovement();
+        AIMovement();
+    }
+
+    ProcessAttributes();
+}
+
+void TamaPetAI::ProcessMovement(float deltaTime) {
+    if (m_petPosition.x < m_petTarget.x) {
+        m_petDirection = -1;
+
+        m_petPosition.x += deltaTime * m_petSpeed;
+        if (m_petPosition.x > m_petTarget.x) {
+            m_petPosition.x = m_petTarget.x;
+        }
+    }
+
+    if (m_petPosition.x > m_petTarget.x) {
+        m_petDirection = 1;
+
+        m_petPosition.x -= deltaTime * m_petSpeed;
+        if (m_petPosition.x < m_petTarget.x) {
+            m_petPosition.x = m_petTarget.x;
+        }
+    }
+
+    if (m_petPosition.y < m_petTarget.y) {
+        m_petPosition.y += deltaTime * m_petSpeed;
+        if (m_petPosition.y > m_petTarget.y) {
+            m_petPosition.y = m_petTarget.y;
+        }
+    }
+
+    if (m_petPosition.y > m_petTarget.y) {
+        m_petPosition.y -= deltaTime * m_petSpeed;
+        if (m_petPosition.y < m_petTarget.y) {
+            m_petPosition.y = m_petTarget.y;
+        }
     }
 }
 
-void TamaPetAI::ProcessMovement() {
+void TamaPetAI::ProcessAttributes() {
+    Pet& petData = m_game->m_gameData.GetCurrentPet();
+    constexpr const float multiplySpeed = 0.0001f;
+    petData.attributes[PET_ATTRIBUTES::HUNGER] += GetRandomValue(10, 20) * multiplySpeed;
+    petData.attributes[PET_ATTRIBUTES::HAPPINESS] -= GetRandomValue(10, 26) * multiplySpeed;
+    petData.attributes[PET_ATTRIBUTES::BOREDOM] += GetRandomValue(15, 40) * multiplySpeed;
+    petData.attributes[PET_ATTRIBUTES::HYGIENE] -= GetRandomValue(15, 50) * multiplySpeed;
+    petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] -= GetRandomValue(10, 26) * multiplySpeed;
+    petData.attributes[PET_ATTRIBUTES::ILLNESS] -= GetRandomValue(5, 15) * multiplySpeed;
+
+    ClampRange(petData.attributes[PET_ATTRIBUTES::HUNGER]);
+    ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
+    ClampRange(petData.attributes[PET_ATTRIBUTES::BOREDOM]);
+    ClampRange(petData.attributes[PET_ATTRIBUTES::HYGIENE]);
+    ClampRange(petData.attributes[PET_ATTRIBUTES::TANKHYGIENE]);
+    ClampRange(petData.attributes[PET_ATTRIBUTES::ILLNESS]);
+
+    float healthChange = 0.0f;
+    // petData.attributes[PET_ATTRIBUTES::HP] = 1.0f;
+    if (petData.attributes[PET_ATTRIBUTES::HUNGER] >= 0.25f) {
+        healthChange -= 0.05f * (petData.attributes[PET_ATTRIBUTES::HUNGER] * 0.25f);
+    } else {
+        healthChange += 0.05f;
+    }
+
+    if (petData.attributes[PET_ATTRIBUTES::HAPPINESS] <= 0.75f) {
+        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::HAPPINESS]) * 0.25f);
+    } else {
+        healthChange += 0.05f;
+    }
+
+    if (petData.attributes[PET_ATTRIBUTES::HYGIENE] <= 0.75f) {
+        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::HYGIENE]) * 0.25f);
+    } else {
+        healthChange += 0.05f;
+    }
+
+    if (petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] <= 0.75f) {
+        healthChange -= 0.5f * 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::TANKHYGIENE]) * 0.25f);
+    } else {
+        healthChange += 0.5f * 0.05f;
+    }
+
+    if (petData.attributes[PET_ATTRIBUTES::ILLNESS] <= 0.75f) {
+        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::ILLNESS]) * 0.25f);
+    } else {
+        healthChange += 0.05f;
+    }
+
+    petData.attributes[PET_ATTRIBUTES::HP] += 0.1f * healthChange;
+
+    if (petData.attributes[PET_ATTRIBUTES::HP] <= 0.0f) {
+        petData.state = PET_STATES::DED;
+
+        return;
+    }
+
+    if (petData.state == PET_STATES::HEALTHY) {
+        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= 600.0f) {
+            petData.state = PET_STATES::EVOLVE;
+            return;
+        }
+
+        if (petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.85f) {
+            petData.state = PET_STATES::HUNGRY;
+            return;
+        }
+
+        if (petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.45f) {
+            petData.state = PET_STATES::HUNGRY;
+            return;
+        }
+
+        if (petData.attributes[PET_ATTRIBUTES::BOREDOM] > 0.35f) {
+            petData.state = PET_STATES::ANGRY;
+            return;
+        }
+
+        if (petData.attributes[PET_ATTRIBUTES::HAPPINESS] < 0.65f) {
+            petData.state = PET_STATES::SAD;
+            return;
+        }
+
+        if (petData.attributes[PET_ATTRIBUTES::HAPPINESS] < 0.65f) {
+            petData.state = PET_STATES::SICK;
+            return;
+        }
+    }
+}
+
+void TamaPetAI::AIMovement() {
     // if (GetRandomValue(0, 1) == 1) {
     //     m_petTarget.x = m_petPosition.x + GetRandomValue(64, 256);
     // } else {
@@ -182,5 +308,15 @@ void TamaPetAI::SetNewPetTarget(int newX, int newY) {
 
 void TamaPetAI::SetNewPetTarget(Vector2 destination) {
     SetNewPetTarget(destination.x, destination.y);
+}
+
+void TamaPetAI::ClampRange(float &value) {
+    if (value < 0.0f) {
+        value = 0.0f;
+    }
+
+    if (value > 1.0f) {
+        value = 1.0f;
+    }
 }
 

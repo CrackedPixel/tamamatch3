@@ -22,8 +22,9 @@ struct Pet {
         attributes[PET_ATTRIBUTES::BOREDOM] = 0.0f;
         attributes[PET_ATTRIBUTES::HYGIENE] = 1.0f;
         attributes[PET_ATTRIBUTES::TANKHYGIENE] = 1.0f;
-        attributes[PET_ATTRIBUTES::HEALTH] = 1.0f;
+        attributes[PET_ATTRIBUTES::ILLNESS] = 1.0f;
         attributes[PET_ATTRIBUTES::GROWTH] = 0.0f;
+        attributes[PET_ATTRIBUTES::HP] = 1.0f;
 
         // TODO: randomize?
         petTint = GetRandomValue(0, petTintList.size()-1);

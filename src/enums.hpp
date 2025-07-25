@@ -19,6 +19,7 @@ enum struct PET_STATES {
     SLEEPING, // SKIP
     ANGRY,
     DED,
+    EVOLVE, // ready to evolve
 };
 
 enum struct PET_ATTRIBUTES {
@@ -27,9 +28,10 @@ enum struct PET_ATTRIBUTES {
     BOREDOM,
     HYGIENE,
     TANKHYGIENE,
-    HEALTH,
+    ILLNESS,
     GROWTH,
     SLEEPINESS,
+    HP,
 };
 
 enum struct OUTFIT_SLOTS {
