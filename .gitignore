@@ -2,5 +2,7 @@ builds/
 *.pro
 *.user
 *.1b76420
+*.o
+*.exe
 resources/textures/castle.png
 
