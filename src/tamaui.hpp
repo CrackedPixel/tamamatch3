@@ -8,14 +8,16 @@ struct Game;
 
 enum struct ICON_ACTION_TYPE {
     STATS,
+    BANDAID,
+    TOY,
     CLEAN,
     CLEAN_TANK,
-    MINIGAMES,
-    BANDAID,
-    INVENTORY,
-    TOY,
+
     CAMERA,
-    SETTINGS,
+    INVENTORY,
+    MINIGAMES,
+    STORE,
+    DISPLAY,
 };
 
 struct TamaIcon {
@@ -32,8 +34,17 @@ struct TamaUI {
     bool OnHandleInput();
     void OnRenderUI();
 
+public:
+    bool IsUIShown();
+
+private:
+    void DrawPetAtSpot(rlRectangle destination);
+
 private:
     static constexpr const char* TEXTURE_PATH = "textures/icons.png";
+    static constexpr const int OFFSET_X = 80;
+    static constexpr const int GAP_X = 105;
+    static constexpr const int ICONS_PER_ROW = 5;
     Game* m_game = nullptr;
     int m_hoverId = -1;
     int m_selectedId = 0;

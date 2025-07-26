@@ -16,13 +16,15 @@ void SceneTama::OnTerminate(){
 }
 
 void SceneTama::OnUpdate(float deltaTime){
+    if (m_game->m_inputController.IsButtonBack) {
+        if (m_tamaui.IsUIShown()) {
+            m_game->m_sceneManager.OnChangeScene("splash");
+            return;
+        }
+    }
+
     m_tamaui.OnUpdate(deltaTime);
     m_tamapetai.OnUpdate(deltaTime);
-
-    if (m_game->m_inputController.IsButtonBack) {
-        m_game->m_sceneManager.OnChangeScene("splash");
-        return;
-    }
 }
 
 bool SceneTama::OnHandleInput(Vector2 mousePos) {
@@ -50,8 +52,7 @@ void SceneTama::OnRender(){
 void SceneTama::OnRenderUI(){
     Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png");
 
-    DrawRectangle(0, 0, 640, 80, LIGHTGRAY);
-    DrawRectangle(0, 480 - 80, 640, 80, LIGHTGRAY);
+    m_tamapetai.OnRenderUI();
     m_tamaui.OnRenderUI();
 
     Vector2 mousePosition = GetMousePosition();

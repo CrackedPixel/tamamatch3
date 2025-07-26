@@ -2,16 +2,30 @@
 
 #include "game.hpp"
 
+// STATS,
+// BANDAID,
+// TOY,
+// CLEAN,
+// CLEAN_TANK,
+
+// CAMERA,
+// INVENTORY,
+// MINIGAMES,
+// STORE,
+// DISPLAY,
+
 void TamaUI::OnInitialize() {
-    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::SETTINGS, { 64 * 0, 0, 64, 64 } });
-    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::MINIGAMES, { 64 * 1, 0, 64, 64 } });
+    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::STATS, { 0, 0, 0, 0 } });
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::BANDAID, { 64 * 2, 0, 64, 64 } });
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::TOY, { 64 * 3, 0, 64, 64 } });
+    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::CLEAN, { 64 * 2, 64, 64, 64 } });
+    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::CLEAN_TANK, { 64 * 0, 64 * 2, 64, 64 } });
 
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::CAMERA, { 64 * 0, 64, 64, 64 } });
-    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::INVENTORY, { 64 * 1, 64, 64, 64 } });
-    // m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::SETTINGS, { 64 * 2, 64, 64, 64 } });
-    // m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::MINIGAMES, { 64 * 3, 64, 64, 64 } });
+    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::INVENTORY, { 64 * 1, 64 * 1, 64, 64 } });
+    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::MINIGAMES, { 64 * 1, 0, 64, 64 } });
+    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::STORE, { 64 * 3, 64, 64, 64 } });
+    m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::DISPLAY, { 0, 0, 64, 64 } });
 }
 
 void TamaUI::OnTerminate() {
@@ -39,14 +53,86 @@ void TamaUI::OnUpdate(float deltaTime) {
         return;
     }
 
+    if (m_game->m_inputController.IsButtonBack) {
+        if (hideUI) {
+            hideUI = false;
+            return;
+        }
+    }
+
+    if (m_game->m_inputController.IsButtonSelect) {
+        if (hideUI) {
+            hideUI = false;
+            return;
+        }
+
+
+        // STATS,
+        // BANDAID,
+        // TOY,
+        // CLEAN,
+        // CLEAN_TANK,
+
+            // CAMERA,
+            // INVENTORY,
+            // MINIGAMES,
+            // STORE,
+            // DISPLAY,
+
+        switch (m_icons[m_selectedId].actionType) {
+            case ICON_ACTION_TYPE::STATS: {
+                // TODO: open stats
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            } break;
+            case ICON_ACTION_TYPE::BANDAID: {
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::ILLNESS;
+            } break;
+            case ICON_ACTION_TYPE::TOY: {
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
+            } break;
+            case ICON_ACTION_TYPE::CLEAN: {
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::DIRTY;
+            } break;
+            case ICON_ACTION_TYPE::CLEAN_TANK: {
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::TANKDIRTY;
+            } break;
+
+
+            case ICON_ACTION_TYPE::CAMERA: {
+                hideUI = !hideUI;
+
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            } break;
+            case ICON_ACTION_TYPE::INVENTORY: {
+                // TODO: open inventory
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            } break;
+            case ICON_ACTION_TYPE::MINIGAMES: {
+                // TODO: change scene
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            } break;
+            case ICON_ACTION_TYPE::STORE: {
+                // TODO: open store
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            } break;
+            case ICON_ACTION_TYPE::DISPLAY: {
+                // TODO: open display
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            } break;
+
+        }
+
+        return;
+    }
+
     Vector2 mousePosition = GetMousePosition();
     mousePosition.x -= 184;
     mousePosition.y -= 174;
 
     rlRectangle destination = { 0, 0, 80, 80 };
     for (size_t i = 0; i < m_icons.size(); ++i) {
-        if (i < 4) {
-            destination.x = 80.0f  + ( 130.0f * i) - 8;
+        if (i < ICONS_PER_ROW) {
+            destination.x = OFFSET_X  + ( GAP_X * i) - 8;
             destination.y = 0;
 
             if (CheckCollisionPointRec(mousePosition, destination)) {
@@ -54,8 +140,8 @@ void TamaUI::OnUpdate(float deltaTime) {
 
                 return;
             }
-        } else if (i < 8) {
-            destination.x = 80.0f  + ( 130.0f * (i - 4)) - 8;
+        } else if (i < ICONS_PER_ROW * 2) {
+            destination.x = OFFSET_X  + ( GAP_X * (i - ICONS_PER_ROW)) - 8;
             destination.y = 480 - 80;
 
             if (CheckCollisionPointRec(mousePosition, destination)) {
@@ -98,16 +184,20 @@ bool TamaUI::OnHandleInput() {
         case ICON_ACTION_TYPE::BANDAID: {
             m_game->m_gameData.activeCursor = CURSOR_TYPES::ILLNESS;
         } break;
-        case ICON_ACTION_TYPE::CAMERA: {
-            hideUI = !hideUI;
-
-            m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+        case ICON_ACTION_TYPE::TOY: {
+            m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
         } break;
         case ICON_ACTION_TYPE::CLEAN: {
             m_game->m_gameData.activeCursor = CURSOR_TYPES::DIRTY;
         } break;
         case ICON_ACTION_TYPE::CLEAN_TANK: {
             m_game->m_gameData.activeCursor = CURSOR_TYPES::TANKDIRTY;
+        } break;
+
+        case ICON_ACTION_TYPE::CAMERA: {
+            hideUI = !hideUI;
+
+            m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
         case ICON_ACTION_TYPE::INVENTORY: {
             // TODO: open inventory
@@ -117,13 +207,15 @@ bool TamaUI::OnHandleInput() {
             // TODO: change scene
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
-        case ICON_ACTION_TYPE::SETTINGS: {
+        case ICON_ACTION_TYPE::STORE: {
             // TODO: open settings
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
-        case ICON_ACTION_TYPE::TOY: {
-            m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
+        case ICON_ACTION_TYPE::DISPLAY: {
+            // TODO: open display
+            m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
+
     }
 
     return true;
@@ -140,11 +232,14 @@ void TamaUI::OnRenderUI() {
     Color bgColour;
     rlRectangle destination = { 0.0f, 0.0f, 64, 64 };
 
+    DrawRectangle(0, 0, 640, 80, LIGHTGRAY);
+    DrawRectangle(0, 480 - 80, 640, 80, LIGHTGRAY);
+
     for (size_t i = 0; i < m_icons.size(); ++i) {
         drawColour = WHITE; //m_selectedId == static_cast<int>(i) ? WHITE : LIGHTGRAY;
         bgColour = m_hoverId == static_cast<int>(i) ? YELLOW : RED;
-        if (i < 4) {
-            destination.x = 80.0f  + ( 130.0f * i);
+        if (i < ICONS_PER_ROW) {
+            destination.x = OFFSET_X  + ( GAP_X * i);
             destination.y = 8;
 
             if (
@@ -154,9 +249,13 @@ void TamaUI::OnRenderUI() {
                 DrawRectangle(destination.x - 8, destination.y - 8, destination.width + 16, destination.height + 16, bgColour);
             }
 
-            DrawTexturePro(iconsTexture, m_icons[i].sourceRect, destination, { 0.0f, 0.0f }, 0.0f, drawColour);
-        } else if (i < 8) {
-            destination.x = 80.0f  + ( 130.0f * (i - 4));
+            if (m_icons[i].actionType == ICON_ACTION_TYPE::STATS) {
+                DrawPetAtSpot(destination);
+            } else {
+                DrawTexturePro(iconsTexture, m_icons[i].sourceRect, destination, { 0.0f, 0.0f }, 0.0f, drawColour);
+            }
+        } else if (i < ICONS_PER_ROW * 2) {
+            destination.x = OFFSET_X  + ( GAP_X * (i - ICONS_PER_ROW));
             destination.y = 480 - 80 + 8;
 
             if (
@@ -166,9 +265,80 @@ void TamaUI::OnRenderUI() {
                 DrawRectangle(destination.x - 8, destination.y - 8, destination.width + 16, destination.height + 16, bgColour);
             }
 
-            DrawTexturePro(iconsTexture, m_icons[i].sourceRect, destination, { 0.0f, 0.0f }, 0.0f, drawColour);
+            if (m_icons[i].actionType == ICON_ACTION_TYPE::STATS) {
+                DrawPetAtSpot(destination);
+            } else {
+                DrawTexturePro(iconsTexture, m_icons[i].sourceRect, destination, { 0.0f, 0.0f }, 0.0f, drawColour);
+            }
         } else {
             // nothing?
         }
     }
+}
+
+bool TamaUI::IsUIShown() {
+    return !this->hideUI;
+}
+
+void TamaUI::DrawPetAtSpot(rlRectangle destination) {
+    Pet& petData = m_game->m_gameData.GetCurrentPet();
+    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath());
+    Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png");
+
+    if (petData.stage == PET_STAGES::EGG) {
+        DrawTexturePro(
+            petTexture,
+            { 0, 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+            destination,
+            { 0.0f, 0.0f },
+            0.0f,
+            WHITE
+        );
+        return;
+    }
+
+    if (petData.state == PET_STATES::DED) {
+        DrawTexturePro(
+            petTexture,
+            { 0, 0, m_game->m_gameData.GetCurrentPetWidth(), -m_game->m_gameData.GetCurrentPetHeight() },
+            destination,
+            { 0.0f, 0.0f },
+            0.0f,
+            m_game->m_gameData.PetTintList[petData.petTint]
+        );
+    } else {
+        DrawTexturePro(
+            petTexture,
+            { m_game->m_gameData.GetCurrentPetWidth(), 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+            destination,
+            { 0.0f, 0.0f },
+            0.0f,
+            m_game->m_gameData.PetTintList[petData.petTint]
+        );
+    }
+
+    if (petData.stage == PET_STAGES::EGG) {
+        return;
+    }
+
+    if (petData.state == PET_STATES::DED) {
+        DrawTexturePro(
+            faceTexture,
+            { m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, -m_game->m_gameData.GetCurrentFace().height},
+            destination,
+            { 0.0f, 0.0f },
+            0.0f,
+            WHITE
+        );
+    } else {
+        DrawTexturePro(
+            faceTexture,
+            { m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height},
+            destination,
+            { 0.0f, 0.0f },
+            0.0f,
+            WHITE
+        );
+    }
+
 }

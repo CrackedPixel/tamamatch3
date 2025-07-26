@@ -4,9 +4,11 @@
 #include <vector>
 
 #include "raylib.h"
+#include "cini.h"
 
 #include "enums.hpp"
 #include "types.hpp"
+#include "utils.hpp"
 
 struct GlobalGameData {
     int activePet = 0;
@@ -20,36 +22,37 @@ struct GlobalGameData {
     std::unordered_map<PET_STAGES, Vector2> PetFaceOffsets = {};
     std::unordered_map<PET_STATES, rlRectangle> PetFaces = {};
     std::vector<std::string> WallpaperList;
+    HCINI iniFile;
 
     void OnInitialize() {
-        WallpaperList.emplace_back("textures/castle.png");
+        iniFile = cini_create("resources/config.ini");
 
-        PetTintList.emplace_back(WHITE);
-        PetTintList.emplace_back(RED);
+        const int wallpaperCount = cini_geti(iniFile, "wallpaper", "count", 0);
+        for (int i = 0; i < wallpaperCount; ++i) {
+          const char* wallpaperPath = cini_gets(iniFile, "wallpaper", std::to_string(i+1).c_str(), "");
+          WallpaperList.emplace_back(wallpaperPath);
+        }
 
-        PetFaces.emplace(PET_STATES::HEALTHY, rlRectangle{ 64 * 0, 0, 64, 64 });
-        PetFaces.emplace(PET_STATES::SAD, rlRectangle{ 64 * 1, 0, 64, 64 });
-        PetFaces.emplace(PET_STATES::SICK, rlRectangle{ 64 * 2, 0, 64, 64 });
-        PetFaces.emplace(PET_STATES::ANGRY, rlRectangle{ 64 * 3, 0, 64, 64 });
-        PetFaces.emplace(PET_STATES::DED, rlRectangle{ 64 * 4, 0, 64, 64 });
+        const int petTintCount = cini_geti(iniFile, "pet_tint", "count", 0);
+        for (int i = 0; i < petTintCount; ++i) {
+            const char* tint = cini_gets(iniFile, "pet_tint", std::to_string(i+1).c_str(), "0 0 0");
+            PetTintList.emplace_back(Utils::ColorFromString(tint));
+        }
 
-        // enum struct CURSOR_TYPES {
-        //     NORMAL,
-        //     INVALID,
-        //     FOOD,
-        //     SAD,
-        //     BORED,
-        //     DIRTY,
-        //     TANKDIRTY,
-        //     ILLNESS,
-        //     TOY,
-        // };
+        PetFaces.emplace(PET_STATES::HEALTHY, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "healthy", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::SAD, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "sad", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::SICK, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "sick", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::ANGRY, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "angry", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::DED, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "ded", "0 0 64 64")));
 
-        Cursors.emplace(CURSOR_TYPES::NORMAL, rlRectangle{ 0, 0, 32, 32 });
-        Cursors.emplace(CURSOR_TYPES::ILLNESS, rlRectangle{ 32, 0, 32, 32 });
-        // Cursors.emplace(CURSOR_TYPES::FOOD, rlRectangle{ 0, 0, 32, 32 });
+        Cursors.emplace(CURSOR_TYPES::NORMAL, Utils::RectFromString(cini_gets(iniFile, "cursors", "normal", "0 0 32 32")));
+        Cursors.emplace(CURSOR_TYPES::ILLNESS, Utils::RectFromString(cini_gets(iniFile, "cursors", "illness", "0 0 32 32")));
 
         AddNewPet();
+    }
+
+    void OnTerminate() {
+        cini_free(iniFile);
     }
 
     void AddNewPet() {
@@ -75,6 +78,16 @@ struct GlobalGameData {
             case PET_STATES::ANGRY: return PetFaces[PET_STATES::ANGRY];
             case PET_STATES::DED: return PetFaces[PET_STATES::DED];
             default: return PetFaces[PET_STATES::HEALTHY];
+        }
+    }
+
+    const char* GetCurrentPetTexturePath() {
+        switch (PetList[activePet].stage) {
+            case PET_STAGES::EGG: return "textures/tadpole0.png";
+            case PET_STAGES::NEWBORN: return "textures/tadpole1.png";
+            case PET_STAGES::TODDLER: return "textures/tadpole2.png";
+            case PET_STAGES::ADOLESCENT: return "textures/tadpole3.png";
+            case PET_STAGES::ADULT: return "textures/tadpole4.png";
         }
     }
 

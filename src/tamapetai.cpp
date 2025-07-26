@@ -15,6 +15,11 @@ void TamaPetAI::OnUpdate(float deltaTime) {
         return;
     }
 
+    if (petData.state == PET_STATES::EVOLVE) {
+        m_animationStep = 1;
+        return;
+    }
+
     petData.attributes[PET_ATTRIBUTES::GROWTH] += deltaTime * m_game->m_gameData.gameSpeed;
     m_currentTimer += deltaTime * m_game->m_gameData.gameSpeed;
 
@@ -27,6 +32,11 @@ void TamaPetAI::OnUpdate(float deltaTime) {
 }
 
 bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
+    if (IsKeyPressed(KEY_F1)) {
+        showStats = !showStats;
+        return true;
+    }
+
     if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         return false;
     }
@@ -51,18 +61,8 @@ bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
 
 void TamaPetAI::OnRender() {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
-    Texture& petTexture = petData.stage == PET_STAGES::EGG
-        ? m_game->m_resourceManager.GetTexture("textures/tadpole0.png")
-        : petData.stage == PET_STAGES::NEWBORN
-            ? m_game->m_resourceManager.GetTexture("textures/tadpole1.png")
-            : petData.stage == PET_STAGES::TODDLER
-                ? m_game->m_resourceManager.GetTexture("textures/tadpole2.png")
-                    : petData.stage == PET_STAGES::ADOLESCENT
-                    ? m_game->m_resourceManager.GetTexture("textures/tadpole3.png")
-                        : m_game->m_resourceManager.GetTexture("textures/tadpole4.png");
-                // : petData.stage == PET_STAGES::NEWBORN
-                //     ? m_game->m_resourceManager.GetTexture("textures/tadpole1.png")
 
+    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath());
     Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png");
 
     if (petData.stage == PET_STAGES::EGG) {
@@ -144,6 +144,25 @@ void TamaPetAI::OnRender() {
     }
 }
 
+void TamaPetAI::OnRenderUI() {
+    if (!showStats) {
+        return;
+    }
+
+    Pet& petData = m_game->m_gameData.GetCurrentPet();
+
+    rlDrawText(TextFormat("Growth: %.1f\nHP: %.1f\nHunger: %.1f\nBoredom: %.1f\nHappiness: %.1f\nHygiene: %.1f\nTank: %.1f\nHealth: %.1f",
+      (petData.attributes[PET_ATTRIBUTES::GROWTH] / (petData.stage == PET_STAGES::EGG ? 60.0f : 600.0f)),
+      petData.attributes[PET_ATTRIBUTES::HP],
+      petData.attributes[PET_ATTRIBUTES::HUNGER],
+      petData.attributes[PET_ATTRIBUTES::BOREDOM],
+      petData.attributes[PET_ATTRIBUTES::HAPPINESS],
+      petData.attributes[PET_ATTRIBUTES::HYGIENE],
+      petData.attributes[PET_ATTRIBUTES::TANKHYGIENE],
+      petData.attributes[PET_ATTRIBUTES::ILLNESS]
+    ), 50, 100, 20, BLACK);
+}
+
 float TamaPetAI::GetOffsetFromState() {
     return 0.0f;
 }
@@ -206,7 +225,11 @@ void TamaPetAI::ProcessAttributes() {
         return;
     }
 
+#ifdef DEBUG_BUILD
+    constexpr const float multiplySpeed = 0.001f;
+#else
     constexpr const float multiplySpeed = 0.0001f;
+#endif
     petData.attributes[PET_ATTRIBUTES::HUNGER] += GetRandomValue(10, 20) * multiplySpeed;
     petData.attributes[PET_ATTRIBUTES::HAPPINESS] -= GetRandomValue(10, 26) * multiplySpeed;
     petData.attributes[PET_ATTRIBUTES::BOREDOM] += GetRandomValue(15, 40) * multiplySpeed;
@@ -253,7 +276,8 @@ void TamaPetAI::ProcessAttributes() {
         healthChange += 0.05f;
     }
 
-    petData.attributes[PET_ATTRIBUTES::HP] += 0.1f * healthChange;
+    petData.attributes[PET_ATTRIBUTES::HP] += healthChange;
+    ClampRange(petData.attributes[PET_ATTRIBUTES::HP]);
 
     if (petData.attributes[PET_ATTRIBUTES::HP] <= 0.0f) {
         petData.state = PET_STATES::DED;

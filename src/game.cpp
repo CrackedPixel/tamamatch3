@@ -59,6 +59,8 @@ void Game::OnTerminate(){
     delete m_audioManager;
     m_audioManager = nullptr;
 
+    m_gameData.OnTerminate();
+
     rlCloseWindow();
 }
 

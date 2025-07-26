@@ -1,3 +1,6 @@
+#define CINI_IMPLEMENTATION
+#include "cini.h"
+
 #include "game.hpp"
 
 int main() {

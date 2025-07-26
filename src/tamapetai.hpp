@@ -11,6 +11,7 @@ struct TamaPetAI {
     void OnUpdate(float deltaTime);
     bool OnHandleInput(Vector2 mousePosition);
     void OnRender();
+    void OnRenderUI();
 
 private:
     float GetOffsetFromState();
@@ -30,6 +31,7 @@ private:
     int m_animationStep = 0;
     int m_petDirection = 1;
     float m_petSpeed = 40.0f;
+    bool showStats = false;
     Vector2 m_petPosition = { 320.0f, 240.0f };
     Vector2 m_petTarget = m_petPosition;
     rlRectangle m_petBounds = { 32.0f, 100.0f, 640 - 32, 480 - 100 - 64 };
