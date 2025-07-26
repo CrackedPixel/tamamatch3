@@ -1,45 +1,55 @@
-CXX = em++
+CXX = g++
+STRIP = strip
+PACK = upx --lzma -9
+
+DEFINES = -DPLATFORM_DESKTOP
 
 # Source files
-SRC = main.cpp game.cpp
+SRC = \
+    src/audiomanager.cpp \
+    src/deviceinfo.cpp \
+    src/game.cpp \
+    src/main.cpp \
+    src/scene_splash.cpp \
+    src/scene_tama.cpp \
+    src/scenemanager.cpp \
+    src/tamapetai.cpp \
+    src/tamaui.cpp
 
-# Include directories
+# Include directories ONLY (do NOT list .hpp files here)
 INCLUDES = -I./src \
-           -I/home/aj/Documents/git/misc/raylib/web/src \
+	-I/home/aj/Documents/raylib/latest/release/include
 
-# Library directories
-LIBDIRS = -L/home/aj/Documents/git/misc/raylib/web/src
+LIBDIRS = -L/home/aj/Documents/raylib/latest/release/lib
 
-# Libraries
 LIBS = -lraylib
 
-# Emscripten flags
-EMFLAGS = -s USE_GLFW=3 \
-          -s ASYNCIFY \
-          -s ALLOW_MEMORY_GROWTH \
-          -s ASSERTIONS \
-          -s SINGLE_FILE \
-          -O2 \
-          -D PLATFORM_WEB=1 \
-          --embed-file resources
+OUTFILE = tamamatch3.exe
+OUTPUT = ./builds/desktop/$(OUTFILE)
+PACKAGEPATH = ./builds/desktop/package
+RESOURCES = ./resources
 
-# Output file
-OUTPUT = ./builds/web/tamamatch3.html
-
-# Object files
 OBJ = $(SRC:.cpp=.o)
 
-# Default target
+CXXFLAGS = -std=c++11 -Wall -Wextra $(DEFINES) $(INCLUDES)
+
+LDFLAGS = $(LIBDIRS) $(LIBS)
+
 all: $(OUTPUT)
 
-# Linking
 $(OUTPUT): $(OBJ)
-	$(CXX) $(OBJ) $(INCLUDES) $(LIBDIRS) $(LIBS) $(EMFLAGS) -o $@
+	$(CXX) $(OBJ) $(LDFLAGS) -o $@
+	mkdir -p $(PACKAGEPATH)/resources
+	mkdir -p ./builds/desktop/
+	cp -r $(RESOURCES) ./builds/desktop/
+	cp -r $(RESOURCES)/ $(PACKAGEPATH)/
+	cp ./builds/desktop/$(OUTFILE) $(PACKAGEPATH)/
+	$(STRIP) $(PACKAGEPATH)/$(OUTFILE)
+	$(PACK) $(PACKAGEPATH)/$(OUTFILE)
 
-# Compilation
 %.o: %.cpp
-	$(CXX) $(INCLUDES) $(EMFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean target
 clean:
 	rm -f $(OBJ) $(OUTPUT)
+	rm -rf $(PACKAGEPATH)

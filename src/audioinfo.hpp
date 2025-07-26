@@ -16,4 +16,7 @@ struct MusicWrapper {
     MUSIC_STATES state = MUSIC_STATES::STOPPED;
     Music track = {};
     float volume = 0.0f;
+
+    MusicWrapper() {}
+    MusicWrapper(const std::string& path, MUSIC_STATES state, Music track) : trackPath(path), state(state), track(track) {}
 };

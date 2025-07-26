@@ -32,7 +32,7 @@ bool DeviceInfo::OnHandleInput() {
     }
 
     switch (m_hoverId) {
-        case -1: return false;
+        // case -1: return false;
         case 0: {
             m_game->m_inputController.EnableButtonUp();
             return true;
@@ -49,6 +49,7 @@ bool DeviceInfo::OnHandleInput() {
             m_game->m_inputController.EnableButtonDown();
             return true;
         } break;
+        default: return false;
     }
 }
 

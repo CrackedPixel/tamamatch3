@@ -3,12 +3,19 @@
 mkdir -p ./builds/web
 
 em++ \
-src/main.cpp \
+src/audiomanager.cpp \
+src/deviceinfo.cpp \
 src/game.cpp \
--I. \
--I/home/aj/Documents/raylib/web/include \
--L/home/aj/Documents/raylib/web/lib \
--lraylib \
+src/main.cpp \
+src/scene_splash.cpp \
+src/scene_tama.cpp \
+src/scenemanager.cpp \
+src/tamapetai.cpp \
+src/tamaui.cpp \
+-I./src/ \
+-I/home/aj/Documents/raylib/web/release/include \
+-L/home/aj/Documents/raylib/web/release/lib \
+-lraylib.web \
 -s USE_GLFW=3 \
 -s STACK_SIZE=1048576 \
 -s INITIAL_MEMORY=234881024 \

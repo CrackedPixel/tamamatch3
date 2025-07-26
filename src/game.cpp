@@ -1,6 +1,7 @@
 #include "game.hpp"
 
 #ifdef PLATFORM_WEB
+    #include <emscripten/emscripten>
 #endif
 
 #include "raylib.h"
