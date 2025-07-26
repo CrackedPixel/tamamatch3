@@ -24,7 +24,9 @@ void SceneSplash::OnRender(){
     mousePosition.y -= 174;
 
     if (CheckCollisionPointRec(mousePosition, { 0, 0, 640, 480 })) {
+#ifdef PLATFORM_DESKTOP
         rlHideCursor();
+#endif
         Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png");
 
         DrawTexturePro(
@@ -36,7 +38,9 @@ void SceneSplash::OnRender(){
             WHITE
         );
     } else {
+#ifdef PLATFORM_DESKTOP
         rlShowCursor();
+#endif
     }
 }
 
@@ -49,9 +53,17 @@ bool SceneSplash::OnHandleInput(Vector2 mousePos) {
     mousePos.y -= 174;
 
     if (CheckCollisionPointRec(mousePos, { 0, 0, 640, 480 })) {
+#ifdef PLATFORM_DESKTOP
         rlHideCursor();
+#endif
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            m_game->m_inputController.EnableButtonSelect();
+            return true;
+        }
     } else {
+#ifdef PLATFORM_DESKTOP
         rlShowCursor();
+#endif
     }
 
     return false;

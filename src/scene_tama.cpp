@@ -58,7 +58,9 @@ void SceneTama::OnRenderUI(){
     mousePosition.x -= 184;
     mousePosition.y -= 174;
     if (CheckCollisionPointRec(mousePosition, { 0, 0, 640, 480 })) {
+#ifdef PLATFORM_DESKTOP
         rlHideCursor();
+#endif
 
         DrawTexturePro(
             cursorTexture,
@@ -69,6 +71,8 @@ void SceneTama::OnRenderUI(){
             WHITE
         );
     } else {
+#ifdef PLATFORM_DESKTOP
         rlShowCursor();
+#endif
     }
 }

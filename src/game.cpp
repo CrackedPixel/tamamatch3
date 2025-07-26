@@ -15,7 +15,9 @@ Game* Game::s_instance = nullptr;
 #endif
 
 void Game::OnInitialize() {
-    // SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
+    #ifdef PLATFORM_DESKTOP
+        SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
+    #endif
     InitWindow(1007, 817, "Tamamatch3");
 
     m_gameData.OnInitialize();
@@ -121,6 +123,8 @@ void Game::OnHandleInput() {
         return;
     }
 
+    Vector2 mousePosition = GetMousePosition();
+
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         // m_mouseHeld = true;
 
@@ -138,7 +142,7 @@ void Game::OnHandleInput() {
 
     Scene* currentScene = m_sceneManager.GetCurrentScene();
     if (currentScene != nullptr) {
-        bool sceneResult = currentScene->OnHandleInput(GetMousePosition());
+        bool sceneResult = currentScene->OnHandleInput(mousePosition);
         if (sceneResult) {
             return;
         }
@@ -188,13 +192,16 @@ void Game::OnRender() {
     Scene* currentScene = m_sceneManager.GetCurrentScene();
 
     BeginDrawing();
-    ClearBackground(RED);
-
-    BeginTextureMode(m_renderTexture);
-    ClearBackground(WHITE);
+#ifdef PLATFORM_WEB
+    ClearBackground(BLACK);
+#endif
+#ifdef PLATFORM_DESKTOP
+    ClearBackground(BLANK);
+#endif
 
     if (currentScene != nullptr) {
         BeginTextureMode(m_renderTexture);
+        ClearBackground(WHITE);
 
         currentScene->OnRender();
         m_transitionManager.OnRender();
