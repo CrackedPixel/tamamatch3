@@ -11,7 +11,7 @@ void TamaPetAI::OnUpdate(float deltaTime) {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
 
     if (petData.state == PET_STATES::DED) {
-        m_animationStep = 0;
+        m_animationStep = 1;
         return;
     }
 

@@ -38,6 +38,7 @@ enum struct OUTFIT_SLOTS {
     HAT,
     GLASSES,
     SHIRT,
+    BACK,
     MISC1,
     MISC2,
 };

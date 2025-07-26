@@ -2,18 +2,6 @@
 
 #include "game.hpp"
 
-// STATS,
-// BANDAID,
-// TOY,
-// CLEAN,
-// CLEAN_TANK,
-
-// CAMERA,
-// INVENTORY,
-// MINIGAMES,
-// STORE,
-// DISPLAY,
-
 void TamaUI::OnInitialize() {
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::STATS, { 0, 0, 0, 0 } });
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::BANDAID, { 64 * 2, 0, 64, 64 } });
@@ -228,7 +216,6 @@ void TamaUI::OnRenderUI() {
 
     Texture& iconsTexture = m_game->m_resourceManager.GetTexture(TEXTURE_PATH);
 
-    Color drawColour;
     Color bgColour;
     rlRectangle destination = { 0.0f, 0.0f, 64, 64 };
 
@@ -236,7 +223,6 @@ void TamaUI::OnRenderUI() {
     DrawRectangle(0, 480 - 80, 640, 80, LIGHTGRAY);
 
     for (size_t i = 0; i < m_icons.size(); ++i) {
-        drawColour = WHITE; //m_selectedId == static_cast<int>(i) ? WHITE : LIGHTGRAY;
         bgColour = m_hoverId == static_cast<int>(i) ? YELLOW : RED;
         if (i < ICONS_PER_ROW) {
             destination.x = OFFSET_X  + ( GAP_X * i);
@@ -252,7 +238,7 @@ void TamaUI::OnRenderUI() {
             if (m_icons[i].actionType == ICON_ACTION_TYPE::STATS) {
                 DrawPetAtSpot(destination);
             } else {
-                DrawTexturePro(iconsTexture, m_icons[i].sourceRect, destination, { 0.0f, 0.0f }, 0.0f, drawColour);
+                DrawTexturePro(iconsTexture, m_icons[i].sourceRect, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
             }
         } else if (i < ICONS_PER_ROW * 2) {
             destination.x = OFFSET_X  + ( GAP_X * (i - ICONS_PER_ROW));
@@ -268,7 +254,7 @@ void TamaUI::OnRenderUI() {
             if (m_icons[i].actionType == ICON_ACTION_TYPE::STATS) {
                 DrawPetAtSpot(destination);
             } else {
-                DrawTexturePro(iconsTexture, m_icons[i].sourceRect, destination, { 0.0f, 0.0f }, 0.0f, drawColour);
+                DrawTexturePro(iconsTexture, m_icons[i].sourceRect, destination, { 0.0f, 0.0f }, 0.0f, WHITE);
             }
         } else {
             // nothing?

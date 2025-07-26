@@ -7,7 +7,7 @@ void AudioManager::OnInitialize() {
 
     int musicCount = m_game->m_gameData.INICount("music");
     for (int i = 0; i < musicCount; ++i) {
-        m_audioPaths.emplace_back(m_game->m_gameData.INIString("music", std::to_string(i).c_str(), ""));
+        m_audioPaths.emplace_back(m_game->m_gameData.INIString("music", std::to_string(i+1).c_str(), ""));
     }
 
     for (const auto& it : m_audioPaths) {
@@ -16,6 +16,12 @@ void AudioManager::OnInitialize() {
 
         PlayMusicStream(bgm.track);
         SetMusicVolume(bgm.track, 0.0f);
+    }
+
+    int sfxCount = m_game->m_gameData.INICount("sfx");
+    for (int i = 0; i < sfxCount; ++i) {
+        const char* sfxPath = m_game->m_gameData.INIString("sfx", std::to_string(i+1).c_str(), "");
+        m_soundPaths.emplace(sfxPath, LoadSound(sfxPath));
     }
 }
 

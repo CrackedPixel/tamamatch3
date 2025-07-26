@@ -58,7 +58,7 @@ struct GlobalGameData {
     }
 
     int INICount(const char* header) {
-        return INIInt(header, "count", -1) + 1;
+        return INIInt(header, "count", 0);
     }
 
     int INIInt(const char* header, const char* key, int defaultValue) {

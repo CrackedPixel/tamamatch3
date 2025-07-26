@@ -1,7 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
 #include <string>
+
+#include "raylib.h"
 
 struct Game;
 
@@ -16,4 +19,5 @@ struct AudioManager {
 private:
     Game* m_game;
     std::vector<std::string> m_audioPaths;
+    std::unordered_map<std::string, Sound> m_soundPaths;
 };
