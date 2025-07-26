@@ -13,6 +13,7 @@ src/scenemanager.cpp \
 src/tamapetai.cpp \
 src/tamaui.cpp \
 -I./src/ \
+-I./external/ \
 -I/home/aj/Documents/raylib/web/release/include \
 -L/home/aj/Documents/raylib/web/release/lib \
 -lraylib.web \

@@ -18,6 +18,7 @@ SRC = \
 
 # Include directories ONLY (do NOT list .hpp files here)
 INCLUDES = -I./src \
+	-I./external \
 	-I/home/aj/Documents/raylib/latest/release/include \
 	-I/home/aj/Documents/git/misc/emsdk/upstream/emscripten/system/include
 
