@@ -32,9 +32,9 @@ RESOURCES = ./resources
 
 OBJ = $(SRC:.cpp=.o)
 
-CXXFLAGS = -std=c++11 -Wall -Wextra $(DEFINES) $(INCLUDES)
+CXXFLAGS = -std=c++11 -Wall -Wextra -Oz -flto $(DEFINES) $(INCLUDES)
 
-LDFLAGS = $(LIBDIRS) $(LIBS)
+LDFLAGS = -flto $(LIBDIRS) $(LIBS)
 
 all: $(OUTPUT)
 
