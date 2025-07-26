@@ -1,15 +1,17 @@
 #include "audiomanager.hpp"
 
+#include "game.hpp"
+
 void AudioManager::OnInitialize() {
     InitAudioDevice();
-    // load all audios
-    m_audioPaths.emplace_back("music/tamagotchi.ogg");
-    m_audioPaths.emplace_back("music/tamagotchi_sick.ogg");
-    m_audioPaths.emplace_back("music/minigame.ogg");
-    m_audioPaths.emplace_back("music/menu.ogg");
+
+    int musicCount = m_game->m_gameData.INICount("music");
+    for (int i = 0; i < musicCount; ++i) {
+        m_audioPaths.emplace_back(m_game->m_gameData.INIString("music", std::to_string(i).c_str(), ""));
+    }
 
     for (const auto& it : m_audioPaths) {
-        MusicWrapper& bgm = m_resourceManager.GetMusic(it);
+        MusicWrapper& bgm = m_game->m_resourceManager.GetMusic(it);
         bgm.state = MUSIC_STATES::STOPPED;
 
         PlayMusicStream(bgm.track);
@@ -20,7 +22,7 @@ void AudioManager::OnInitialize() {
 void AudioManager::OnTerminate() {
     // unload all audios
     for (const auto& it : m_audioPaths) {
-        MusicWrapper& currentTrack = m_resourceManager.GetMusic(it);
+        MusicWrapper& currentTrack = m_game->m_resourceManager.GetMusic(it);
         UnloadMusicStream(currentTrack.track);
     }
 
@@ -30,7 +32,7 @@ void AudioManager::OnTerminate() {
 void AudioManager::OnUpdate(float deltaTime) {
     // update all audios to keep them in sync
     for (auto& it : m_audioPaths) {
-        MusicWrapper& currentTrack = m_resourceManager.GetMusic(it);
+        MusicWrapper& currentTrack = m_game->m_resourceManager.GetMusic(it);
 
         UpdateMusicStream(currentTrack.track);
 
@@ -67,7 +69,7 @@ void AudioManager::OnUpdate(float deltaTime) {
 
 void AudioManager::PlayTrack(std::string trackPath) {
     for (auto& it : m_audioPaths) {
-        MusicWrapper& currentTrack = m_resourceManager.GetMusic(it);
+        MusicWrapper& currentTrack = m_game->m_resourceManager.GetMusic(it);
         if (
             currentTrack.state == MUSIC_STATES::PLAYING
             || currentTrack.state == MUSIC_STATES::FADE_IN
@@ -79,4 +81,8 @@ void AudioManager::PlayTrack(std::string trackPath) {
             currentTrack.state = MUSIC_STATES::FADE_IN;
         }
     }
+}
+
+void AudioManager::PlaySFX(std::string sfxPath) {
+
 }

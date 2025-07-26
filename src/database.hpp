@@ -27,32 +27,42 @@ struct GlobalGameData {
     void OnInitialize() {
         iniFile = cini_create("resources/config.ini");
 
-        const int wallpaperCount = cini_geti(iniFile, "wallpaper", "count", 0);
+        const int wallpaperCount = INICount("wallpaper");
         for (int i = 0; i < wallpaperCount; ++i) {
-          const char* wallpaperPath = cini_gets(iniFile, "wallpaper", std::to_string(i+1).c_str(), "");
-          WallpaperList.emplace_back(wallpaperPath);
+            WallpaperList.emplace_back(INIString("wallpaper", std::to_string(i+1).c_str(), ""));
         }
 
-        const int petTintCount = cini_geti(iniFile, "pet_tint", "count", 0);
+        const int petTintCount = INICount("pet_tint");
         for (int i = 0; i < petTintCount; ++i) {
-            const char* tint = cini_gets(iniFile, "pet_tint", std::to_string(i+1).c_str(), "0 0 0");
-            PetTintList.emplace_back(Utils::ColorFromString(tint));
+            PetTintList.emplace_back(Utils::ColorFromString(INIString("pet_tint", std::to_string(i+1).c_str(), "0 0 0")));
         }
 
-        PetFaces.emplace(PET_STATES::HEALTHY, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "healthy", "0 0 64 64")));
-        PetFaces.emplace(PET_STATES::SAD, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "sad", "0 0 64 64")));
-        PetFaces.emplace(PET_STATES::SICK, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "sick", "0 0 64 64")));
-        PetFaces.emplace(PET_STATES::ANGRY, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "angry", "0 0 64 64")));
-        PetFaces.emplace(PET_STATES::DED, Utils::RectFromString(cini_gets(iniFile, "pet_faces", "ded", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::HEALTHY, Utils::RectFromString(INIString("pet_faces", "healthy", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::SAD, Utils::RectFromString(INIString("pet_faces", "sad", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::SICK, Utils::RectFromString(INIString("pet_faces", "sick", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::ANGRY, Utils::RectFromString(INIString("pet_faces", "angry", "0 0 64 64")));
+        PetFaces.emplace(PET_STATES::DED, Utils::RectFromString(INIString("pet_faces", "ded", "0 0 64 64")));
 
-        Cursors.emplace(CURSOR_TYPES::NORMAL, Utils::RectFromString(cini_gets(iniFile, "cursors", "normal", "0 0 32 32")));
-        Cursors.emplace(CURSOR_TYPES::ILLNESS, Utils::RectFromString(cini_gets(iniFile, "cursors", "illness", "0 0 32 32")));
+        Cursors.emplace(CURSOR_TYPES::NORMAL, Utils::RectFromString(INIString("cursors", "normal", "0 0 32 32")));
+        Cursors.emplace(CURSOR_TYPES::ILLNESS, Utils::RectFromString(INIString("cursors", "illness", "0 0 32 32")));
 
         AddNewPet();
     }
 
     void OnTerminate() {
         cini_free(iniFile);
+    }
+
+    const char* INIString(const char* header, const char* key, const char* defaultValue) {
+        return cini_gets(iniFile, header, key, defaultValue);
+    }
+
+    int INICount(const char* header) {
+        return INIInt(header, "count", -1) + 1;
+    }
+
+    int INIInt(const char* header, const char* key, int defaultValue) {
+        return cini_geti(iniFile, header, key, defaultValue);
     }
 
     void AddNewPet() {

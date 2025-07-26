@@ -3,17 +3,17 @@
 #include <vector>
 #include <string>
 
-// #include "audioinfo.hpp"
-#include "resourcemanager.hpp"
+struct Game;
 
 struct AudioManager {
     void OnInitialize();
     void OnTerminate();
     void OnUpdate(float deltaTime);
     void PlayTrack(std::string trackPath);
+    void PlaySFX(std::string sfxPath);
 
-    AudioManager(ResourceManager& resourceManager) : m_resourceManager(resourceManager) {}
+    AudioManager(Game* game) : m_game(game) {}
 private:
-    ResourceManager& m_resourceManager;
+    Game* m_game;
     std::vector<std::string> m_audioPaths;
 };

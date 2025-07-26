@@ -22,7 +22,7 @@ void Game::OnInitialize() {
 
     m_gameData.OnInitialize();
 
-    m_audioManager = new AudioManager(m_resourceManager);
+    m_audioManager = new AudioManager(this);
     m_audioManager->OnInitialize();
 
     m_deviceInfo = new DeviceInfo(this);
