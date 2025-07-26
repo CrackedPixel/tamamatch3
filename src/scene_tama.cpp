@@ -26,6 +26,11 @@ void SceneTama::OnUpdate(float deltaTime){
 }
 
 bool SceneTama::OnHandleInput(Vector2 mousePos) {
+    bool uiResult = m_tamaui.OnHandleInput();
+    if (uiResult) {
+        return true;
+    }
+
     bool petAIResult = m_tamapetai.OnHandleInput(mousePos);
     if (petAIResult) {
         return true;
@@ -40,13 +45,30 @@ void SceneTama::OnRender(){
     DrawTexture(wallpaperTexture, 0, 0, WHITE);
 
     m_tamapetai.OnRender();
-
-    DrawRectangle(0, 0, 640, 80, LIGHTGRAY);
-    DrawRectangle(0, 480 - 80, 640, 80, LIGHTGRAY);
-
-    m_tamaui.OnRender();
 }
 
 void SceneTama::OnRenderUI(){
+    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png");
 
+    DrawRectangle(0, 0, 640, 80, LIGHTGRAY);
+    DrawRectangle(0, 480 - 80, 640, 80, LIGHTGRAY);
+    m_tamaui.OnRenderUI();
+
+    Vector2 mousePosition = GetMousePosition();
+    mousePosition.x -= 184;
+    mousePosition.y -= 174;
+    if (CheckCollisionPointRec(mousePosition, { 0, 0, 640, 480 })) {
+        rlHideCursor();
+
+        DrawTexturePro(
+            cursorTexture,
+            m_game->m_gameData.GetCurrentCursorCoords(),
+            { mousePosition.x, mousePosition.y, 32, 32 },
+            { 0, 0 },
+            0.0f,
+            WHITE
+        );
+    } else {
+        rlShowCursor();
+    }
 }

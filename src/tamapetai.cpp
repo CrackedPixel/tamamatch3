@@ -52,40 +52,61 @@ bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
 void TamaPetAI::OnRender() {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
     Texture& petTexture = petData.stage == PET_STAGES::EGG
-                ? m_game->m_resourceManager.GetTexture("textures/tadpole0.png")
-                : m_game->m_resourceManager.GetTexture("textures/tadpole1.png")
-    ;
+        ? m_game->m_resourceManager.GetTexture("textures/tadpole0.png")
+        : petData.stage == PET_STAGES::NEWBORN
+            ? m_game->m_resourceManager.GetTexture("textures/tadpole1.png")
+            : petData.stage == PET_STAGES::TODDLER
+                ? m_game->m_resourceManager.GetTexture("textures/tadpole2.png")
+                    : petData.stage == PET_STAGES::ADOLESCENT
+                    ? m_game->m_resourceManager.GetTexture("textures/tadpole3.png")
+                        : m_game->m_resourceManager.GetTexture("textures/tadpole4.png");
                 // : petData.stage == PET_STAGES::NEWBORN
                 //     ? m_game->m_resourceManager.GetTexture("textures/tadpole1.png")
 
     Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png");
 
+    if (petData.stage == PET_STAGES::EGG) {
+        DrawTexturePro(
+            petTexture,
+            { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+            { m_petPosition.x, m_petPosition.y, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+            { 0.0f, 0.0f },
+            0.0f,
+            WHITE
+        );
+        return;
+    }
+
     if (petData.state == PET_STATES::DED) {
         DrawTexturePro(
            petTexture,
-           { m_animationStep * (petTexture.width * 0.25f), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), -64 },
-           { m_petPosition.x, m_petPosition.y, petTexture.width * 0.25f, 64.0f},
+           { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), -m_game->m_gameData.GetCurrentPetHeight() },
+           { m_petPosition.x, m_petPosition.y, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
            { 0.0f, 0.0f },
            0.0f,
-           m_game->m_gameData.PetTintList[petData.petTint] // TBD
+           m_game->m_gameData.PetTintList[petData.petTint]
         );
     } else {
         DrawTexturePro(
             petTexture,
-            { m_animationStep * (petTexture.width * 0.25f), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), 64 },
-            { m_petPosition.x, m_petPosition.y, petTexture.width * 0.25f, 64.0f},
+            { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+            { m_petPosition.x, m_petPosition.y, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
             { 0.0f, 0.0f },
             0.0f,
-            m_game->m_gameData.PetTintList[petData.petTint] // TBD
+            m_game->m_gameData.PetTintList[petData.petTint]
         );
+    }
+
+    if (petData.stage == PET_STAGES::EGG) {
+        return;
     }
 
     if (m_petDirection == -1) {
         if (petData.state == PET_STATES::DED) {
             DrawTexturePro(
                 faceTexture,
-                {m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height * -1},
-                { m_petPosition.x + m_game->m_gameData.GetCurrentPetWidth() - 42, m_petPosition.y, 64, 64},
+                {m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y + (m_animationStep == 6 ? 64 : 0), m_game->m_gameData.GetCurrentFace().width, -m_game->m_gameData.GetCurrentFace().height},
+                { m_petPosition.x + m_game->m_gameData.GetCurrentPetWidth() - 42, m_petPosition.y, 64, 64 },
                 { 0.0f, 0.0f },
                 0.0f,
                 WHITE
@@ -93,8 +114,8 @@ void TamaPetAI::OnRender() {
         } else {
             DrawTexturePro(
                 faceTexture,
-                m_game->m_gameData.GetCurrentFace(),
-                { m_petPosition.x + m_game->m_gameData.GetCurrentPetWidth() - 42, m_petPosition.y, 64, 64},
+                {m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y + (m_animationStep == 6 ? 64 : 0), m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height},
+                { m_petPosition.x + m_game->m_gameData.GetCurrentPetWidth() - 42, m_petPosition.y, 64, 64 },
                 { 0.0f, 0.0f },
                 0.0f,
                 WHITE
@@ -104,7 +125,7 @@ void TamaPetAI::OnRender() {
         if (petData.state == PET_STATES::DED) {
             DrawTexturePro(
                 faceTexture,
-                {m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height * -1},
+                {m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y + (m_animationStep == 6 ? 64 : 0), m_game->m_gameData.GetCurrentFace().width, -m_game->m_gameData.GetCurrentFace().height},
                 { m_petPosition.x, m_petPosition.y, 64, 64},
                 { 0.0f, 0.0f },
                 0.0f,
@@ -113,7 +134,7 @@ void TamaPetAI::OnRender() {
         } else {
             DrawTexturePro(
                 faceTexture,
-                m_game->m_gameData.GetCurrentFace(),
+                {m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y + (m_animationStep == 6 ? 64 : 0), m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height},
                 { m_petPosition.x, m_petPosition.y, 64, 64},
                 { 0.0f, 0.0f },
                 0.0f,
@@ -130,7 +151,7 @@ float TamaPetAI::GetOffsetFromState() {
 void TamaPetAI::ProcessAI() {
     m_animationStep += 1;
 
-    if (m_animationStep > MAX_ANIMATION_STEPS) {
+    if (m_animationStep > (MAX_ANIMATION_STEPS * 2)) {
         m_animationStep = 0;
     }
 
@@ -177,6 +198,14 @@ void TamaPetAI::ProcessMovement(float deltaTime) {
 
 void TamaPetAI::ProcessAttributes() {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
+    if (petData.stage == PET_STAGES::EGG) {
+        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= 60.0f) {
+            petData.state = PET_STATES::EVOLVE;
+        }
+
+        return;
+    }
+
     constexpr const float multiplySpeed = 0.0001f;
     petData.attributes[PET_ATTRIBUTES::HUNGER] += GetRandomValue(10, 20) * multiplySpeed;
     petData.attributes[PET_ATTRIBUTES::HAPPINESS] -= GetRandomValue(10, 26) * multiplySpeed;

@@ -29,12 +29,14 @@ struct TamaUI {
     void OnInitialize();
     void OnTerminate();
     void OnUpdate(float deltaTime);
-    void OnHandleInput();
-    void OnRender();
+    bool OnHandleInput();
+    void OnRenderUI();
 
 private:
     static constexpr const char* TEXTURE_PATH = "textures/icons.png";
     Game* m_game = nullptr;
-    int m_hoverId = 0;
+    int m_hoverId = -1;
+    int m_selectedId = 0;
+    bool hideUI = false;
     std::vector<TamaIcon> m_icons;
 };

@@ -10,12 +10,12 @@
 
 struct GlobalGameData {
     int activePet = 0;
-    int activeCursor = 0;
+    CURSOR_TYPES activeCursor = CURSOR_TYPES::NORMAL;
     float gameSpeed = 1.0f;
     std::vector<Pet> PetList = {};
     std::vector<Item> ItemList = {};
     std::vector<OutfitData> OutfitList = {};
-    std::vector<CursorData> Cursors = {};
+    std::unordered_map<CURSOR_TYPES, rlRectangle> Cursors = {};
     std::vector<Color> PetTintList = {};
     std::unordered_map<PET_STAGES, Vector2> PetFaceOffsets = {};
     std::unordered_map<PET_STATES, rlRectangle> PetFaces = {};
@@ -33,11 +33,35 @@ struct GlobalGameData {
         PetFaces.emplace(PET_STATES::ANGRY, rlRectangle{ 64 * 3, 0, 64, 64 });
         PetFaces.emplace(PET_STATES::DED, rlRectangle{ 64 * 4, 0, 64, 64 });
 
+        // enum struct CURSOR_TYPES {
+        //     NORMAL,
+        //     INVALID,
+        //     FOOD,
+        //     SAD,
+        //     BORED,
+        //     DIRTY,
+        //     TANKDIRTY,
+        //     ILLNESS,
+        //     TOY,
+        // };
+
+        Cursors.emplace(CURSOR_TYPES::NORMAL, rlRectangle{ 0, 0, 32, 32 });
+        Cursors.emplace(CURSOR_TYPES::ILLNESS, rlRectangle{ 32, 0, 32, 32 });
+        // Cursors.emplace(CURSOR_TYPES::FOOD, rlRectangle{ 0, 0, 32, 32 });
+
         AddNewPet();
     }
 
     void AddNewPet() {
         PetList.emplace_back(PetTintList);
+    }
+
+    rlRectangle& GetCurrentCursorCoords() {
+        if (Cursors.find(activeCursor) == Cursors.end()) {
+            return Cursors[CURSOR_TYPES::NORMAL];
+        }
+
+        return Cursors[activeCursor];
     }
 
     Pet& GetCurrentPet() {
@@ -65,6 +89,17 @@ struct GlobalGameData {
             case PET_STAGES::TODDLER: return 128;
             case PET_STAGES::ADOLESCENT: return 128;
             case PET_STAGES::ADULT: return 128;
+            default: return 0.0f;
+        }
+    }
+
+    float GetCurrentPetHeight() {
+        switch (PetList[activePet].stage) {
+            case PET_STAGES::EGG: return 32;
+            case PET_STAGES::NEWBORN: return 64;
+            case PET_STAGES::TODDLER: return 64;
+            case PET_STAGES::ADOLESCENT: return 64;
+            case PET_STAGES::ADULT: return 64;
             default: return 0.0f;
         }
     }

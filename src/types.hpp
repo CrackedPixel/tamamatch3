@@ -37,11 +37,6 @@ struct Item {
     int outfitId;
 };
 
-struct CursorData {
-    std::string texturePath;
-    rlRectangle texturePosition;
-};
-
 struct OutfitStageData {
     std::string texturePath;
     rlRectangle texturePosition;

@@ -179,11 +179,18 @@ void Game::OnRender() {
     BeginDrawing();
     ClearBackground(RED);
 
+    BeginTextureMode(m_renderTexture);
+    ClearBackground(WHITE);
+
     if (currentScene != nullptr) {
         BeginTextureMode(m_renderTexture);
-        ClearBackground(WHITE);
+
         currentScene->OnRender();
         m_transitionManager.OnRender();
+    }
+
+    if (currentScene != nullptr) {
+        currentScene->OnRenderUI();
         EndTextureMode();
     }
 
@@ -203,6 +210,13 @@ void Game::OnRender() {
     m_deviceInfo->OnRender();
 
     EndDrawing();
+}
+
+void Game::OnRenderUI() {
+    Scene* currentScene = m_sceneManager.GetCurrentScene();
+    if (currentScene != nullptr) {
+        currentScene->OnRenderUI();
+    }
 }
 
 void Game::OnGameLoopStart(){

@@ -23,7 +23,7 @@ private:
     void ClampRange(float& value);
 
 private:
-    static constexpr const int MAX_ANIMATION_STEPS = 3;
+    static constexpr const int MAX_ANIMATION_STEPS = 4;
     Game* m_game = nullptr;
     float m_currentTimer = 0.0f;
     int m_lastFrameCounter = 0;

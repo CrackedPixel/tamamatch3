@@ -19,7 +19,25 @@ void SceneSplash::OnUpdate(float deltaTime){
 }
 
 void SceneSplash::OnRender(){
-    rlDrawText("SPLASH", 0, 0, 50, BLUE);
+    Vector2 mousePosition = GetMousePosition();
+    mousePosition.x -= 184;
+    mousePosition.y -= 174;
+
+    if (CheckCollisionPointRec(mousePosition, { 0, 0, 640, 480 })) {
+        rlHideCursor();
+        Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png");
+
+        DrawTexturePro(
+            cursorTexture,
+            m_game->m_gameData.GetCurrentCursorCoords(),
+            { mousePosition.x, mousePosition.y, 32, 32 },
+            { 0, 0 },
+            0.0f,
+            WHITE
+        );
+    } else {
+        rlShowCursor();
+    }
 }
 
 void SceneSplash::OnRenderUI(){
@@ -27,5 +45,14 @@ void SceneSplash::OnRenderUI(){
 }
 
 bool SceneSplash::OnHandleInput(Vector2 mousePos) {
+    mousePos.x -= 184;
+    mousePos.y -= 174;
+
+    if (CheckCollisionPointRec(mousePos, { 0, 0, 640, 480 })) {
+        rlHideCursor();
+    } else {
+        rlShowCursor();
+    }
+
     return false;
 }

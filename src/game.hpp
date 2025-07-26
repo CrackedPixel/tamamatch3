@@ -40,4 +40,5 @@ struct Game {
         void OnHandleInput();
         void OnUpdate();
         void OnRender();
+        void OnRenderUI();
 };
