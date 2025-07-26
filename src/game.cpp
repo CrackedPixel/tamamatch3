@@ -1,7 +1,7 @@
 #include "game.hpp"
 
 #ifdef PLATFORM_WEB
-    #include <emscripten/emscripten>
+    #include <emscripten/emscripten.h>
 #endif
 
 #include "raylib.h"
@@ -9,6 +9,10 @@
 
 #include "scene_splash.hpp"
 #include "scene_tama.hpp"
+
+#ifdef PLATFORM_WEB
+Game* Game::s_instance = nullptr;
+#endif
 
 void Game::OnInitialize() {
     // SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
@@ -21,7 +25,13 @@ void Game::OnInitialize() {
 
     m_deviceInfo = new DeviceInfo(this);
 
+#ifdef PLATFORM_DESKTOP
     m_scanlineShader = LoadShader(nullptr, "resources/shaders/scanlines.frag");
+#endif
+
+#ifdef PLATFORM_WEB
+    m_scanlineShader = LoadShader(nullptr, "resources/shaders/scanlines.web.frag");
+#endif
 
     m_sceneManager.OnAddScene("splash", new SceneSplash(this));
     m_sceneManager.OnAddScene("tama", new SceneTama(this));
@@ -228,6 +238,8 @@ void Game::OnGameLoopStart(){
 #endif
 
 #ifdef PLATFORM_WEB
+    Game::s_instance = this;
+    emscripten_set_main_loop(Game::OnGameLoopWeb, 0, 1);
 #endif
 }
 

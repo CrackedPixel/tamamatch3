@@ -9,6 +9,16 @@
 #include "deviceinfo.hpp"
 
 struct Game {
+#ifdef PLATFORM_WEB
+    public:
+        static Game* s_instance;
+        static void OnGameLoopWeb() {
+            if (s_instance != nullptr) {
+                s_instance->OnGameLoop();
+            }
+        }
+#endif
+
     public:
         ResourceManager m_resourceManager = {};
         SceneManager m_sceneManager = {};
