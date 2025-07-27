@@ -425,7 +425,7 @@ void TamaUI::DrawPetAtSpot(rlRectangle destination) {
                 destination,
                 { 0.0f, 0.0f },
                 0.0f,
-                WHITE
+                m_game->m_gameData.PetTintList[petData.petTint]
             );
         } break;
         case PET_STAGES::TODDLER: {
