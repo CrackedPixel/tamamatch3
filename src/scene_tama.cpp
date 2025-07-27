@@ -46,6 +46,11 @@ void SceneTama::OnRender(){
 
     DrawTexture(wallpaperTexture, 0, 0, WHITE);
 
+    if (m_game->m_gameData.GetCurrentPet().attributes[PET_ATTRIBUTES::TANKHYGIENE] < 0.5f) {
+        Texture& dirtyTexture = m_game->m_resourceManager.GetTexture("textures/dirty.png");
+        DrawTexture(dirtyTexture, 0, 0, WHITE);
+    }
+
     m_tamapetai.OnRender();
 }
 

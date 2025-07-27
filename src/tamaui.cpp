@@ -15,6 +15,13 @@ void TamaUI::OnInitialize() {
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::MINIGAMES, { 64 * 1, 0, 64, 64 } });
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::STORE, { 64 * 3, 64, 64, 64 } });
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::DISPLAY, { 0, 0, 64, 64 } });
+
+    int promptsCount = m_game->m_gameData.INICount("prompts");
+    for (int i = 0; i < promptsCount; ++i) {
+        const char* promptKey = m_game->m_gameData.INIString("prompts", std::to_string(i+1).c_str(), "");
+        std::string promptMessage = Utils::ReplaceNewlines(m_game->m_gameData.INIString("prompts", promptKey, "MISSING"));
+        promptsList.emplace(promptKey, promptMessage);
+    }
 }
 
 void TamaUI::OnTerminate() {
@@ -50,11 +57,27 @@ void TamaUI::OnUpdate(float deltaTime) {
     }
 
     if (m_game->m_inputController.IsButtonSelect) {
+        switch (m_popupMenu) {
+            case POPUP_TYPES::PAUSE_MENU: {
+
+            } break;
+            case POPUP_TYPES::INVENTORY: {
+
+            } break;
+            case POPUP_TYPES::EVOLVE: {
+                m_game->m_gameData.EvolveCurrentPet();
+                m_game->m_audioManager->PlaySFX("hatch");
+                m_popupMenu = POPUP_TYPES::NONE;
+
+                return;
+            } break;
+            default: break;
+        }
+
         if (hideUI) {
             hideUI = false;
             return;
         }
-
 
         // STATS,
         // BANDAID,
@@ -299,6 +322,26 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
 }
 
 void TamaUI::OnRenderUI() {
+    Texture& popupTexture = m_game->m_resourceManager.GetTexture("textures/messagebox.png", 0);
+    switch (m_popupMenu) {
+    case POPUP_TYPES::PAUSE_MENU: {
+
+    } break;
+    case POPUP_TYPES::INVENTORY: {
+
+    } break;
+    case POPUP_TYPES::EVOLVE: {
+        DrawTexturePro(popupTexture, { 0, 0, 128, 128 }, { 192, 112, 256, 256 }, { 0, 0 }, 0.0f, WHITE);
+        rlDrawText("Growth", 220, 140, 30, BLACK);
+        rlDrawText(promptsList["evolve_egg"].c_str(), 220, 200, 20, BLACK);
+        // const char* testText = "test\ntest";
+        // rlDrawText(testText, 220, 200, 20, BLACK);
+        // std::string dummyString = "test\nstring";
+        // rlDrawText(dummyString.c_str(), 220, 200, 20, BLACK);
+    } break;
+    default: break;
+    }
+
     if (hideUI) {
         return;
     }
@@ -360,60 +403,107 @@ void TamaUI::DrawPetAtSpot(rlRectangle destination) {
     Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath());
     Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png");
 
-    if (petData.stage == PET_STAGES::EGG) {
-        DrawTexturePro(
-            petTexture,
-            { 0, 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
-            destination,
-            { 0.0f, 0.0f },
-            0.0f,
-            WHITE
-        );
-        return;
+    float widthFactor = m_game->m_gameData.GetCurrentPetWidth() / 64;
+    float widthHeightFactor = m_game->m_gameData.GetCurrentPetWidth() / m_game->m_gameData.GetCurrentPetHeight();
+
+    switch (petData.stage) {
+        case PET_STAGES::EGG: {
+            DrawTexturePro(
+                petTexture,
+                { 0, 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+                destination,
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+            return;
+        } break;
+        case PET_STAGES::NEWBORN: {
+            DrawTexturePro(
+                petTexture,
+                { m_game->m_gameData.GetCurrentPetWidth(), 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+                destination,
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        } break;
+        case PET_STAGES::TODDLER: {
+            DrawTexturePro(
+                petTexture,
+                { m_game->m_gameData.GetCurrentPetWidth(), 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+                { destination.x, destination.y + 16, destination.width, destination.height / widthHeightFactor },
+                { 0.0f, 0.0f },
+                0.0f,
+                m_game->m_gameData.PetTintList[petData.petTint]
+            );
+        } break;
+        case PET_STAGES::ADOLESCENT: {
+            DrawTexturePro(
+                petTexture,
+                { m_game->m_gameData.GetCurrentPetWidth(), 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+                { destination.x, destination.y + 16, destination.width, destination.height / widthHeightFactor },
+                { 0.0f, 0.0f },
+                0.0f,
+                m_game->m_gameData.PetTintList[petData.petTint]
+            );
+        } break;
+        case PET_STAGES::ADULT: {
+            DrawTexturePro(
+                petTexture,
+                { 0, 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+                destination,
+                { 0.0f, 0.0f },
+                0.0f,
+                m_game->m_gameData.PetTintList[petData.petTint]
+            );
+        } break;
     }
 
-    if (petData.state == PET_STATES::DED) {
-        DrawTexturePro(
-            petTexture,
-            { 0, 0, m_game->m_gameData.GetCurrentPetWidth(), -m_game->m_gameData.GetCurrentPetHeight() },
-            destination,
-            { 0.0f, 0.0f },
-            0.0f,
-            m_game->m_gameData.PetTintList[petData.petTint]
-        );
-    } else {
-        DrawTexturePro(
-            petTexture,
-            { m_game->m_gameData.GetCurrentPetWidth(), 0, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
-            destination,
-            { 0.0f, 0.0f },
-            0.0f,
-            m_game->m_gameData.PetTintList[petData.petTint]
-        );
+    // FACES
+    switch (petData.stage) {
+        case PET_STAGES::EGG: {
+            return;
+        } break;
+        case PET_STAGES::NEWBORN: {
+            DrawTexturePro(
+                faceTexture,
+                { m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height},
+                { destination.x, destination.y + ((widthFactor-1)*10), destination.width / widthFactor, destination.height / widthHeightFactor },
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        } break;
+        case PET_STAGES::TODDLER: {
+            DrawTexturePro(
+                faceTexture,
+                { m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height},
+                { destination.x, destination.y + ((widthFactor-1)*10), destination.width / widthFactor, destination.height / widthHeightFactor },
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        } break;
+        case PET_STAGES::ADOLESCENT: {
+            DrawTexturePro(
+                faceTexture,
+                { m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height},
+                { destination.x, destination.y + ((widthFactor-1)*10), destination.width / widthFactor, destination.height / widthHeightFactor },
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        } break;
+        case PET_STAGES::ADULT: {
+            DrawTexturePro(
+                faceTexture,
+                { m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height},
+                { destination.x + 17, destination.y + 16, destination.width / 2, destination.height / 2 },
+                { 0.0f, 0.0f },
+                0.0f,
+                WHITE
+            );
+        } break;
     }
-
-    if (petData.stage == PET_STAGES::EGG) {
-        return;
-    }
-
-    if (petData.state == PET_STATES::DED) {
-        DrawTexturePro(
-            faceTexture,
-            { m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, -m_game->m_gameData.GetCurrentFace().height},
-            destination,
-            { 0.0f, 0.0f },
-            0.0f,
-            WHITE
-        );
-    } else {
-        DrawTexturePro(
-            faceTexture,
-            { m_game->m_gameData.GetCurrentFace().x, m_game->m_gameData.GetCurrentFace().y, m_game->m_gameData.GetCurrentFace().width, m_game->m_gameData.GetCurrentFace().height},
-            destination,
-            { 0.0f, 0.0f },
-            0.0f,
-            WHITE
-        );
-    }
-
 }

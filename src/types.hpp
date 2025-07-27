@@ -27,7 +27,7 @@ struct Pet {
         attributes[PET_ATTRIBUTES::HP] = 1.0f;
 
         // TODO: randomize?
-        petTint = GetRandomValue(0, petTintList.size()-1);
+        petTint = GetRandomValue(0, petTintList.size() - 1);
     }
 };
 

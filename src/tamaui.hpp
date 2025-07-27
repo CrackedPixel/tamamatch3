@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
+#include <string>
 
 #include "raylib.h"
 
@@ -24,6 +26,13 @@ struct TamaIcon {
     // std::string texturePath;
     ICON_ACTION_TYPE actionType;
     rlRectangle sourceRect;
+};
+
+enum struct POPUP_TYPES {
+    NONE,
+    PAUSE_MENU,
+    INVENTORY,
+    EVOLVE,
 };
 
 struct SceneTama;
@@ -53,4 +62,8 @@ private:
     int m_selectedId = 0;
     bool hideUI = false;
     std::vector<TamaIcon> m_icons;
+    std::unordered_map<std::string, std::string> promptsList;
+
+public:
+    POPUP_TYPES m_popupMenu = POPUP_TYPES::NONE;
 };

@@ -43,13 +43,18 @@ struct GlobalGameData {
         PetFaces.emplace(PET_STATES::ANGRY, Utils::RectFromString(INIString("pet_faces", "angry", "0 0 64 64")));
         PetFaces.emplace(PET_STATES::DED, Utils::RectFromString(INIString("pet_faces", "ded", "0 0 64 64")));
 
+        PetFaceOffsets.emplace(PET_STAGES::NEWBORN, Utils::Vector2FromString(INIString("pet_face_offsets", "newborn", "0 0")));
+        PetFaceOffsets.emplace(PET_STAGES::TODDLER, Utils::Vector2FromString(INIString("pet_face_offsets", "toddler", "0 0")));
+        PetFaceOffsets.emplace(PET_STAGES::ADOLESCENT, Utils::Vector2FromString(INIString("pet_face_offsets", "adolescent", "0 0")));
+        PetFaceOffsets.emplace(PET_STAGES::ADULT, Utils::Vector2FromString(INIString("pet_face_offsets", "adult", "0 0")));
+
         Cursors.emplace(CURSOR_TYPES::NORMAL, Utils::RectFromString(INIString("cursors", "normal", "0 0 32 32")));
         Cursors.emplace(CURSOR_TYPES::ILLNESS, Utils::RectFromString(INIString("cursors", "illness", "0 0 32 32")));
         Cursors.emplace(CURSOR_TYPES::TOY, Utils::RectFromString(INIString("cursors", "ball", "0 0 32 32")));
         Cursors.emplace(CURSOR_TYPES::DIRTY, Utils::RectFromString(INIString("cursors", "bath", "0 0 32 32")));
         Cursors.emplace(CURSOR_TYPES::TANKDIRTY, Utils::RectFromString(INIString("cursors", "tank", "0 0 32 32")));
 
-
+        Cursors.emplace(CURSOR_TYPES::STINKY, Utils::RectFromString(INIString("cursors", "stinky", "0 0 32 32")));
     }
 
     void OnTerminate() {
@@ -68,6 +73,10 @@ struct GlobalGameData {
         return cini_geti(iniFile, header, key, defaultValue);
     }
 
+    float INIFloat(const char* header, const char* key, float defaultValue) {
+        return cini_getf(iniFile, header, key, defaultValue);
+    }
+
     void NewGame() {
         PetList.clear();
 
@@ -82,6 +91,37 @@ struct GlobalGameData {
 
     void AddNewPet() {
         PetList.emplace_back(PetTintList);
+    }
+
+    void EvolveCurrentPet() {
+        if (PetList[activePet].stage < PET_STAGES::ADULT) {
+            switch (PetList[activePet].stage) {
+                case PET_STAGES::EGG: {
+                    PetList[activePet].stage = PET_STAGES::NEWBORN;
+                } break;
+                case PET_STAGES::NEWBORN:{
+                    PetList[activePet].stage = PET_STAGES::TODDLER;
+                } break;
+                case PET_STAGES::TODDLER:{
+                    PetList[activePet].stage = PET_STAGES::ADOLESCENT;
+                } break;
+                case PET_STAGES::ADOLESCENT:{
+                    PetList[activePet].stage = PET_STAGES::ADULT;
+                } break;
+                default: break;
+            }
+
+            PetList[activePet].attributes[PET_ATTRIBUTES::HUNGER] = 0.0f;
+            PetList[activePet].attributes[PET_ATTRIBUTES::HAPPINESS] = 1.0f;
+            PetList[activePet].attributes[PET_ATTRIBUTES::BOREDOM] = 0.0f;
+            PetList[activePet].attributes[PET_ATTRIBUTES::HYGIENE] = 1.0f;
+            PetList[activePet].attributes[PET_ATTRIBUTES::TANKHYGIENE] = 1.0f;
+            PetList[activePet].attributes[PET_ATTRIBUTES::ILLNESS] = 1.0f;
+            PetList[activePet].attributes[PET_ATTRIBUTES::GROWTH] = 0.0f;
+            PetList[activePet].attributes[PET_ATTRIBUTES::HP] = 1.0f;
+
+            PetList[activePet].state = PET_STATES::HEALTHY;
+        }
     }
 
     rlRectangle& GetCurrentCursorCoords() {
@@ -137,7 +177,7 @@ struct GlobalGameData {
             case PET_STAGES::NEWBORN: return 64;
             case PET_STAGES::TODDLER: return 64;
             case PET_STAGES::ADOLESCENT: return 64;
-            case PET_STAGES::ADULT: return 64;
+            case PET_STAGES::ADULT: return 128;
             default: return 0.0f;
         }
     }

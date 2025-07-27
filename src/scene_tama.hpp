@@ -5,7 +5,7 @@
 #include "tamapetai.hpp"
 
 struct SceneTama : public Scene {
-    SceneTama(Game* game) : Scene(game), m_tamaui(game, this), m_tamapetai(game) {}
+    SceneTama(Game* game) : Scene(game), m_tamaui(game, this), m_tamapetai(game, this) {}
 
     void OnInitialize();
     void OnTerminate();
@@ -17,6 +17,10 @@ struct SceneTama : public Scene {
 public:
     TamaPetAI* GetPetAI() {
         return &m_tamapetai;
+    }
+
+    TamaUI* GetTamaUI() {
+        return & m_tamaui;
     }
 
 private:

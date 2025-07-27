@@ -23,7 +23,7 @@ void Game::OnInitialize() {
     #ifdef PLATFORM_DESKTOP
         SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
     #endif
-    InitWindow(1007, 817, "Tamamatch3");
+    InitWindow(1007, 817, "TamaGacha");
 
     m_gameData.OnInitialize();
 
@@ -249,7 +249,6 @@ void Game::OnRender() {
     if (currentScene != nullptr) {
         BeginTextureMode(m_renderTexture);
         ClearBackground(WHITE);
-
         currentScene->OnRender();
         m_transitionManager.OnRender();
     }

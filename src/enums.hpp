@@ -51,6 +51,7 @@ enum struct CURSOR_TYPES {
     TANKDIRTY,
     ILLNESS,
     TOY,
+    STINKY,
 };
 
 enum struct ITEM_TYPES {

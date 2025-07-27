@@ -23,6 +23,13 @@ namespace Utils {
         return { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) };
     }
 
+    inline Vector2 Vector2FromString(const char* str) {
+        int x = 0, y = 0;
+        sscanf(str, "%d %d", &x, &y);
+
+        return { static_cast<float>(x), static_cast<float>(y) };
+    }
+
     inline void ClampRange(float& value) {
         if (value < 0.0f) {
             value = 0.0f;
