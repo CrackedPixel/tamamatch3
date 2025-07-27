@@ -237,15 +237,14 @@ void TamaPetAI::ProcessAttributes() {
     petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] -= GetRandomValue(10, 26) * multiplySpeed;
     petData.attributes[PET_ATTRIBUTES::ILLNESS] -= GetRandomValue(5, 15) * multiplySpeed;
 
-    ClampRange(petData.attributes[PET_ATTRIBUTES::HUNGER]);
-    ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
-    ClampRange(petData.attributes[PET_ATTRIBUTES::BOREDOM]);
-    ClampRange(petData.attributes[PET_ATTRIBUTES::HYGIENE]);
-    ClampRange(petData.attributes[PET_ATTRIBUTES::TANKHYGIENE]);
-    ClampRange(petData.attributes[PET_ATTRIBUTES::ILLNESS]);
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HUNGER]);
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::BOREDOM]);
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HYGIENE]);
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::TANKHYGIENE]);
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::ILLNESS]);
 
     float healthChange = 0.0f;
-    // petData.attributes[PET_ATTRIBUTES::HP] = 1.0f;
     if (petData.attributes[PET_ATTRIBUTES::HUNGER] >= 0.25f) {
         healthChange -= 0.05f * (petData.attributes[PET_ATTRIBUTES::HUNGER] * 0.25f);
     } else {
@@ -277,7 +276,7 @@ void TamaPetAI::ProcessAttributes() {
     }
 
     petData.attributes[PET_ATTRIBUTES::HP] += healthChange;
-    ClampRange(petData.attributes[PET_ATTRIBUTES::HP]);
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HP]);
 
     if (petData.attributes[PET_ATTRIBUTES::HP] <= 0.0f) {
         petData.state = PET_STATES::DED;
@@ -291,10 +290,10 @@ void TamaPetAI::ProcessAttributes() {
             return;
         }
 
-        if (petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.85f) {
-            petData.state = PET_STATES::HUNGRY;
-            return;
-        }
+        // if (petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.85f) {
+        //     petData.state = PET_STATES::HUNGRY;
+        //     return;
+        // }
 
         if (petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.45f) {
             petData.state = PET_STATES::HUNGRY;
@@ -311,8 +310,29 @@ void TamaPetAI::ProcessAttributes() {
             return;
         }
 
-        if (petData.attributes[PET_ATTRIBUTES::HAPPINESS] < 0.65f) {
+        if (petData.attributes[PET_ATTRIBUTES::ILLNESS] < 0.65f) {
             petData.state = PET_STATES::SICK;
+            return;
+        }
+    }
+
+    if (petData.state == PET_STATES::ANGRY) {
+        if (petData.attributes[PET_ATTRIBUTES::BOREDOM] < 0.35f) {
+            petData.state = PET_STATES::HEALTHY;
+            return;
+        }
+    }
+
+    if (petData.state == PET_STATES::SAD) {
+        if (petData.attributes[PET_ATTRIBUTES::HAPPINESS] > 0.65f) {
+            petData.state = PET_STATES::HEALTHY;
+            return;
+        }
+    }
+
+    if (petData.state == PET_STATES::SICK) {
+        if (petData.attributes[PET_ATTRIBUTES::ILLNESS] > 0.65f) {
+            petData.state = PET_STATES::HEALTHY;
             return;
         }
     }
@@ -362,14 +382,3 @@ void TamaPetAI::SetNewPetTarget(int newX, int newY) {
 void TamaPetAI::SetNewPetTarget(Vector2 destination) {
     SetNewPetTarget(destination.x, destination.y);
 }
-
-void TamaPetAI::ClampRange(float &value) {
-    if (value < 0.0f) {
-        value = 0.0f;
-    }
-
-    if (value > 1.0f) {
-        value = 1.0f;
-    }
-}
-

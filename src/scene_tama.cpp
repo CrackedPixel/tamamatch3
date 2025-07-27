@@ -58,6 +58,7 @@ void SceneTama::OnRenderUI(){
     Vector2 mousePosition = GetMousePosition();
     mousePosition.x -= 184;
     mousePosition.y -= 174;
+
     if (CheckCollisionPointRec(mousePosition, { 0, 0, 640, 480 })) {
 #ifdef PLATFORM_DESKTOP
         rlHideCursor();

@@ -21,4 +21,14 @@ namespace Utils {
 
         return { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) };
     }
+
+    inline void ClampRange(float& value) {
+        if (value < 0.0f) {
+            value = 0.0f;
+        }
+
+        if (value > 1.0f) {
+            value = 1.0f;
+        }
+    }
 }

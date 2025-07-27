@@ -67,22 +67,42 @@ void TamaUI::OnUpdate(float deltaTime) {
             // STORE,
             // DISPLAY,
 
+        //     petData.attributes[PET_ATTRIBUTES::HUNGER] += GetRandomValue(10, 20) * multiplySpeed;
+        // petData.attributes[PET_ATTRIBUTES::HAPPINESS] -= GetRandomValue(10, 26) * multiplySpeed;
+        // petData.attributes[PET_ATTRIBUTES::BOREDOM] += GetRandomValue(15, 40) * multiplySpeed;
+        // petData.attributes[PET_ATTRIBUTES::HYGIENE] -= GetRandomValue(15, 50) * multiplySpeed;
+        // petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] -= GetRandomValue(10, 26) * multiplySpeed;
+        // petData.attributes[PET_ATTRIBUTES::ILLNESS] -= GetRandomValue(5, 15) * multiplySpeed;
+
+
+        // device select
         switch (m_icons[m_selectedId].actionType) {
             case ICON_ACTION_TYPE::STATS: {
                 // TODO: open stats
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             } break;
             case ICON_ACTION_TYPE::BANDAID: {
-                m_game->m_gameData.activeCursor = CURSOR_TYPES::ILLNESS;
+                m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                auto& petData = m_game->m_gameData.GetCurrentPet();
+                petData.attributes[PET_ATTRIBUTES::ILLNESS] += 0.3f;
             } break;
             case ICON_ACTION_TYPE::TOY: {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
+                auto& petData = m_game->m_gameData.GetCurrentPet();
+                petData.attributes[PET_ATTRIBUTES::BOREDOM] -= 0.5f;
+                petData.attributes[PET_ATTRIBUTES::HAPPINESS] += 0.35f;
+                Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::BOREDOM]);
+                Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
             } break;
             case ICON_ACTION_TYPE::CLEAN: {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::DIRTY;
+                auto& petData = m_game->m_gameData.GetCurrentPet();
+                petData.attributes[PET_ATTRIBUTES::HYGIENE] += 0.5f;
             } break;
             case ICON_ACTION_TYPE::CLEAN_TANK: {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::TANKDIRTY;
+                auto& petData = m_game->m_gameData.GetCurrentPet();
+                petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] += 0.5f;
             } break;
 
 

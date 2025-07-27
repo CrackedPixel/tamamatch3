@@ -20,8 +20,9 @@ void AudioManager::OnInitialize() {
 
     int sfxCount = m_game->m_gameData.INICount("sfx");
     for (int i = 0; i < sfxCount; ++i) {
-        const char* sfxPath = m_game->m_gameData.INIString("sfx", std::to_string(i+1).c_str(), "");
-        m_soundPaths.emplace(sfxPath, LoadSound(sfxPath));
+        std::string sfxPath = m_game->m_gameData.INIString("sfx", std::to_string(i+1).c_str(), "");
+        std::string realFilePath = "resources/" + sfxPath;
+        m_soundPaths.emplace(sfxPath, LoadSound(realFilePath.c_str()));
     }
 }
 
@@ -90,5 +91,7 @@ void AudioManager::PlayTrack(std::string trackPath) {
 }
 
 void AudioManager::PlaySFX(std::string sfxPath) {
-
+    if (m_soundPaths.find(sfxPath) != m_soundPaths.end()) {
+        rlPlaySound(m_soundPaths[sfxPath]);
+    }
 }

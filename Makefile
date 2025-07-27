@@ -1,6 +1,6 @@
-CXX = g++
+CXX = /usr/bin/x86_64-w64-mingw32-g++
 STRIP = strip
-PACK = upx --lzma -9
+PACK = echo upx --lzma -9
 
 DEFINES = -DPLATFORM_DESKTOP
 
@@ -19,12 +19,11 @@ SRC = \
 # Include directories ONLY (do NOT list .hpp files here)
 INCLUDES = -I./src \
 	-I./external \
-	-I/home/aj/Documents/raylib/latest/release/include \
-	-I/home/aj/Documents/git/misc/emsdk/upstream/emscripten/system/include
+	-I/home/aj/Documents/raylib/win/release/include
 
-LIBDIRS = -L/home/aj/Documents/raylib/latest/release/lib
+LIBDIRS = -L/home/aj/Documents/raylib/win/release/lib
 
-LIBS = -lraylib
+LIBS = -lraylib -lgdi32 -lwinmm
 
 OUTFILE = tamamatch3.exe
 OUTPUT = ./builds/desktop/$(OUTFILE)
@@ -33,9 +32,9 @@ RESOURCES = ./resources
 
 OBJ = $(SRC:.cpp=.o)
 
-CXXFLAGS = -std=c++11 -Wall -Wextra -Oz -flto $(DEFINES) $(INCLUDES)
+CXXFLAGS = -static -static-libgcc -static-libstdc++ -std=c++11 -Wall -Wextra -Oz -flto $(DEFINES) $(INCLUDES)
 
-LDFLAGS = -flto $(LIBDIRS) $(LIBS)
+LDFLAGS = -static -static-libgcc -static-libstdc++ -flto $(LIBDIRS) $(LIBS)
 
 all: $(OUTPUT)
 
