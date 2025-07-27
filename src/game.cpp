@@ -21,7 +21,7 @@ void Game::OnInitialize() {
     SetTraceLogLevel(LOG_NONE);
 #endif
     #ifdef PLATFORM_DESKTOP
-        SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
+        // SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
     #endif
     InitWindow(1007, 817, "TamaGacha");
 
@@ -239,12 +239,14 @@ void Game::OnRender() {
     Scene* currentScene = m_sceneManager.GetCurrentScene();
 
     BeginDrawing();
-#ifdef PLATFORM_WEB
-    ClearBackground(BLACK);
-#endif
-#ifdef PLATFORM_DESKTOP
-    ClearBackground(BLANK);
-#endif
+// #ifdef PLATFORM_WEB
+    // ClearBackground(BLACK);
+// #endif
+// #ifdef PLATFORM_DESKTOP
+    // ClearBackground(BLANK);
+// #endif
+
+    ClearBackground({ 82, 139, 82, 255 });
 
     if (currentScene != nullptr) {
         BeginTextureMode(m_renderTexture);

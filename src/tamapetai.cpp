@@ -16,6 +16,11 @@ void TamaPetAI::OnInitialize() {
 }
 
 void TamaPetAI::OnUpdate(float deltaTime) {
+
+    if (IsKeyPressed(KEY_G)) {
+        m_game->m_audioManager->PlayTrack("music/tamagotchi_sick.ogg");
+    }
+
     Pet& petData = m_game->m_gameData.GetCurrentPet();
 
     if (m_interactSpotList.size() > 0) {
@@ -430,6 +435,8 @@ void TamaPetAI::ProcessAttributes() {
     }
 
     if (petData.state == PET_STATES::SICK) {
+        m_game->m_audioManager->PlayTrack("music/tamagotchi_sick.ogg");
+
         if (petData.attributes[PET_ATTRIBUTES::ILLNESS] > 0.65f) {
             petData.state = PET_STATES::HEALTHY;
             return;

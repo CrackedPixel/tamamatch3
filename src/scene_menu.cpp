@@ -4,6 +4,7 @@
 
 void SceneMenu::OnInitialize() {
     m_game->m_transitionManager.FadeIn(0.75f);
+    m_game->m_audioManager->PlayTrack("music/menu.ogg");
 }
 
 void SceneMenu::OnUpdate(float deltaTime) {

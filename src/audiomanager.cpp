@@ -83,15 +83,26 @@ void AudioManager::OnUpdate(float deltaTime) {
 void AudioManager::PlayTrack(std::string trackPath) {
     for (auto& it : m_audioPaths) {
         MusicWrapper& currentTrack = m_game->m_resourceManager.GetMusic(it);
+
+        if (currentTrack.trackPath == trackPath) {
+            if (currentTrack.state == MUSIC_STATES::PLAYING) {
+                continue;
+            }
+
+            if (currentTrack.state == MUSIC_STATES::FADE_IN) {
+                continue;
+            }
+
+            currentTrack.state = MUSIC_STATES::FADE_IN;
+
+            continue;
+        }
+
         if (
             currentTrack.state == MUSIC_STATES::PLAYING
             || currentTrack.state == MUSIC_STATES::FADE_IN
         ) {
             currentTrack.state = MUSIC_STATES::FADE_OUT;
-        }
-
-        if (currentTrack.trackPath == trackPath) {
-            currentTrack.state = MUSIC_STATES::FADE_IN;
         }
     }
 }
