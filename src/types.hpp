@@ -28,6 +28,7 @@ struct Pet {
 
         // TODO: randomize?
         petTint = GetRandomValue(0, petTintList.size() - 1);
+        wallpaperId = GetRandomValue(0, 1);
     }
 };
 
