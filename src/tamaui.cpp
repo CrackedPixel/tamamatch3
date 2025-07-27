@@ -140,6 +140,8 @@ void TamaUI::OnUpdate(float deltaTime) {
 
         }
 
+        m_game->m_audioManager->PlaySFX("uiselect");
+
         return;
     }
 
@@ -289,8 +291,9 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
-
     }
+
+    m_game->m_audioManager->PlaySFX("uiselect");
 
     return true;
 }

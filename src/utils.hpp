@@ -1,6 +1,7 @@
 #pragma once
 
-#include <stdio.h>
+#include <string>
+// #include <stdio.h>
 #include "raylib.h"
 
 namespace Utils {
@@ -31,4 +32,18 @@ namespace Utils {
             value = 1.0f;
         }
     }
+
+    inline std::string ReplaceNewlines(const std::string& input) {
+        std::string result;
+        size_t prev = 0;
+        size_t pos = 0;
+        while ((pos = input.find("\\n", prev)) != std::string::npos) {
+            result += input.substr(prev, pos - prev);
+            result += '\n';
+            prev = pos + 2;
+        }
+        result += input.substr(prev);
+        return result;
+    }
+
 }

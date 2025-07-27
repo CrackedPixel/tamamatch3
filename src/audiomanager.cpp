@@ -18,11 +18,17 @@ void AudioManager::OnInitialize() {
         SetMusicVolume(bgm.track, 0.0f);
     }
 
+    std::vector<std::string> sfxNameList = {};
     int sfxCount = m_game->m_gameData.INICount("sfx");
     for (int i = 0; i < sfxCount; ++i) {
-        std::string sfxPath = m_game->m_gameData.INIString("sfx", std::to_string(i+1).c_str(), "");
+        std::string sfxName = m_game->m_gameData.INIString("sfx", std::to_string(i+1).c_str(), "");
+        sfxNameList.emplace_back(sfxName);
+    }
+
+    for (const auto& it : sfxNameList) {
+        std::string sfxPath = m_game->m_gameData.INIString("sfx", it.c_str(), "");
         std::string realFilePath = "resources/" + sfxPath;
-        m_soundPaths.emplace(sfxPath, LoadSound(realFilePath.c_str()));
+        m_soundPaths.emplace(it, LoadSound(realFilePath.c_str()));
     }
 }
 
@@ -90,8 +96,17 @@ void AudioManager::PlayTrack(std::string trackPath) {
     }
 }
 
-void AudioManager::PlaySFX(std::string sfxPath) {
-    if (m_soundPaths.find(sfxPath) != m_soundPaths.end()) {
-        rlPlaySound(m_soundPaths[sfxPath]);
+void AudioManager::PlaySFX(std::string sfxName, int min, int max) {
+    if (min != 0 && max != 0) {
+        int sfxVariation = GetRandomValue(min, max);
+        std::string sfxKey = sfxName + std::to_string(sfxVariation);
+        if (m_soundPaths.find(sfxKey) != m_soundPaths.end()) {
+            rlPlaySound(m_soundPaths[sfxKey]);
+        }
+        return;
+    }
+
+    if (m_soundPaths.find(sfxName) != m_soundPaths.end()) {
+        rlPlaySound(m_soundPaths[sfxName]);
     }
 }

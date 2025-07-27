@@ -13,7 +13,7 @@ struct AudioManager {
     void OnTerminate();
     void OnUpdate(float deltaTime);
     void PlayTrack(std::string trackPath);
-    void PlaySFX(std::string sfxPath);
+    void PlaySFX(std::string sfxPath, int min = 0, int max = 0);
 
     AudioManager(Game* game) : m_game(game) {}
 private:

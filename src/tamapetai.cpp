@@ -5,6 +5,15 @@
 void TamaPetAI::OnInitialize() {
     m_lastFrameCounter = 0;
     m_currentTimer = 0.0f;
+
+    int promptsCount = m_game->m_gameData.INICount("prompts");
+    for (int i = 0; i < promptsCount; ++i) {
+        const char* promptKey = m_game->m_gameData.INIString("prompts", std::to_string(i+1).c_str(), "");
+        std::string promptMessage = Utils::ReplaceNewlines(m_game->m_gameData.INIString("prompts", promptKey, "MISSING"));
+        promptsList.emplace(promptKey, promptMessage);
+    }
+
+    m_game->m_audioManager->PlaySFX("hatch");
 }
 
 void TamaPetAI::OnUpdate(float deltaTime) {
@@ -45,8 +54,21 @@ void TamaPetAI::OnUpdate(float deltaTime) {
 
 bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
     if (IsKeyPressed(KEY_F1)) {
-        showStats = !showStats;
+        m_showStats = !m_showStats;
         return true;
+    }
+
+    switch (m_popupMenu) {
+        case POPUP_TYPES::PAUSE_MENU: {
+
+        } break;
+        case POPUP_TYPES::INVENTORY: {
+
+        } break;
+        case POPUP_TYPES::EVOLVE: {
+
+        } break;
+        default: break;
     }
 
     if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -171,14 +193,34 @@ void TamaPetAI::OnRenderUI() {
         DrawTexturePro(poopTexture, { 0, 0, 32, 32 }, { it.position.x, it.position.y, 32, 32 }, { 0, 0 }, 0.0f, WHITE);
     }
 
-    if (!showStats) {
+    Texture& popupTexture = m_game->m_resourceManager.GetTexture("textures/messagebox.png", 0);
+    switch (m_popupMenu) {
+        case POPUP_TYPES::PAUSE_MENU: {
+
+        } break;
+        case POPUP_TYPES::INVENTORY: {
+
+        } break;
+        case POPUP_TYPES::EVOLVE: {
+            DrawTexturePro(popupTexture, { 0, 0, 128, 128 }, { 192, 112, 256, 256 }, { 0, 0 }, 0.0f, WHITE);
+            rlDrawText("Growth", 220, 140, 30, BLACK);
+            rlDrawText(promptsList["evolve_egg"].c_str(), 220, 200, 20, BLACK);
+            // const char* testText = "test\ntest";
+            // rlDrawText(testText, 220, 200, 20, BLACK);
+            // std::string dummyString = "test\nstring";
+            // rlDrawText(dummyString.c_str(), 220, 200, 20, BLACK);
+        } break;
+        default: break;
+    }
+
+    if (!m_showStats) {
         return;
     }
 
     Pet& petData = m_game->m_gameData.GetCurrentPet();
 
     rlDrawText(TextFormat("Growth: %.1f\nHP: %.1f\nHunger: %.1f\nBoredom: %.1f\nHappiness: %.1f\nHygiene: %.1f\nTank: %.1f\nHealth: %.1f",
-      (petData.attributes[PET_ATTRIBUTES::GROWTH] / (petData.stage == PET_STAGES::EGG ? 60.0f : 600.0f)),
+      (petData.attributes[PET_ATTRIBUTES::GROWTH] / (petData.stage == PET_STAGES::EGG ? GROWTH_EGG : GROWTH_TADPOLE)),
       petData.attributes[PET_ATTRIBUTES::HP],
       petData.attributes[PET_ATTRIBUTES::HUNGER],
       petData.attributes[PET_ATTRIBUTES::BOREDOM],
@@ -248,8 +290,12 @@ void TamaPetAI::ProcessMovement(float deltaTime) {
 void TamaPetAI::ProcessAttributes() {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
     if (petData.stage == PET_STAGES::EGG) {
-        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= 60.0f) {
+        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= GROWTH_EGG) {
             petData.state = PET_STATES::EVOLVE;
+
+            if (m_popupMenu == POPUP_TYPES::NONE) {
+                m_popupMenu = POPUP_TYPES::EVOLVE;
+            }
         }
 
         return;
@@ -320,6 +366,7 @@ void TamaPetAI::ProcessAttributes() {
 
     if (petData.attributes[PET_ATTRIBUTES::HP] <= 0.0f) {
         petData.state = PET_STATES::DED;
+        m_game->m_audioManager->PlaySFX("die", 1, 3);
 
         return;
     }
@@ -327,6 +374,7 @@ void TamaPetAI::ProcessAttributes() {
     if (m_poopTimer >= 5.0f) {
         m_poopTimer = 0.0f;
         if (m_animationStep < 5) {
+            m_game->m_audioManager->PlaySFX("poo");
             SpawnNewPoopPile({
                 static_cast<float>(GetRandomValue(m_petBounds.x, m_petBounds.width)),
                 static_cast<float>(GetRandomValue(m_petBounds.y, m_petBounds.height)),
@@ -337,7 +385,7 @@ void TamaPetAI::ProcessAttributes() {
     }
 
     if (petData.state == PET_STATES::HEALTHY) {
-        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= 600.0f) {
+        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= GROWTH_TADPOLE) {
             petData.state = PET_STATES::EVOLVE;
             return;
         }
@@ -361,6 +409,10 @@ void TamaPetAI::ProcessAttributes() {
             petData.state = PET_STATES::SICK;
             return;
         }
+    }
+
+    if (m_animationStep == 0 && petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.45f) {
+        m_game->m_audioManager->PlaySFX("hungry");
     }
 
     if (petData.state == PET_STATES::ANGRY) {

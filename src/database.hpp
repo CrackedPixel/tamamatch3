@@ -69,6 +69,8 @@ struct GlobalGameData {
     }
 
     void NewGame() {
+        PetList.clear();
+
         AddNewPet();
 
         // do we need more?
