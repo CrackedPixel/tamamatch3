@@ -17,6 +17,9 @@ Game* Game::s_instance = nullptr;
 #endif
 
 void Game::OnInitialize() {
+#ifndef DEBUG_BUILD
+    SetTraceLogLevel(LOG_NONE);
+#endif
     #ifdef PLATFORM_DESKTOP
         SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
     #endif
@@ -97,6 +100,10 @@ void Game::ChangeScene(std::string newSceneName, bool fadeOut, float fadeOutSpee
 
 bool Game::IsChangingScenes() {
     return m_changingScenes;
+}
+
+void Game::Quit() {
+    m_isRunning = false;
 }
 
 void Game::OnHandleInput() {
@@ -278,8 +285,9 @@ void Game::OnRenderUI() {
 }
 
 void Game::OnGameLoopStart(){
+    m_isRunning = true;
 #ifdef PLATFORM_DESKTOP
-    while (!WindowShouldClose()) {
+    while (m_isRunning) {
         OnGameLoop();
     }
 #endif
@@ -291,6 +299,11 @@ void Game::OnGameLoopStart(){
 }
 
 void Game::OnGameLoop(){
+    if (WindowShouldClose()) {
+        m_isRunning = false;
+        return;
+    }
+
     OnHandleInput();
     OnUpdate();
     OnRender();

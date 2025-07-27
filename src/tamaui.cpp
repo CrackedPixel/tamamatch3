@@ -223,9 +223,6 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
                 }
             }
         }
-        // case CURSOR_TYPES::TANKDIRTY: {
-        //     petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] += 0.45f;
-        // } break;
 
         return false;
     }

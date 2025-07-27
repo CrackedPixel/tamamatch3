@@ -30,6 +30,7 @@ struct Game {
         DeviceInfo* m_deviceInfo = nullptr;
 
     private:
+        bool m_isRunning = false;
         bool m_mouseHeld = false;
         bool m_renderScanlines = true;
         bool m_changingScenes = false;
@@ -46,6 +47,7 @@ struct Game {
         void OnGameLoopStart();
         void ChangeScene(std::string newSceneName, bool fadeOut = false, float fadeOutSpeed = 0.0f);
         bool IsChangingScenes();
+        void Quit();
 
     private:
         void OnGameLoop();

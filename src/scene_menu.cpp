@@ -41,10 +41,10 @@ void SceneMenu::OnUpdate(float deltaTime) {
 
             } break;
             case 2: { // credits
-                m_game->ChangeScene("credits", true, 1.0f);
+                // m_game->ChangeScene("credits", true, 1.0f);
             } break;
             case 3: { // quit
-
+                m_game->Quit();
             } break;
         }
 

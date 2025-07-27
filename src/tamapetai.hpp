@@ -10,12 +10,16 @@ struct Game;
 struct PoopPile {
     float scale = 1.0f;
     rlRectangle position = {};
+
+    PoopPile(float scale, rlRectangle position) : scale(scale), position(position) {}
 };
 
 struct InteractSpot {
     CURSOR_TYPES cursorId = CURSOR_TYPES::NORMAL;
     float currentTime = 0.0f;
     Vector2 position = {};
+
+    InteractSpot(CURSOR_TYPES cursorId, float currentTime, Vector2 position) : cursorId(cursorId), currentTime(currentTime), position(position) {}
 };
 
 struct TamaPetAI {

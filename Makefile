@@ -1,6 +1,6 @@
 CXX = /usr/bin/x86_64-w64-mingw32-g++
 STRIP = strip
-PACK = echo upx --lzma -9
+PACK = upx --lzma -9
 
 DEFINES = -DPLATFORM_DESKTOP
 
@@ -10,6 +10,8 @@ SRC = \
     src/deviceinfo.cpp \
     src/game.cpp \
     src/main.cpp \
+    src/scene_credits.cpp \
+    src/scene_menu.cpp \
     src/scene_splash.cpp \
     src/scene_tama.cpp \
     src/scenemanager.cpp \

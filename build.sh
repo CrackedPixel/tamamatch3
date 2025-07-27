@@ -7,6 +7,8 @@ src/audiomanager.cpp \
 src/deviceinfo.cpp \
 src/game.cpp \
 src/main.cpp \
+src/scene_credits.cpp \
+src/scene_menu.cpp \
 src/scene_splash.cpp \
 src/scene_tama.cpp \
 src/scenemanager.cpp \

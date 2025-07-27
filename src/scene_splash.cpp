@@ -4,6 +4,8 @@
 #include "game.hpp"
 
 void SceneSplash::OnInitialize() {
+    m_startedFade = false;
+    m_currentTimer = 0.0f;
     m_game->m_transitionManager.FadeIn(0.0f);
 }
 
