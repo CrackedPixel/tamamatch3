@@ -26,12 +26,14 @@ struct TamaIcon {
     rlRectangle sourceRect;
 };
 
+struct SceneTama;
+
 struct TamaUI {
-    TamaUI(Game* game) : m_game(game) {}
+    TamaUI(Game* game, SceneTama* sceneTama) : m_game(game), m_sceneTama(sceneTama) {}
     void OnInitialize();
     void OnTerminate();
     void OnUpdate(float deltaTime);
-    bool OnHandleInput();
+    bool OnHandleInput(rlRectangle petPosition);
     void OnRenderUI();
 
 public:
@@ -46,6 +48,7 @@ private:
     static constexpr const int GAP_X = 105;
     static constexpr const int ICONS_PER_ROW = 5;
     Game* m_game = nullptr;
+    SceneTama* m_sceneTama = nullptr;
     int m_hoverId = -1;
     int m_selectedId = 0;
     bool hideUI = false;

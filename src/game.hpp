@@ -31,19 +31,21 @@ struct Game {
 
     private:
         bool m_mouseHeld = false;
+        bool m_renderScanlines = true;
+        bool m_changingScenes = false;
         float m_gameTime = 0.0f;
         Shader m_scanlineShader;
         Vector2 m_lastMousePos = {};
         Vector2 m_lastWindowPos = {};
         Vector2 m_dragOffset = {};
         std::string m_nextSceneName = "";
-        bool m_renderScanlines = true;
 
     public:
         void OnInitialize();
         void OnTerminate();
         void OnGameLoopStart();
-        void ChangeScene(std::string newSceneName, bool fadeOut = false);
+        void ChangeScene(std::string newSceneName, bool fadeOut = false, float fadeOutSpeed = 0.0f);
+        bool IsChangingScenes();
 
     private:
         void OnGameLoop();

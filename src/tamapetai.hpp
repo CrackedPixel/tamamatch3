@@ -1,8 +1,22 @@
 #pragma once
 
+#include <vector>
+
 #include "raylib.h"
+#include "enums.hpp"
 
 struct Game;
+
+struct PoopPile {
+    float scale = 1.0f;
+    rlRectangle position = {};
+};
+
+struct InteractSpot {
+    CURSOR_TYPES cursorId = CURSOR_TYPES::NORMAL;
+    float currentTime = 0.0f;
+    Vector2 position = {};
+};
 
 struct TamaPetAI {
     TamaPetAI(Game* game) : m_game(game){}
@@ -12,6 +26,14 @@ struct TamaPetAI {
     bool OnHandleInput(Vector2 mousePosition);
     void OnRender();
     void OnRenderUI();
+
+public:
+    rlRectangle GetPetPosition();
+    void SpawnNewInteractSpot(CURSOR_TYPES cursorId, Vector2 position);
+    void SpawnNewPoopPile(rlRectangle position);
+    std::vector<PoopPile>& GetPoopPileList() {
+        return m_poopPileList;
+    }
 
 private:
     float GetOffsetFromState();
@@ -31,8 +53,11 @@ private:
     int m_animationStep = 0;
     int m_petDirection = 1;
     float m_petSpeed = 40.0f;
+    float m_poopTimer = 0.0f;
     bool showStats = false;
     Vector2 m_petPosition = { 320.0f, 240.0f };
     Vector2 m_petTarget = m_petPosition;
     rlRectangle m_petBounds = { 32.0f, 100.0f, 640 - 32, 480 - 100 - 64 };
+    std::vector<InteractSpot> m_interactSpotList = {};
+    std::vector<PoopPile> m_poopPileList = {};
 };

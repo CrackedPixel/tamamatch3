@@ -45,8 +45,11 @@ struct GlobalGameData {
 
         Cursors.emplace(CURSOR_TYPES::NORMAL, Utils::RectFromString(INIString("cursors", "normal", "0 0 32 32")));
         Cursors.emplace(CURSOR_TYPES::ILLNESS, Utils::RectFromString(INIString("cursors", "illness", "0 0 32 32")));
+        Cursors.emplace(CURSOR_TYPES::TOY, Utils::RectFromString(INIString("cursors", "ball", "0 0 32 32")));
+        Cursors.emplace(CURSOR_TYPES::DIRTY, Utils::RectFromString(INIString("cursors", "bath", "0 0 32 32")));
+        Cursors.emplace(CURSOR_TYPES::TANKDIRTY, Utils::RectFromString(INIString("cursors", "tank", "0 0 32 32")));
 
-        AddNewPet();
+
     }
 
     void OnTerminate() {
@@ -63,6 +66,16 @@ struct GlobalGameData {
 
     int INIInt(const char* header, const char* key, int defaultValue) {
         return cini_geti(iniFile, header, key, defaultValue);
+    }
+
+    void NewGame() {
+        AddNewPet();
+
+        // do we need more?
+    }
+
+    void LoadGame() {
+        // TODO: load from file
     }
 
     void AddNewPet() {

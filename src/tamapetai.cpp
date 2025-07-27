@@ -10,6 +10,17 @@ void TamaPetAI::OnInitialize() {
 void TamaPetAI::OnUpdate(float deltaTime) {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
 
+    if (m_interactSpotList.size() > 0) {
+        for (int i = m_interactSpotList.size()-1; i >= 0; --i) {
+            m_interactSpotList[i].currentTime += deltaTime;
+
+            if (m_interactSpotList[i].currentTime >= 1.0f) {
+                m_interactSpotList.erase(m_interactSpotList.begin() + i);
+                continue;
+            }
+        }
+    }
+
     if (petData.state == PET_STATES::DED) {
         m_animationStep = 1;
         return;
@@ -22,6 +33,7 @@ void TamaPetAI::OnUpdate(float deltaTime) {
 
     petData.attributes[PET_ATTRIBUTES::GROWTH] += deltaTime * m_game->m_gameData.gameSpeed;
     m_currentTimer += deltaTime * m_game->m_gameData.gameSpeed;
+    m_poopTimer += deltaTime * m_game->m_gameData.gameSpeed;
 
     if (static_cast<int>(m_currentTimer / 0.5f) > m_lastFrameCounter) {
         m_lastFrameCounter = static_cast<int>(m_currentTimer / 0.5f);
@@ -38,6 +50,10 @@ bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
     }
 
     if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        return false;
+    }
+
+    if (m_game->m_gameData.activeCursor != CURSOR_TYPES::NORMAL) {
         return false;
     }
 
@@ -145,6 +161,16 @@ void TamaPetAI::OnRender() {
 }
 
 void TamaPetAI::OnRenderUI() {
+    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png");
+    for (const auto& it : m_interactSpotList) {
+        DrawTexturePro(cursorTexture, m_game->m_gameData.Cursors[it.cursorId], { it.position.x, it.position.y - (it.currentTime * 64.0f), 32, 32 }, { 0, 0 }, 0.0f, ColorAlpha(WHITE, 1.0f - it.currentTime));
+    }
+
+    Texture& poopTexture = m_game->m_resourceManager.GetTexture("textures/misc.png");
+    for (const auto& it : m_poopPileList) {
+        DrawTexturePro(poopTexture, { 0, 0, 32, 32 }, { it.position.x, it.position.y, 32, 32 }, { 0, 0 }, 0.0f, WHITE);
+    }
+
     if (!showStats) {
         return;
     }
@@ -161,6 +187,10 @@ void TamaPetAI::OnRenderUI() {
       petData.attributes[PET_ATTRIBUTES::TANKHYGIENE],
       petData.attributes[PET_ATTRIBUTES::ILLNESS]
     ), 50, 100, 20, BLACK);
+}
+
+rlRectangle TamaPetAI::GetPetPosition() {
+    return { m_petPosition.x, m_petPosition.y, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() };
 }
 
 float TamaPetAI::GetOffsetFromState() {
@@ -231,57 +261,79 @@ void TamaPetAI::ProcessAttributes() {
     constexpr const float multiplySpeed = 0.0001f;
 #endif
     petData.attributes[PET_ATTRIBUTES::HUNGER] += GetRandomValue(10, 20) * multiplySpeed;
-    petData.attributes[PET_ATTRIBUTES::HAPPINESS] -= GetRandomValue(10, 26) * multiplySpeed;
     petData.attributes[PET_ATTRIBUTES::BOREDOM] += GetRandomValue(15, 40) * multiplySpeed;
     petData.attributes[PET_ATTRIBUTES::HYGIENE] -= GetRandomValue(15, 50) * multiplySpeed;
-    petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] -= GetRandomValue(10, 26) * multiplySpeed;
     petData.attributes[PET_ATTRIBUTES::ILLNESS] -= GetRandomValue(5, 15) * multiplySpeed;
 
     Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HUNGER]);
-    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
     Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::BOREDOM]);
     Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HYGIENE]);
-    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::TANKHYGIENE]);
     Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::ILLNESS]);
 
     float healthChange = 0.0f;
     if (petData.attributes[PET_ATTRIBUTES::HUNGER] >= 0.25f) {
-        healthChange -= 0.05f * (petData.attributes[PET_ATTRIBUTES::HUNGER] * 0.25f);
+        healthChange -= 0.05f * (petData.attributes[PET_ATTRIBUTES::HUNGER] * 0.5f);
     } else {
-        healthChange += 0.05f;
+        healthChange += 0.025f;
     }
 
-    if (petData.attributes[PET_ATTRIBUTES::HAPPINESS] <= 0.75f) {
-        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::HAPPINESS]) * 0.25f);
+    if (petData.attributes[PET_ATTRIBUTES::HAPPINESS] <= 0.55f) {
+        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::HAPPINESS]) );
     } else {
-        healthChange += 0.05f;
+        healthChange += 0.025f;
     }
 
     if (petData.attributes[PET_ATTRIBUTES::HYGIENE] <= 0.75f) {
-        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::HYGIENE]) * 0.25f);
+        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::HYGIENE]) * 0.5f);
     } else {
-        healthChange += 0.05f;
+        healthChange += 0.025f;
     }
 
     if (petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] <= 0.75f) {
         healthChange -= 0.5f * 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::TANKHYGIENE]) * 0.25f);
     } else {
-        healthChange += 0.5f * 0.05f;
+        healthChange += 0.025f * 0.5f;
     }
 
     if (petData.attributes[PET_ATTRIBUTES::ILLNESS] <= 0.75f) {
-        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::ILLNESS]) * 0.25f);
+        healthChange -= 0.05f * ((1 - petData.attributes[PET_ATTRIBUTES::ILLNESS]) * 0.5f);
     } else {
-        healthChange += 0.05f;
+        healthChange += 0.025f;
     }
+
+    if (m_poopPileList.size() > 0) {
+        petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] -= 0.025f * m_poopPileList.size();
+    } else {
+        petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] += 0.05f;
+    }
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::TANKHYGIENE]);
 
     petData.attributes[PET_ATTRIBUTES::HP] += healthChange;
     Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HP]);
+
+    if (healthChange < 0.0f) {
+        petData.attributes[PET_ATTRIBUTES::HAPPINESS] += (healthChange * 0.5f);
+    } else {
+        petData.attributes[PET_ATTRIBUTES::HAPPINESS] += healthChange;
+    }
+    Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
 
     if (petData.attributes[PET_ATTRIBUTES::HP] <= 0.0f) {
         petData.state = PET_STATES::DED;
 
         return;
+    }
+
+    if (m_poopTimer >= 5.0f) {
+        m_poopTimer = 0.0f;
+        if (m_animationStep < 5) {
+            SpawnNewPoopPile({
+                static_cast<float>(GetRandomValue(m_petBounds.x, m_petBounds.width)),
+                static_cast<float>(GetRandomValue(m_petBounds.y, m_petBounds.height)),
+                32,
+                32
+            });
+        }
     }
 
     if (petData.state == PET_STATES::HEALTHY) {
@@ -290,15 +342,10 @@ void TamaPetAI::ProcessAttributes() {
             return;
         }
 
-        // if (petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.85f) {
+        // if (petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.45f) {
         //     petData.state = PET_STATES::HUNGRY;
         //     return;
         // }
-
-        if (petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.45f) {
-            petData.state = PET_STATES::HUNGRY;
-            return;
-        }
 
         if (petData.attributes[PET_ATTRIBUTES::BOREDOM] > 0.35f) {
             petData.state = PET_STATES::ANGRY;
@@ -381,4 +428,13 @@ void TamaPetAI::SetNewPetTarget(int newX, int newY) {
 
 void TamaPetAI::SetNewPetTarget(Vector2 destination) {
     SetNewPetTarget(destination.x, destination.y);
+}
+
+void TamaPetAI::SpawnNewInteractSpot(CURSOR_TYPES cursorId, Vector2 position) {
+    position.x += GetRandomValue(-10, 10);
+    m_interactSpotList.emplace_back(InteractSpot{ cursorId, 0.0f, position });
+}
+
+void TamaPetAI::SpawnNewPoopPile(rlRectangle position) {
+    m_poopPileList.emplace_back(PoopPile{ 1.0f, position });
 }

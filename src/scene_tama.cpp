@@ -28,7 +28,7 @@ void SceneTama::OnUpdate(float deltaTime){
 }
 
 bool SceneTama::OnHandleInput(Vector2 mousePos) {
-    bool uiResult = m_tamaui.OnHandleInput();
+    bool uiResult = m_tamaui.OnHandleInput(m_tamapetai.GetPetPosition());
     if (uiResult) {
         return true;
     }

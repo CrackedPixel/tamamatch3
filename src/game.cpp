@@ -8,6 +8,8 @@
 #include "scene.hpp"
 
 #include "scene_splash.hpp"
+#include "scene_menu.hpp"
+#include "scene_credits.hpp"
 #include "scene_tama.hpp"
 
 #ifdef PLATFORM_WEB
@@ -36,8 +38,15 @@ void Game::OnInitialize() {
 #endif
 
     m_sceneManager.OnAddScene("splash", new SceneSplash(this));
+    m_sceneManager.OnAddScene("menu", new SceneMenu(this));
+    m_sceneManager.OnAddScene("credits", new SceneCredits(this));
     m_sceneManager.OnAddScene("tama", new SceneTama(this));
+#ifdef DEBUG_BUILD
+    m_gameData.NewGame();
+    m_sceneManager.OnChangeScene("tama");
+#else
     m_sceneManager.OnChangeScene("splash");
+#endif
 
     m_renderTexture = LoadRenderTexture(640, 480);
 
@@ -64,16 +73,30 @@ void Game::OnTerminate(){
     rlCloseWindow();
 }
 
-void Game::ChangeScene(std::string newSceneName, bool fadeOut) {
+void Game::ChangeScene(std::string newSceneName, bool fadeOut, float fadeOutSpeed) {
+    if (m_changingScenes) {
+        return;
+    }
+
     if (m_nextSceneName != "") {
         return;
     }
 
+    m_changingScenes = true;
+
     if (fadeOut) {
-        m_transitionManager.FadeOut();
+        if (fadeOutSpeed == 0.0f) {
+            m_transitionManager.FadeOut();
+        } else {
+            m_transitionManager.FadeOut(fadeOutSpeed);
+        }
     }
 
     m_nextSceneName = newSceneName;
+}
+
+bool Game::IsChangingScenes() {
+    return m_changingScenes;
 }
 
 void Game::OnHandleInput() {
@@ -137,6 +160,16 @@ void Game::OnHandleInput() {
         // m_mouseHeld = false;
     }
 
+    if (GetMouseWheelMove() < 0.0f) {
+        m_inputController.EnableButtonDown();
+        return;
+    }
+
+    if (GetMouseWheelMove() > 0.0f) {
+        m_inputController.EnableButtonUp();
+        return;
+    }
+
     bool deviceResult = m_deviceInfo->OnHandleInput();
     if (deviceResult) {
         return;
@@ -161,8 +194,13 @@ void Game::OnUpdate() {
 
     if (m_nextSceneName != "") {
         if (m_transitionManager.IsDoneFade()) {
-            m_sceneManager.OnChangeScene(m_nextSceneName);
+            m_inputController.OnHandleInput();
+            bool changeResult = m_sceneManager.OnChangeScene(m_nextSceneName);
             m_nextSceneName = "";
+            m_changingScenes = false;
+            if (!changeResult) {
+                // something?
+            }
         }
     }
 

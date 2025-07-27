@@ -39,8 +39,7 @@ enum struct OUTFIT_SLOTS {
     GLASSES,
     SHIRT,
     BACK,
-    MISC1,
-    MISC2,
+    MISC,
 };
 
 enum struct CURSOR_TYPES {
@@ -48,7 +47,6 @@ enum struct CURSOR_TYPES {
     INVALID,
     FOOD,
     SAD,
-    BORED,
     DIRTY,
     TANKDIRTY,
     ILLNESS,

@@ -1,6 +1,7 @@
 #include "tamaui.hpp"
 
 #include "game.hpp"
+#include "scene_tama.hpp"
 
 void TamaUI::OnInitialize() {
     m_icons.emplace_back(TamaIcon{ ICON_ACTION_TYPE::STATS, { 0, 0, 0, 0 } });
@@ -82,27 +83,36 @@ void TamaUI::OnUpdate(float deltaTime) {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             } break;
             case ICON_ACTION_TYPE::BANDAID: {
-                m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                // m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 auto& petData = m_game->m_gameData.GetCurrentPet();
                 petData.attributes[PET_ATTRIBUTES::ILLNESS] += 0.3f;
+                m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::ILLNESS, { m_sceneTama->GetPetAI()->GetPetPosition().x, m_sceneTama->GetPetAI()->GetPetPosition().y });
             } break;
             case ICON_ACTION_TYPE::TOY: {
-                m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
+                // m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
                 auto& petData = m_game->m_gameData.GetCurrentPet();
                 petData.attributes[PET_ATTRIBUTES::BOREDOM] -= 0.5f;
                 petData.attributes[PET_ATTRIBUTES::HAPPINESS] += 0.35f;
-                Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::BOREDOM]);
-                Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
+                // Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::BOREDOM]);
+                // Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
+                m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TOY, { m_sceneTama->GetPetAI()->GetPetPosition().x, m_sceneTama->GetPetAI()->GetPetPosition().y });
             } break;
             case ICON_ACTION_TYPE::CLEAN: {
-                m_game->m_gameData.activeCursor = CURSOR_TYPES::DIRTY;
+                // m_game->m_gameData.activeCursor = CURSOR_TYPES::DIRTY;
                 auto& petData = m_game->m_gameData.GetCurrentPet();
                 petData.attributes[PET_ATTRIBUTES::HYGIENE] += 0.5f;
+                m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::DIRTY, { m_sceneTama->GetPetAI()->GetPetPosition().x, m_sceneTama->GetPetAI()->GetPetPosition().y });
             } break;
             case ICON_ACTION_TYPE::CLEAN_TANK: {
-                m_game->m_gameData.activeCursor = CURSOR_TYPES::TANKDIRTY;
-                auto& petData = m_game->m_gameData.GetCurrentPet();
-                petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] += 0.5f;
+                // m_game->m_gameData.activeCursor = CURSOR_TYPES::TANKDIRTY;
+                // auto& petData = m_game->m_gameData.GetCurrentPet();
+                // petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] += 0.5f;
+                // m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TANKDIRTY, { m_sceneTama->GetPetAI()->GetPetPosition().x, m_sceneTama->GetPetAI()->GetPetPosition().y });
+                auto& poopList = m_sceneTama->GetPetAI()->GetPoopPileList();
+                if (poopList.size() > 0) {
+                    m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TANKDIRTY, { poopList[0].position.x, poopList[0].position.y });
+                    poopList.erase(poopList.begin());
+                }
             } break;
 
 
@@ -163,12 +173,60 @@ void TamaUI::OnUpdate(float deltaTime) {
     m_hoverId = -1;
 }
 
-bool TamaUI::OnHandleInput() {
+bool TamaUI::OnHandleInput(rlRectangle petPosition) {
     if (!IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         return false;
     }
 
     if (m_hoverId == -1) {
+        Vector2 mousePosition = GetMousePosition();
+        mousePosition.x -= 184;
+        mousePosition.y -= 174;
+
+        if (CheckCollisionPointRec(mousePosition, petPosition)) {
+            Pet& petData = m_game->m_gameData.GetCurrentPet();
+            switch (m_game->m_gameData.activeCursor) {
+                case CURSOR_TYPES::SAD: {
+                    petData.attributes[PET_ATTRIBUTES::HAPPINESS] += 0.45f;
+                    m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::SAD, mousePosition);
+                } break;
+                case CURSOR_TYPES::DIRTY: {
+                    petData.attributes[PET_ATTRIBUTES::HYGIENE] += 0.45f;
+                    m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::DIRTY, mousePosition);
+                } break;
+                case CURSOR_TYPES::ILLNESS: {
+                    petData.attributes[PET_ATTRIBUTES::ILLNESS] += 0.45f;
+                    m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::ILLNESS, mousePosition);
+                } break;
+                case CURSOR_TYPES::TOY: {
+                    petData.attributes[PET_ATTRIBUTES::BOREDOM] -= 0.45f;
+                    m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TOY, mousePosition);
+                } break;
+                default: return false;
+            }
+
+            m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+
+            return true;
+        }
+
+        if (m_game->m_gameData.activeCursor == CURSOR_TYPES::TANKDIRTY) {
+            auto& poopPileList = m_sceneTama->GetPetAI()->GetPoopPileList();
+            for (size_t i = 0; i < poopPileList.size(); ++i) {
+                if (CheckCollisionPointRec(mousePosition, poopPileList[i].position)) {
+                    m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                    m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TANKDIRTY, {
+                        poopPileList[i].position.x, poopPileList[i].position.y
+                    });
+                    poopPileList.erase(poopPileList.begin() + i);
+                    return true;
+                }
+            }
+        }
+        // case CURSOR_TYPES::TANKDIRTY: {
+        //     petData.attributes[PET_ATTRIBUTES::TANKHYGIENE] += 0.45f;
+        // } break;
+
         return false;
     }
 
@@ -184,43 +242,54 @@ bool TamaUI::OnHandleInput() {
     //     TOY,
     // };
 
+    // mouse
     switch (m_icons[m_hoverId].actionType) {
         case ICON_ACTION_TYPE::STATS: {
             // TODO: open stats
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
         case ICON_ACTION_TYPE::BANDAID: {
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::ILLNESS;
         } break;
         case ICON_ACTION_TYPE::TOY: {
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
         } break;
         case ICON_ACTION_TYPE::CLEAN: {
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::DIRTY;
         } break;
         case ICON_ACTION_TYPE::CLEAN_TANK: {
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::TANKDIRTY;
         } break;
 
         case ICON_ACTION_TYPE::CAMERA: {
             hideUI = !hideUI;
 
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
         case ICON_ACTION_TYPE::INVENTORY: {
             // TODO: open inventory
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
         case ICON_ACTION_TYPE::MINIGAMES: {
             // TODO: change scene
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
         case ICON_ACTION_TYPE::STORE: {
             // TODO: open settings
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
         case ICON_ACTION_TYPE::DISPLAY: {
             // TODO: open display
+            m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
         } break;
 

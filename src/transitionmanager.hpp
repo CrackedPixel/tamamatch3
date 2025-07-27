@@ -16,7 +16,7 @@ struct TransitionManager {
             case FADE_STATES::HOLD: return;
 
             case FADE_STATES::FADE_IN: {
-                m_currentAlpha -= FADE_SPEED * deltaTime;
+                m_currentAlpha -= m_fadeSpeed * deltaTime;
 
                 if (m_currentAlpha < 0.0f) {
                     m_currentAlpha = 0.0f;
@@ -25,7 +25,7 @@ struct TransitionManager {
             } break;
 
             case FADE_STATES::FADE_OUT: {
-                m_currentAlpha += FADE_SPEED * deltaTime;
+                m_currentAlpha += m_fadeSpeed * deltaTime;
 
                 if (m_currentAlpha > 1.0f) {
                     m_currentAlpha = 1.0f;
@@ -43,11 +43,13 @@ struct TransitionManager {
         DrawRectangle(0, 0, 640, 480, ColorAlpha(BLACK, m_currentAlpha));
     }
 
-    void FadeOut() {
+    void FadeOut(float fadeSpeed = DEFAULT_FADE_SPEED) {
+        m_fadeSpeed = fadeSpeed;
         m_fadeState = FADE_STATES::FADE_OUT;
     }
 
-    void FadeIn() {
+    void FadeIn(float fadeSpeed = DEFAULT_FADE_SPEED) {
+        m_fadeSpeed = fadeSpeed;
         m_currentAlpha = 1.0f;
         m_fadeState = FADE_STATES::FADE_IN;
     }
@@ -58,6 +60,7 @@ struct TransitionManager {
 
 private:
     FADE_STATES m_fadeState = FADE_STATES::FADE_IN;
-    float m_currentAlpha;
-    static constexpr const float FADE_SPEED = 0.5f * 5.0f;
+    float m_currentAlpha = 1.0f;
+    float m_fadeSpeed = 0.0f;
+    static constexpr const float DEFAULT_FADE_SPEED = 0.5f * 5.0f;
 };

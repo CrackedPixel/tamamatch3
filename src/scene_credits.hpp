@@ -2,16 +2,14 @@
 
 #include "scene.hpp"
 
-struct SceneSplash : public Scene {
-    SceneSplash(Game* m_game) : Scene(m_game) {}
+struct SceneCredits : public Scene {
+    SceneCredits(Game* game) : Scene(game) {}
 
     void OnInitialize();
     void OnUpdate(float deltaTime);
     void OnRender();
-    void OnRenderUI();
     bool OnHandleInput(Vector2 mousePos);
 
 private:
-    float m_currentTimer = 0.0f;
-    bool m_startedFade = false;
+
 };

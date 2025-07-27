@@ -5,7 +5,7 @@
 #include "tamapetai.hpp"
 
 struct SceneTama : public Scene {
-    SceneTama(Game* game) : Scene(game), m_tamaui(game), m_tamapetai(game) {}
+    SceneTama(Game* game) : Scene(game), m_tamaui(game, this), m_tamapetai(game) {}
 
     void OnInitialize();
     void OnTerminate();
@@ -13,6 +13,11 @@ struct SceneTama : public Scene {
     void OnRender();
     void OnRenderUI();
     bool OnHandleInput(Vector2 mousePos);
+
+public:
+    TamaPetAI* GetPetAI() {
+        return &m_tamapetai;
+    }
 
 private:
     TamaUI m_tamaui;

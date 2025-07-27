@@ -12,6 +12,6 @@ struct SceneManager {
     Scene* GetCurrentScene();
 
     void OnAddScene(std::string sceneName, Scene* newScene);
-    void OnChangeScene(std::string newScene);
+    bool OnChangeScene(std::string newScene);
     void OnTerminate();
 };

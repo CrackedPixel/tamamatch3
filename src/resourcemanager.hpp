@@ -29,7 +29,7 @@ struct ResourceManager {
         return m_fonts[fontKey];
     }
 
-    Texture& GetTexture(std::string relativeFilePath) {
+    Texture& GetTexture(std::string relativeFilePath, int textureMode = 1) {
         if (m_textures.find(relativeFilePath) == m_textures.end()) {
             LoadTextureFromDisk(relativeFilePath);
 
@@ -37,6 +37,8 @@ struct ResourceManager {
             if (m_textures.find(relativeFilePath) == m_textures.end()) {
                 return m_emptyTexture;
             }
+
+            SetTextureFilter(m_textures[relativeFilePath], textureMode);
         }
 
         return m_textures[relativeFilePath];
