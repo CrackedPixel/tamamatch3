@@ -290,9 +290,9 @@ void TamaUI::OnUpdate(float deltaTime) {
                 m_game->m_audioManager->PlaySFX("uiselect");
             } break;
             case ICON_ACTION_TYPE::MINIGAMES: {
-                // TODO: change scene
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_game->m_audioManager->PlaySFX("uiselect");
+                m_game->ChangeScene("mastermind", true, 0.5f);
             } break;
             case ICON_ACTION_TYPE::STORE: {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
@@ -475,10 +475,10 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             m_game->m_audioManager->PlaySFX("uiselect");
         } break;
         case ICON_ACTION_TYPE::MINIGAMES: {
-            // TODO: change scene
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_game->m_audioManager->PlaySFX("uiselect");
+            m_game->ChangeScene("mastermind", true, 0.5f);
         } break;
         case ICON_ACTION_TYPE::STORE: {
             m_selectedId = m_hoverId;

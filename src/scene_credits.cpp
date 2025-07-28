@@ -23,11 +23,11 @@ void SceneCredits::OnUpdate(float deltaTime) {
     }
 
     if (m_game->m_inputController.IsButtonBack) {
-        m_game->ChangeScene("menu", true);
+        m_game->ChangeScene("menu", true, 1.0f);
     }
 
     if (m_game->m_inputController.IsButtonSelect) {
-        m_game->ChangeScene("menu", true);
+        m_game->ChangeScene("menu", true, 1.0f);
     }
 }
 
