@@ -98,7 +98,7 @@ bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
 void TamaPetAI::OnRender() {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
 
-    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath(), 0);
+    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath());
     Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png", 0);
 
     if (petData.stage == PET_STAGES::EGG) {

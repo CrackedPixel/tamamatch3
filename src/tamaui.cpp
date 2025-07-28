@@ -386,9 +386,12 @@ void TamaUI::OnRenderUI() {
         rlDrawText("<", 192 + 20, 250, 30, drawColour);
         rlDrawText(">", 192 + 256 - 30, 250, 30, drawColour);
         //  { "Food", "Hats", "Glasses", "Backs", "Acc" };
+        drawColour = m_currentInventoryTab == 1 ? WHITE : GRAY;
         switch (m_currentInventoryPage) {
             case INVENTORY_PAGES::FOOD: {
                 // rlDrawText("FOOD", 192 + 50, 140, 30, BLACK);
+                Texture& foodTexture = m_game->m_resourceManager.GetTexture("textures/food.png", 0);
+                DrawTexturePro(foodTexture, { 0, 0, 32, 32 }, { 256, 200, 128, 128 }, { 0, 0 }, 0.0f, drawColour);
             } break;
             case INVENTORY_PAGES::HATS: {
 
@@ -417,7 +420,7 @@ void TamaUI::OnRenderUI() {
         return;
     }
 
-    Texture& iconsTexture = m_game->m_resourceManager.GetTexture(TEXTURE_PATH, 0);
+    Texture& iconsTexture = m_game->m_resourceManager.GetTexture(ICONS_TEXTURE_PATH, 0);
 
     Color bgColour;
     rlRectangle destination = { 0.0f, 0.0f, 64, 64 };
@@ -471,7 +474,7 @@ bool TamaUI::IsUIShown() {
 
 void TamaUI::DrawPetAtSpot(rlRectangle destination) {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
-    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath(), 0);
+    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath());
     Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png", 0);
 
     float widthFactor = m_game->m_gameData.GetCurrentPetWidth() / 64;
