@@ -22,6 +22,8 @@ struct GlobalGameData {
     std::unordered_map<PET_STAGES, Vector2> PetFaceOffsets = {};
     std::unordered_map<PET_STATES, rlRectangle> PetFaces = {};
     std::vector<std::string> WallpaperList;
+    std::unordered_map<PET_STAGES, float> growthSpeeds = {};
+
     HCINI iniFile;
 
     void OnInitialize() {
@@ -36,6 +38,11 @@ struct GlobalGameData {
         for (int i = 0; i < petTintCount; ++i) {
             PetTintList.emplace_back(Utils::ColorFromString(INIString("pet_tint", std::to_string(i+1).c_str(), "0 0 0")));
         }
+
+        growthSpeeds[PET_STAGES::EGG] = INIFloat("speed", "grow_egg", 60.0f);
+        growthSpeeds[PET_STAGES::NEWBORN] = INIFloat("speed", "grow_newborn", 60.0f);
+        growthSpeeds[PET_STAGES::TODDLER] = INIFloat("speed", "grow_toddler", 60.0f);
+        growthSpeeds[PET_STAGES::ADOLESCENT] = INIFloat("speed", "grow_adolescent", 60.0f);
 
         PetFaces.emplace(PET_STATES::HEALTHY, Utils::RectFromString(INIString("pet_faces", "healthy", "0 0 64 64")));
         PetFaces.emplace(PET_STATES::SAD, Utils::RectFromString(INIString("pet_faces", "sad", "0 0 64 64")));
@@ -134,6 +141,10 @@ struct GlobalGameData {
 
     Pet& GetCurrentPet() {
         return PetList[activePet];
+    }
+
+    float& GetCurrentPetGrowthTime() {
+        return growthSpeeds[PetList[activePet].stage];
     }
 
     rlRectangle& GetCurrentFace() {

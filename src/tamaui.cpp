@@ -20,8 +20,10 @@ void TamaUI::OnInitialize() {
     for (int i = 0; i < promptsCount; ++i) {
         const char* promptKey = m_game->m_gameData.INIString("prompts", std::to_string(i+1).c_str(), "");
         std::string promptMessage = Utils::ReplaceNewlines(m_game->m_gameData.INIString("prompts", promptKey, "MISSING"));
-        promptsList.emplace(promptKey, promptMessage);
+        m_promptsList.emplace(promptKey, promptMessage);
     }
+
+    m_barsColour = Utils::RGBAFromString(m_game->m_gameData.INIString("colours", "bars", "182 182 182 255"));
 }
 
 void TamaUI::OnTerminate() {
@@ -29,7 +31,7 @@ void TamaUI::OnTerminate() {
 }
 
 void TamaUI::OnUpdate(float deltaTime) {
-    if (m_game->m_inputController.IsButtonUp) {
+    if (m_popupMenu == POPUP_TYPES::NONE && m_game->m_inputController.IsButtonUp) {
         m_selectedId -= 1;
 
         if (m_selectedId < 0) {
@@ -39,7 +41,7 @@ void TamaUI::OnUpdate(float deltaTime) {
         return;
     }
 
-    if (m_game->m_inputController.IsButtonDown) {
+    if (m_popupMenu == POPUP_TYPES::NONE && m_game->m_inputController.IsButtonDown) {
         m_selectedId += 1;
 
         if (m_selectedId == static_cast<int>(m_icons.size())) {
@@ -49,15 +51,19 @@ void TamaUI::OnUpdate(float deltaTime) {
         return;
     }
 
-    if (m_game->m_inputController.IsButtonBack) {
-        if (hideUI) {
-            hideUI = false;
+    if (m_popupMenu == POPUP_TYPES::NONE && m_game->m_inputController.IsButtonBack) {
+        if (m_hideUI) {
+            m_hideUI = false;
             return;
         }
     }
 
     if (m_game->m_inputController.IsButtonSelect) {
         switch (m_popupMenu) {
+            case POPUP_TYPES::STATS: {
+                m_popupMenu = POPUP_TYPES::NONE;
+                return;
+            } break;
             case POPUP_TYPES::PAUSE_MENU: {
 
             } break;
@@ -74,8 +80,8 @@ void TamaUI::OnUpdate(float deltaTime) {
             default: break;
         }
 
-        if (hideUI) {
-            hideUI = false;
+        if (m_hideUI) {
+            m_hideUI = false;
             return;
         }
 
@@ -104,6 +110,7 @@ void TamaUI::OnUpdate(float deltaTime) {
             case ICON_ACTION_TYPE::STATS: {
                 // TODO: open stats
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                m_popupMenu = POPUP_TYPES::STATS;
             } break;
             case ICON_ACTION_TYPE::BANDAID: {
                 // m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
@@ -140,7 +147,7 @@ void TamaUI::OnUpdate(float deltaTime) {
 
 
             case ICON_ACTION_TYPE::CAMERA: {
-                hideUI = !hideUI;
+                m_hideUI = !m_hideUI;
 
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             } break;
@@ -165,6 +172,11 @@ void TamaUI::OnUpdate(float deltaTime) {
 
         m_game->m_audioManager->PlaySFX("uiselect");
 
+        return;
+    }
+
+    if (m_popupMenu != POPUP_TYPES::NONE) {
+        m_hoverId = -1;
         return;
     }
 
@@ -200,6 +212,10 @@ void TamaUI::OnUpdate(float deltaTime) {
 
 bool TamaUI::OnHandleInput(rlRectangle petPosition) {
     if (!IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        return false;
+    }
+
+    if (m_popupMenu != POPUP_TYPES::NONE) {
         return false;
     }
 
@@ -270,6 +286,7 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             // TODO: open stats
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            m_popupMenu = POPUP_TYPES::STATS;
         } break;
         case ICON_ACTION_TYPE::BANDAID: {
             m_selectedId = m_hoverId;
@@ -289,7 +306,7 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
         } break;
 
         case ICON_ACTION_TYPE::CAMERA: {
-            hideUI = !hideUI;
+            m_hideUI = !m_hideUI;
 
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
@@ -324,6 +341,32 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
 void TamaUI::OnRenderUI() {
     Texture& popupTexture = m_game->m_resourceManager.GetTexture("textures/messagebox.png", 0);
     switch (m_popupMenu) {
+    case POPUP_TYPES::STATS: {
+        DrawRectangleRounded({ 140, 130, 380, 230 }, 0.2f, 1, { 111, 180, 68, 255 });
+        DrawRectangleRoundedLinesEx({ 140, 130, 380, 230 }, 0.2f, 1, 3, BLACK);
+
+        // DrawRectangleRounded({ 160, 150, 100, 100 }, 0.2f, 1, YELLOW);
+        // DrawPetAtSpot({ 170, 160, 80, 80 });
+        auto& petData = m_game->m_gameData.GetCurrentPet();
+        if (petData.stage != PET_STAGES::ADULT) {
+            rlDrawText(TextFormat("Growth: %d\%\nHP: %d\%\nHunger: %d\%\nBoredom: %d\%",
+              static_cast<int>(100.0f * (petData.attributes[PET_ATTRIBUTES::GROWTH] / m_game->m_gameData.GetCurrentPetGrowthTime())),
+              static_cast<int>(100.0f * petData.attributes[PET_ATTRIBUTES::HP]),
+              static_cast<int>(100.0f * petData.attributes[PET_ATTRIBUTES::HUNGER]),
+              static_cast<int>(100.0f * petData.attributes[PET_ATTRIBUTES::BOREDOM])
+            ), 160, 150, 22, BLACK);
+
+            rlDrawText(TextFormat("Sadness: %d\%\nDirty: %d\%\nTank: %d\%\nIllness: %d\%",
+              static_cast<int>(100.0f * (1-petData.attributes[PET_ATTRIBUTES::HAPPINESS])),
+              static_cast<int>(100.0f * (1-petData.attributes[PET_ATTRIBUTES::HYGIENE])),
+              static_cast<int>(100.0f * (1-petData.attributes[PET_ATTRIBUTES::TANKHYGIENE])),
+              static_cast<int>(100.0f * (1-petData.attributes[PET_ATTRIBUTES::ILLNESS]))
+            ), 350, 150, 22, BLACK);
+        } else {
+            rlDrawText("Growth: 100%\nHP: 100%\nHunger: 0%\nBoredom: 0%", 160, 150, 22, BLACK);
+            rlDrawText("Sadness: 0%\nDirty: 0%\nTank: 0%\nIllness: 0%", 350, 150, 22, BLACK);
+        }
+    } break;
     case POPUP_TYPES::PAUSE_MENU: {
 
     } break;
@@ -333,16 +376,12 @@ void TamaUI::OnRenderUI() {
     case POPUP_TYPES::EVOLVE: {
         DrawTexturePro(popupTexture, { 0, 0, 128, 128 }, { 192, 112, 256, 256 }, { 0, 0 }, 0.0f, WHITE);
         rlDrawText("Growth", 220, 140, 30, BLACK);
-        rlDrawText(promptsList["evolve_egg"].c_str(), 220, 200, 20, BLACK);
-        // const char* testText = "test\ntest";
-        // rlDrawText(testText, 220, 200, 20, BLACK);
-        // std::string dummyString = "test\nstring";
-        // rlDrawText(dummyString.c_str(), 220, 200, 20, BLACK);
+        rlDrawText(m_promptsList["evolve_egg"].c_str(), 220, 200, 20, BLACK);
     } break;
     default: break;
     }
 
-    if (hideUI) {
+    if (m_hideUI) {
         return;
     }
 
@@ -351,11 +390,11 @@ void TamaUI::OnRenderUI() {
     Color bgColour;
     rlRectangle destination = { 0.0f, 0.0f, 64, 64 };
 
-    DrawRectangle(0, 0, 640, 80, LIGHTGRAY);
-    DrawRectangle(0, 480 - 80, 640, 80, LIGHTGRAY);
+    DrawRectangle(0, 0, 640, 80, m_barsColour);
+    DrawRectangle(0, 480 - 80, 640, 80, m_barsColour);
 
     for (size_t i = 0; i < m_icons.size(); ++i) {
-        bgColour = m_hoverId == static_cast<int>(i) ? YELLOW : RED;
+        bgColour = m_hoverId == static_cast<int>(i) ? Color{ 172, 211, 148, 255 } : Color{ 111, 180, 68, 255 };
         if (i < ICONS_PER_ROW) {
             destination.x = OFFSET_X  + ( GAP_X * i);
             destination.y = 8;
@@ -395,7 +434,7 @@ void TamaUI::OnRenderUI() {
 }
 
 bool TamaUI::IsUIShown() {
-    return !this->hideUI;
+    return !this->m_hideUI;
 }
 
 void TamaUI::DrawPetAtSpot(rlRectangle destination) {

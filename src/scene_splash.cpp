@@ -15,7 +15,6 @@ void SceneSplash::OnUpdate(float deltaTime){
     }
 
     m_currentTimer += deltaTime;
-
     if (!m_startedFade && m_currentTimer >= 1.0f) {
         m_startedFade = true;
         m_game->m_transitionManager.FadeIn(0.5f);

@@ -79,5 +79,4 @@ private:
     std::vector<InteractSpot> m_interactSpotList = {};
     std::vector<PoopPile> m_poopPileList = {};
     std::vector<StinkySpot> m_stinkySpotList = {};
-    std::unordered_map<PET_STAGES, float> m_growthSpeeds = {};
 };

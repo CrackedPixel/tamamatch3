@@ -20,9 +20,9 @@ void Game::OnInitialize() {
 #ifndef DEBUG_BUILD
     SetTraceLogLevel(LOG_NONE);
 #endif
-    #ifdef PLATFORM_DESKTOP
+    // #ifdef PLATFORM_DESKTOP
         // SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
-    #endif
+    // #endif
     InitWindow(1007, 817, "TamaGacha");
 
     m_gameData.OnInitialize();
@@ -46,7 +46,7 @@ void Game::OnInitialize() {
     m_sceneManager.OnAddScene("tama", new SceneTama(this));
 #ifdef DEBUG_BUILD
     m_gameData.NewGame();
-    m_sceneManager.OnChangeScene("menu");
+    m_sceneManager.OnChangeScene("credits");
 #else
     m_sceneManager.OnChangeScene("splash");
 #endif

@@ -23,6 +23,13 @@ namespace Utils {
         return { static_cast<float>(x), static_cast<float>(y), static_cast<float>(w), static_cast<float>(h) };
     }
 
+    inline Color RGBAFromString(const char* str) {
+        int x = 0, y = 0, w = 0, h = 0;
+        sscanf(str, "%d %d %d %d", &x, &y, &w, &h);
+
+        return Color{ static_cast<unsigned char>(x), static_cast<unsigned char>(y), static_cast<unsigned char>(w), static_cast<unsigned char>(h) };
+    }
+
     inline Vector2 Vector2FromString(const char* str) {
         int x = 0, y = 0;
         sscanf(str, "%d %d", &x, &y);

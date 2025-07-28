@@ -61,9 +61,10 @@ private:
     SceneTama* m_sceneTama = nullptr;
     int m_hoverId = -1;
     int m_selectedId = 0;
-    bool hideUI = false;
+    bool m_hideUI = false;
     std::vector<TamaIcon> m_icons;
-    std::unordered_map<std::string, std::string> promptsList;
+    std::unordered_map<std::string, std::string> m_promptsList;
+    Color m_barsColour = LIGHTGRAY;
 
 public:
     POPUP_TYPES m_popupMenu = POPUP_TYPES::NONE;

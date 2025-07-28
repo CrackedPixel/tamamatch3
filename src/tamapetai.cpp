@@ -7,20 +7,10 @@ void TamaPetAI::OnInitialize() {
     m_lastFrameCounter = 0;
     m_currentTimer = 0.0f;
 
-    m_growthSpeeds[PET_STAGES::EGG] = m_game->m_gameData.INIFloat("speed", "grow_egg", 60.0f);
-    m_growthSpeeds[PET_STAGES::NEWBORN] = m_game->m_gameData.INIFloat("speed", "grow_newborn", 60.0f);
-    m_growthSpeeds[PET_STAGES::TODDLER] = m_game->m_gameData.INIFloat("speed", "grow_toddler", 60.0f);
-    m_growthSpeeds[PET_STAGES::ADOLESCENT] = m_game->m_gameData.INIFloat("speed", "grow_adolescent", 60.0f);
-
     m_game->m_audioManager->PlaySFX("hatch");
 }
 
 void TamaPetAI::OnUpdate(float deltaTime) {
-
-    if (IsKeyPressed(KEY_G)) {
-        m_game->m_audioManager->PlayTrack("music/tamagotchi_sick.ogg");
-    }
-
     Pet& petData = m_game->m_gameData.GetCurrentPet();
 
     if (m_interactSpotList.size() > 0) {
@@ -55,10 +45,12 @@ void TamaPetAI::OnUpdate(float deltaTime) {
         return;
     }
 
-    petData.attributes[PET_ATTRIBUTES::GROWTH] += deltaTime * m_game->m_gameData.gameSpeed;
-    m_currentTimer += deltaTime * m_game->m_gameData.gameSpeed;
-    m_poopTimer += deltaTime * m_game->m_gameData.gameSpeed;
+    if (m_tama->GetTamaUI()->m_popupMenu == POPUP_TYPES::NONE) {
+        petData.attributes[PET_ATTRIBUTES::GROWTH] += deltaTime * m_game->m_gameData.gameSpeed;
+        m_poopTimer += deltaTime * m_game->m_gameData.gameSpeed;
+    }
 
+    m_currentTimer += deltaTime * m_game->m_gameData.gameSpeed;
     if (static_cast<int>(m_currentTimer / 0.5f) > m_lastFrameCounter) {
         m_lastFrameCounter = static_cast<int>(m_currentTimer / 0.5f);
         ProcessAI();
@@ -71,6 +63,10 @@ bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
     if (IsKeyPressed(KEY_F1)) {
         m_showStats = !m_showStats;
         return true;
+    }
+
+    if (m_tama->GetTamaUI()->m_popupMenu != POPUP_TYPES::NONE) {
+        return false;
     }
 
     if (!IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -208,7 +204,7 @@ void TamaPetAI::OnRenderUI() {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
 
     rlDrawText(TextFormat("Growth: %.1f\nHP: %.1f\nHunger: %.1f\nBoredom: %.1f\nHappiness: %.1f\nHygiene: %.1f\nTank: %.1f\nHealth: %.1f",
-      (petData.attributes[PET_ATTRIBUTES::GROWTH] / m_growthSpeeds[petData.stage]),
+      (petData.attributes[PET_ATTRIBUTES::GROWTH] / m_game->m_gameData.GetCurrentPetGrowthTime()),
       petData.attributes[PET_ATTRIBUTES::HP],
       petData.attributes[PET_ATTRIBUTES::HUNGER],
       petData.attributes[PET_ATTRIBUTES::BOREDOM],
@@ -276,13 +272,17 @@ void TamaPetAI::ProcessMovement(float deltaTime) {
 }
 
 void TamaPetAI::ProcessAttributes() {
+    if (m_tama->GetTamaUI()->m_popupMenu != POPUP_TYPES::NONE) {
+        return;
+    }
+
     Pet& petData = m_game->m_gameData.GetCurrentPet();
     if (petData.stage == PET_STAGES::ADULT) {
         return;
     }
 
     if (petData.stage == PET_STAGES::EGG) {
-        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= m_growthSpeeds[petData.stage]) {
+        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= m_game->m_gameData.GetCurrentPetGrowthTime()) {
             petData.state = PET_STATES::EVOLVE;
 
             if (m_tama->GetTamaUI()->m_popupMenu == POPUP_TYPES::NONE) {
@@ -376,7 +376,7 @@ void TamaPetAI::ProcessAttributes() {
         }
     }
 
-    if (m_animationStep == 0 && petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.45f) {
+    if (m_animationStep % 3 == 0 && petData.attributes[PET_ATTRIBUTES::HUNGER] > 0.45f) {
         m_game->m_audioManager->PlaySFX("hungry");
     }
 
@@ -389,7 +389,7 @@ void TamaPetAI::ProcessAttributes() {
     }
 
     if (petData.state == PET_STATES::HEALTHY) {
-        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= m_growthSpeeds[petData.stage]) {
+        if (petData.attributes[PET_ATTRIBUTES::GROWTH] >= m_game->m_gameData.GetCurrentPetGrowthTime()) {
             petData.state = PET_STATES::EVOLVE;
 
             if (m_tama->GetTamaUI()->m_popupMenu == POPUP_TYPES::NONE) {
