@@ -5,6 +5,7 @@
 void SceneMastermind::OnInitialize() {
 #ifdef DEBUG_BUILD
     m_game->m_transitionManager.FadeIn(20.0f);
+    m_game->m_audioManager->PlayTrack("music/minigame.ogg");
 #else
     m_game->m_transitionManager.FadeIn(0.5f);
 #endif
@@ -83,7 +84,7 @@ void SceneMastermind::OnUpdate(float deltaTime) {
                 m_previousGuesses[m_currentGuess].value[m_selectionId] -= 1;
 
                 if (m_previousGuesses[m_currentGuess].value[m_selectionId] == -1) {
-                    m_previousGuesses[m_currentGuess].value[m_selectionId] = 4;
+                    m_previousGuesses[m_currentGuess].value[m_selectionId] = 5;
                 }
                 return;
             } break;
@@ -96,7 +97,7 @@ void SceneMastermind::OnUpdate(float deltaTime) {
         case MASTERMIND_STATES::STARTED: {
             m_previousGuesses[m_currentGuess].value[m_selectionId] += 1;
 
-            if (m_previousGuesses[m_currentGuess].value[m_selectionId] == 5) {
+            if (m_previousGuesses[m_currentGuess].value[m_selectionId] == 6) {
                 m_previousGuesses[m_currentGuess].value[m_selectionId] = 0;
             }
             return;
@@ -116,7 +117,15 @@ void SceneMastermind::OnRender() {
             DrawRectangleRounded({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, { 111, 180, 68, 255 });
             DrawRectangleRoundedLinesEx({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, 3, BLACK);
             rlDrawText("Mastermind", 320 - (MeasureText("Mastermind", 20) * 0.5f), 150, 20, BLACK);
-            rlDrawText("Press to start", 320 - (MeasureText("Press to start", 20) * 0.5f), 180, 20, BLACK);
+            rlDrawText("Rules:", 320 - (MeasureText("Rules:", 20) * 0.5f), 180, 20, BLACK);
+
+            rlDrawText("Figure out the correct", 320 - (MeasureText("Figure out the correct", 20) * 0.5f), 200, 20, BLACK);
+            rlDrawText("combination of colours.", 320 - (MeasureText("combination of colours.", 20) * 0.5f), 220, 20, BLACK);
+
+            rlDrawText("You have 10 attempts", 320 - (MeasureText("You have 10 attempts", 20) * 0.5f), 250, 20, BLACK);
+
+            rlDrawText("Lillypads show how close", 320 - (MeasureText("Lillypads show how close", 20) * 0.5f), 280, 20, BLACK);
+            rlDrawText("your guess is.", 320 - (MeasureText("your guess is.", 20) * 0.5f), 300, 20, BLACK);
         } break;
         case MASTERMIND_STATES::STARTED: {
             Texture& mastermindTexture = m_game->m_resourceManager.GetTexture(TEXTURE_PATH, 0);

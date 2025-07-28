@@ -6,7 +6,20 @@ DEFINES = -DPLATFORM_DESKTOP -DPLATFORM_WINDOWS
 
 # Source files
 SRC = \
-    src/unity.cpp
+    src/audiomanager.cpp \
+    src/deviceinfo.cpp \
+    src/game.cpp \
+    src/main.cpp \
+    src/scene_collection.cpp \
+    src/scene_credits.cpp \
+    src/scene_mastermind.cpp \
+    src/scene_menu.cpp \
+    src/scene_shop.cpp \
+    src/scene_splash.cpp \
+    src/scene_tama.cpp \
+    src/scenemanager.cpp \
+    src/tamapetai.cpp \
+    src/tamaui.cpp
 
 # Include directories ONLY (do NOT list .hpp files here)
 INCLUDES = -I./src \

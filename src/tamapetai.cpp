@@ -8,6 +8,10 @@ void TamaPetAI::OnInitialize() {
     m_currentTimer = 0.0f;
 
     m_game->m_audioManager->PlaySFX("hatch");
+
+    m_interactSpotList.clear();
+    m_foodSpotList.clear();
+    m_stinkySpotList.clear();
 }
 
 void TamaPetAI::OnUpdate(float deltaTime) {

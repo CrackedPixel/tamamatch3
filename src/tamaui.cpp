@@ -24,6 +24,8 @@ void TamaUI::OnInitialize() {
     }
 
     m_barsColour = Utils::RGBAFromString(m_game->m_gameData.INIString("colours", "bars", "182 182 182 255"));
+
+    m_popupMenu = POPUP_TYPES::NONE;
 }
 
 void TamaUI::OnTerminate() {

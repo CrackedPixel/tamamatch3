@@ -5,6 +5,7 @@
 void SceneShop::OnInitialize() {
     m_shopState = SHOP_STATES::NEW;
     m_game->m_transitionManager.FadeIn(0.5f);
+    m_game->m_audioManager->PlayTrack("music/store.ogg");
 
     m_itemPrice = m_game->m_gameData.INIInt("shop", "item_price", 10);
 }

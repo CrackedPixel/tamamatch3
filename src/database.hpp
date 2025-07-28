@@ -533,7 +533,10 @@ struct GlobalGameData {
 
     bool HasAllAdults() {
         for (const auto& it : PetList) {
-            if (it.stage != PET_STAGES::ADULT) {
+            if (
+                it.stage != PET_STAGES::ADULT
+                && it.state != PET_STATES::DED
+            ) {
                 return false;
             }
         }
