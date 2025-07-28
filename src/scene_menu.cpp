@@ -49,7 +49,8 @@ void SceneMenu::OnUpdate(float deltaTime) {
                 m_game->ChangeScene("tama", true, 1.0f);
             } break;
             case 1: { // load
-
+                m_game->m_gameData.LoadGame();
+                m_game->ChangeScene("tama", true, 1.0f);
             } break;
             case 2: { // credits
                 m_game->ChangeScene("credits", true, 1.0f);

@@ -51,7 +51,7 @@ void Game::OnInitialize() {
     m_sceneManager.OnAddScene("collection", new SceneCollection(this));
     m_sceneManager.OnAddScene("mastermind", new SceneMastermind(this));
 #ifdef DEBUG_BUILD
-    m_gameData.NewGame();
+    // m_gameData.NewGame();
     m_sceneManager.OnChangeScene("menu");
 #else
     m_sceneManager.OnChangeScene("splash");

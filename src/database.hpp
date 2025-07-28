@@ -5,6 +5,7 @@
 
 #include "raylib.h"
 #include "cini.h"
+#include "ini.h"
 
 #include "enums.hpp"
 #include "types.hpp"
@@ -190,16 +191,121 @@ struct GlobalGameData {
     }
 
     void LoadGame() {
-        // TODO: load from file
+        PetList.clear();
         HCINI saveINI = cini_create("save.ini");
+
+        coins = cini_geti(saveINI, "user", "coins", 0);
+        activePet = cini_geti(saveINI, "user", "active_pet", 0);
+
+        int petCount = cini_geti(saveINI, "user", "pet_count", 0);
+        std::string tempString = "";
+        std::string otherTempString = "";
+        for (int i = 0; i < petCount; ++i) {
+            Pet tempPet(PetTintList);
+
+            tempString = "pet_" + std::to_string(i);
+            tempPet.stage = static_cast<PET_STAGES>(cini_geti(saveINI, tempString.c_str(), "stage", 0));
+            tempPet.state = static_cast<PET_STATES>(cini_geti(saveINI, tempString.c_str(), "state", 0));
+            tempPet.petTint = cini_geti(saveINI, tempString.c_str(), "tint", 0);
+            tempPet.wallpaperId = cini_geti(saveINI, tempString.c_str(), "wallpaper", 0);
+
+            tempPet.attributes[PET_ATTRIBUTES::HUNGER] = cini_getf(saveINI, tempString.c_str(), "hunger", 0.0f);
+            tempPet.attributes[PET_ATTRIBUTES::HAPPINESS] = cini_getf(saveINI, tempString.c_str(), "happiness", 0.0f);
+            tempPet.attributes[PET_ATTRIBUTES::BOREDOM] = cini_getf(saveINI, tempString.c_str(), "boredom", 0.0f);
+            tempPet.attributes[PET_ATTRIBUTES::HYGIENE] = cini_getf(saveINI, tempString.c_str(), "hygiene", 0.0f);
+            tempPet.attributes[PET_ATTRIBUTES::TANKHYGIENE] = cini_getf(saveINI, tempString.c_str(), "tankhygiene", 0.0f);
+            tempPet.attributes[PET_ATTRIBUTES::ILLNESS] = cini_getf(saveINI, tempString.c_str(), "illness", 0.0f);
+            tempPet.attributes[PET_ATTRIBUTES::GROWTH] = cini_getf(saveINI, tempString.c_str(), "growth", 0.0f);
+            tempPet.attributes[PET_ATTRIBUTES::HP] = cini_getf(saveINI, tempString.c_str(), "hp", 0.0f);
+
+            for (int x = 0; x < 5; ++x) {
+                otherTempString = "outfit_" + std::to_string(x) + "_id";
+                tempPet.outfitId[static_cast<OUTFIT_SLOTS>(x)] = cini_geti(saveINI, tempString.c_str(), otherTempString.c_str(), 0);
+                otherTempString = "outfit_" + std::to_string(x) + "_tint";
+                tempPet.outfitTint[static_cast<OUTFIT_SLOTS>(x)] = cini_geti(saveINI, tempString.c_str(), otherTempString.c_str(), 0);
+            }
+            for (int x = 0; x < 5; ++x) {
+                otherTempString = "inventory_outfit_" + std::to_string(x) + "_count";
+                int outfitCount = cini_geti(saveINI, tempString.c_str(), otherTempString.c_str(), 0);
+
+                for (int y = 0; y < outfitCount; ++y) {
+                    otherTempString = "inventory_outfit_" + std::to_string(x) + "_" + std::to_string(y) + "_id";
+                    int outfitId = cini_geti(saveINI, tempString.c_str(), otherTempString.c_str(), 0);
+                    otherTempString = "inventory_outfit_" + std::to_string(x) + "_" + std::to_string(y) + "_tint";
+                    int outfitTint = cini_geti(saveINI, tempString.c_str(), otherTempString.c_str(), 0);
+                    tempPet.outfitInventory[static_cast<OUTFIT_SLOTS>(x)].emplace_back(outfitId, outfitTint);
+                }
+            }
+            for (int x = 0; x < 5; ++x) {
+                otherTempString = "food_" + std::to_string(x);
+                tempPet.foodInventory[static_cast<FOOD_TYPES>(x)] = cini_geti(saveINI, tempString.c_str(), otherTempString.c_str(), 0);
+            }
+
+            PetList.emplace_back(tempPet);
+        }
 
         cini_free(saveINI);
     }
 
     void SaveGame() {
-        HCINI saveINI = cini_create("save.ini");
+        // ini::File file;// = ini::open("./save.ini");
+        mINI::INIFile filePath("save.ini");
+        mINI::INIStructure file;
 
-        cini_free(saveINI);
+        file["user"]["coins"] = std::to_string(coins);
+        file["user"]["active_pet"] = std::to_string(activePet);
+        file["user"]["pet_count"] = std::to_string(PetList.size());
+
+        for (size_t i = 0; i < PetList.size(); ++i) {
+            // PET_STAGES stage = PET_STAGES::EGG;
+            // PET_STATES state = PET_STATES::HEALTHY;
+            // std::unordered_map<PET_ATTRIBUTES, float> attributes = {};
+            // HUNGER,
+            //     HAPPINESS,
+            //     BOREDOM,
+            //     HYGIENE,
+            //     TANKHYGIENE,
+            //     ILLNESS,
+            //     GROWTH,
+            //     SLEEPINESS,
+            //     HP,
+            // std::unordered_map<OUTFIT_SLOTS, int> outfitId = {};
+            // std::unordered_map<OUTFIT_SLOTS, int> outfitTint = {};
+            // std::unordered_map<OUTFIT_SLOTS, std::vector<PetInventoryItem>> outfitInventory;
+            // std::unordered_map<FOOD_TYPES, int> foodInventory;
+            // int petTint = 0;
+            // int wallpaperId = 0;
+            file["pet_" + std::to_string(i)]["stage"] = std::to_string(static_cast<int>(PetList[i].stage));
+            file["pet_" + std::to_string(i)]["state"] = std::to_string(static_cast<int>(PetList[i].state));
+            file["pet_" + std::to_string(i)]["tint"] = std::to_string(static_cast<int>(PetList[i].petTint));
+            file["pet_" + std::to_string(i)]["wallpaper"] = std::to_string(static_cast<int>(PetList[i].wallpaperId));
+            file["pet_" + std::to_string(i)]["hunger"] = std::to_string(static_cast<float>(PetList[i].attributes[PET_ATTRIBUTES::HUNGER]));
+            file["pet_" + std::to_string(i)]["happiness"] = std::to_string(static_cast<float>(PetList[i].attributes[PET_ATTRIBUTES::HAPPINESS]));
+            file["pet_" + std::to_string(i)]["boredom"] = std::to_string(static_cast<float>(PetList[i].attributes[PET_ATTRIBUTES::BOREDOM]));
+            file["pet_" + std::to_string(i)]["hygiene"] = std::to_string(static_cast<float>(PetList[i].attributes[PET_ATTRIBUTES::HYGIENE]));
+            file["pet_" + std::to_string(i)]["tankhygiene"] = std::to_string(static_cast<float>(PetList[i].attributes[PET_ATTRIBUTES::TANKHYGIENE]));
+            file["pet_" + std::to_string(i)]["illness"] = std::to_string(static_cast<float>(PetList[i].attributes[PET_ATTRIBUTES::ILLNESS]));
+            file["pet_" + std::to_string(i)]["growth"] = std::to_string(static_cast<float>(PetList[i].attributes[PET_ATTRIBUTES::GROWTH]));
+            file["pet_" + std::to_string(i)]["hp"] = std::to_string(static_cast<float>(PetList[i].attributes[PET_ATTRIBUTES::HP]));
+            for (int x = 0; x < 5; ++x) {
+                file["pet_" + std::to_string(i)]["outfit_" + std::to_string(x) + "_id"] = std::to_string(static_cast<int>(PetList[i].outfitId[static_cast<OUTFIT_SLOTS>(x)]));
+                file["pet_" + std::to_string(i)]["outfit_" + std::to_string(x) + "_tint"] = std::to_string(static_cast<int>(PetList[i].outfitTint[static_cast<OUTFIT_SLOTS>(x)]));
+            }
+            for (int x = 0; x < 5; ++x) {
+                file["pet_" + std::to_string(i)]["inventory_outfit_" + std::to_string(x) + "_count"] = std::to_string(static_cast<int>(PetList[i].outfitInventory[static_cast<OUTFIT_SLOTS>(x)].size()));
+                for (size_t y = 0; y < PetList[i].outfitInventory[static_cast<OUTFIT_SLOTS>(x)].size(); ++y) {
+                    file["pet_" + std::to_string(i)]["inventory_outfit_" + std::to_string(x) + "_" + std::to_string(y) + "_id"] = std::to_string(static_cast<int>(PetList[i].outfitInventory[static_cast<OUTFIT_SLOTS>(x)][y].outfitId));
+                    file["pet_" + std::to_string(i)]["inventory_outfit_" + std::to_string(x) + "_" + std::to_string(y) + "_tint"] = std::to_string(static_cast<int>(PetList[i].outfitInventory[static_cast<OUTFIT_SLOTS>(x)][y].outfitTint));
+                }
+            }
+            for (int x = 0; x < 5; ++x) {
+                file["pet_" + std::to_string(i)]["food_" + std::to_string(x)] = std::to_string(static_cast<int>(PetList[i].foodInventory[static_cast<FOOD_TYPES>(x)]));
+            }
+        }
+
+
+        // file.write("save.ini");
+        filePath.generate(file);
     }
 
     void AddNewPet() {
