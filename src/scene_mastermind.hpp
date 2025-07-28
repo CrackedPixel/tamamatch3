@@ -3,7 +3,7 @@
 #include "scene.hpp"
 
 struct MastermindLine {
-    int value[4] = { 0, 0, 0, 0 };
+    int value[4] = { -1, -1, -1, -1 };
 };
 
 struct MastermindResult {
@@ -31,6 +31,7 @@ private:
     void SubmitGuess();
 
 private:
+    static constexpr const int GUESS_HISTORY = 3;
     static constexpr const int MAX_GUESS = 10;
     static constexpr const char* TEXTURE_PATH = "textures/mastermind.png";
     const rlRectangle m_eggTexturePos = { 96, 0, 32, 32 };
