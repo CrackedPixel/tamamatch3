@@ -34,14 +34,14 @@ RESOURCES = ./resources
 
 OBJ = $(SRC:.cpp=.o)
 
-CXXFLAGS = -static -static-libgcc -static-libstdc++ -std=c++11 -Wall -Wextra -Oz $(DEFINES) $(INCLUDES)
+CXXFLAGS = -static -static-libgcc -static-libstdc++ -mwindows -std=c++11 -Wall -Wextra -Oz $(DEFINES) $(INCLUDES)
 
-LDFLAGS = -static -static-libgcc -static-libstdc++  $(LIBDIRS) $(LIBS)
+LDFLAGS = -static -static-libgcc -static-libstdc++ -mwindows $(LIBDIRS) $(LIBS)
 
 all: $(OUTPUT)
 
 $(OUTPUT): $(OBJ)
-	$(CXX) $(OBJ) $(LDFLAGS) -o $@
+	$(CXX) $(OBJ) icon.o $(LDFLAGS) -o $@
 	mkdir -p $(PACKAGEPATH)/resources
 	mkdir -p ./builds/desktop/
 	cp -r $(RESOURCES) ./builds/desktop/
