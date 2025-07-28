@@ -29,7 +29,7 @@ src/tamaui.cpp \
 -D PLATFORM_WEB=1 \
 -D USE_EXTERNAL_GLFW=ON \
 --embed-file resources \
--o ./builds/web/tamamatch3.html \
+-o ./builds/web/tamagacha.html \
 --shell-file ./builds/shell.html
 
 exit 0

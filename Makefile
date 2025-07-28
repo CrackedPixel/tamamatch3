@@ -27,16 +27,16 @@ LIBDIRS = -L/home/aj/Documents/raylib/win/release/lib
 
 LIBS = -lraylib -lgdi32 -lwinmm
 
-OUTFILE = tamamatch3.exe
+OUTFILE = tamagacha.exe
 OUTPUT = ./builds/desktop/$(OUTFILE)
 PACKAGEPATH = ./builds/desktop/package
 RESOURCES = ./resources
 
 OBJ = $(SRC:.cpp=.o)
 
-CXXFLAGS = -static -static-libgcc -static-libstdc++ -std=c++11 -Wall -Wextra -Oz -flto $(DEFINES) $(INCLUDES)
+CXXFLAGS = -static -static-libgcc -static-libstdc++ -std=c++11 -Wall -Wextra -Oz $(DEFINES) $(INCLUDES)
 
-LDFLAGS = -static -static-libgcc -static-libstdc++ -flto $(LIBDIRS) $(LIBS)
+LDFLAGS = -static -static-libgcc -static-libstdc++  $(LIBDIRS) $(LIBS)
 
 all: $(OUTPUT)
 
