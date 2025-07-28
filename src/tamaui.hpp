@@ -41,7 +41,8 @@ enum struct INVENTORY_PAGES {
     HATS,
     GLASSES,
     BACK,
-    ACC,
+    ACC1,
+    ACC2,
     COUNT,
 };
 
@@ -74,9 +75,10 @@ private:
     std::vector<TamaIcon> m_icons;
     std::unordered_map<std::string, std::string> m_promptsList;
     Color m_barsColour = LIGHTGRAY;
-    std::vector<const char*> m_inventoryPageTitles = { "Food", "Hats", "Glasses", "Backs", "Acc" };
-    int m_currentInventoryTab = 0;
+    std::vector<const char*> m_inventoryPageTitles = { "Food", "Hats", "Glasses", "Backs", "Acc 1", "Acc 2" };
     INVENTORY_PAGES m_currentInventoryPage = INVENTORY_PAGES::FOOD;
+    int m_currentInventoryTab = 0;
+    int m_currentInventorySlot = 0;
 
 public:
     POPUP_TYPES m_popupMenu = POPUP_TYPES::NONE;

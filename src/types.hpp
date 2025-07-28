@@ -10,6 +10,8 @@
 struct PetInventoryItem {
     int outfitId;
     int outfitTint;
+
+    PetInventoryItem(int outfitId, int outfitTint) : outfitId(outfitId), outfitTint(outfitTint) {}
 };
 
 struct GumballItem {
@@ -25,7 +27,7 @@ struct Pet {
     std::unordered_map<PET_ATTRIBUTES, float> attributes = {};
     std::unordered_map<OUTFIT_SLOTS, int> outfitId = {};
     std::unordered_map<OUTFIT_SLOTS, int> outfitTint = {};
-    std::unordered_map<OUTFIT_SLOTS, std::unordered_map<std::string, PetInventoryItem>> outfitInventory;
+    std::unordered_map<OUTFIT_SLOTS, std::vector<PetInventoryItem>> outfitInventory;
     std::unordered_map<FOOD_TYPES, int> foodInventory;
     int petTint = 0;
     int wallpaperId = 0;
@@ -51,9 +53,19 @@ struct Pet {
                 foodInventory[static_cast<FOOD_TYPES>(newItem.id)] += 1;
             } break;
             case ITEM_TYPES::OUTFIT: {
-                std::string outfitKey = std::to_string(newItem.id) + "_" + std::to_string(newItem.tint);
-                outfitInventory[static_cast<OUTFIT_SLOTS>(newItem.slot)][outfitKey].outfitId = newItem.id;
-                outfitInventory[static_cast<OUTFIT_SLOTS>(newItem.slot)][outfitKey].outfitTint = newItem.tint;
+                bool alreadyHas = false;
+                for (const auto& it : outfitInventory[static_cast<OUTFIT_SLOTS>(newItem.slot)]) {
+                    if (
+                        it.outfitId == newItem.id
+                        && it.outfitTint == newItem.tint
+                    ) {
+                        alreadyHas = true;
+                    }
+                }
+
+                if (!alreadyHas) {
+                    outfitInventory[static_cast<OUTFIT_SLOTS>(newItem.slot)].emplace_back(PetInventoryItem{ newItem.id, newItem.tint });
+                }
             } break;
             default: return;
         }

@@ -58,6 +58,84 @@ void TamaUI::OnUpdate(float deltaTime) {
         }
     }
 
+    if (m_popupMenu == POPUP_TYPES::INVENTORY) {
+        if (m_game->m_inputController.IsButtonUp) {
+            switch (m_currentInventoryTab) {
+                case 0: { // top
+                    m_currentInventoryPage = static_cast<INVENTORY_PAGES>(static_cast<int>(m_currentInventoryPage)-1);
+                    if (m_currentInventoryPage < INVENTORY_PAGES::FOOD) {
+                        m_currentInventoryPage = INVENTORY_PAGES::ACC2;
+                    }
+                    m_currentInventorySlot = 0;
+                } break;
+                case 1: { // bottom
+                    m_currentInventorySlot--;
+                } break;
+            }
+        }
+
+        if (m_game->m_inputController.IsButtonDown) {
+            switch (m_currentInventoryTab) {
+            case 0: { // top
+                m_currentInventoryPage = static_cast<INVENTORY_PAGES>(static_cast<int>(m_currentInventoryPage)+1);
+                if (m_currentInventoryPage == INVENTORY_PAGES::COUNT) {
+                    m_currentInventoryPage = INVENTORY_PAGES::FOOD;
+                }
+                m_currentInventorySlot = 0;
+            } break;
+            case 1: { // bottom
+                m_currentInventorySlot++;
+            } break;
+            }
+        }
+
+        if (m_game->m_inputController.IsButtonSelect) {
+            switch (m_currentInventoryTab) {
+                case 0: { // top
+                    m_currentInventoryTab = 1;
+                    return;
+                } break;
+                case 1: { // bottom, item selection
+                    switch (m_currentInventoryPage) {
+                        case INVENTORY_PAGES::FOOD: {
+                            if (m_game->m_gameData.GetCurrentPetFoodCount(static_cast<FOOD_TYPES>(m_currentInventorySlot)) > 0) {
+                                m_game->m_gameData.activeCursor = static_cast<CURSOR_TYPES>(static_cast<int>(CURSOR_TYPES::FOOD1) + m_currentInventorySlot);
+                                m_popupMenu = POPUP_TYPES::NONE;
+                            }
+                        } break;
+                        case INVENTORY_PAGES::HATS: {
+                            const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::HAT;
+                            auto& currentPet = m_game->m_gameData.GetCurrentPet();
+
+                            if (m_currentInventorySlot == 0) {
+                                currentPet.outfitId[viewSlot] = 0;
+                                return;
+                            }
+
+                            auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+                            currentPet.outfitId[viewSlot] = selectedItem.outfitId;
+                            currentPet.outfitTint[viewSlot] = selectedItem.outfitTint;
+                        } break;
+                    }
+                    return;
+                };
+            }
+        }
+
+        if (m_game->m_inputController.IsButtonBack) {
+            switch (m_currentInventoryTab) {
+                case 0: { // top
+                    m_popupMenu = POPUP_TYPES::NONE;
+                    return;
+                } break;
+                case 1: { // bottom, item selection
+                    m_currentInventoryTab = 0;
+                    return;
+                };
+            }
+        }
+    }
+
     if (m_game->m_inputController.IsButtonSelect) {
         switch (m_popupMenu) {
             case POPUP_TYPES::STATS: {
@@ -66,11 +144,6 @@ void TamaUI::OnUpdate(float deltaTime) {
             } break;
             case POPUP_TYPES::PAUSE_MENU: {
 
-            } break;
-            case POPUP_TYPES::INVENTORY: {
-                // TODO: inventory menu management
-                m_popupMenu = POPUP_TYPES::NONE;
-                return;
             } break;
             case POPUP_TYPES::EVOLVE: {
                 m_game->m_gameData.EvolveCurrentPet();
@@ -99,7 +172,7 @@ void TamaUI::OnUpdate(float deltaTime) {
             // STORE,
             // DISPLAY,
 
-        //     petData.attributes[PET_ATTRIBUTES::HUNGER] += GetRandomValue(10, 20) * multiplySpeed;
+        // petData.attributes[PET_ATTRIBUTES::HUNGER] += GetRandomValue(10, 20) * multiplySpeed;
         // petData.attributes[PET_ATTRIBUTES::HAPPINESS] -= GetRandomValue(10, 26) * multiplySpeed;
         // petData.attributes[PET_ATTRIBUTES::BOREDOM] += GetRandomValue(15, 40) * multiplySpeed;
         // petData.attributes[PET_ATTRIBUTES::HYGIENE] -= GetRandomValue(15, 50) * multiplySpeed;
@@ -151,15 +224,16 @@ void TamaUI::OnUpdate(float deltaTime) {
                 }
             } break;
 
-
             case ICON_ACTION_TYPE::CAMERA: {
                 m_hideUI = !m_hideUI;
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_game->m_audioManager->PlaySFX("uiselect");
             } break;
             case ICON_ACTION_TYPE::INVENTORY: {
-                // TODO: open inventory
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                m_currentInventoryPage = INVENTORY_PAGES::FOOD;
+                m_currentInventorySlot = 0;
+                m_currentInventoryTab = 0;
                 m_popupMenu = POPUP_TYPES::INVENTORY;
                 m_game->m_audioManager->PlaySFX("uiselect");
             } break;
@@ -253,6 +327,18 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
                     m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TOY, mousePosition);
                     m_game->m_audioManager->PlaySFX("boop", 1, 2);
                 } break;
+
+                case CURSOR_TYPES::FOOD1:
+                case CURSOR_TYPES::FOOD2:
+                case CURSOR_TYPES::FOOD3:
+                case CURSOR_TYPES::FOOD4:
+                case CURSOR_TYPES::FOOD5: {
+                    petData.attributes[PET_ATTRIBUTES::HUNGER] -= 0.45f;
+                    m_sceneTama->GetPetAI()->SpawnNewFoodSpot(m_game->m_gameData.activeCursor, mousePosition);
+                    m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                    m_game->m_audioManager->PlaySFX("nom", 1, 2);
+                    return true;
+                }
                 default: return false;
             }
 
@@ -329,9 +415,11 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             m_game->m_audioManager->PlaySFX("uiselect");
         } break;
         case ICON_ACTION_TYPE::INVENTORY: {
-            // TODO: open inventory
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            m_currentInventoryPage = INVENTORY_PAGES::FOOD;
+            m_currentInventorySlot = 0;
+            m_currentInventoryTab = 0;
             m_popupMenu = POPUP_TYPES::INVENTORY;
             m_game->m_audioManager->PlaySFX("uiselect");
         } break;
@@ -405,24 +493,168 @@ void TamaUI::OnRenderUI() {
         rlDrawText("<", 192 + 20, 250, 30, drawColour);
         rlDrawText(">", 192 + 256 - 30, 250, 30, drawColour);
         //  { "Food", "Hats", "Glasses", "Backs", "Acc" };
-        drawColour = m_currentInventoryTab == 1 ? WHITE : GRAY;
         switch (m_currentInventoryPage) {
             case INVENTORY_PAGES::FOOD: {
-                // rlDrawText("FOOD", 192 + 50, 140, 30, BLACK);
+                if (m_currentInventorySlot >= static_cast<int>(FOOD_TYPES::COUNT)) {
+                    m_currentInventorySlot = 0;
+                }
+                if (m_currentInventorySlot < 0) {
+                    m_currentInventorySlot = static_cast<int>(FOOD_TYPES::COUNT)-1;
+                }
+                rlDrawText(TextFormat("x%d", m_game->m_gameData.GetCurrentPetFoodCount(static_cast<FOOD_TYPES>(m_currentInventorySlot))), 320 - (MeasureText(TextFormat("x%d", m_game->m_gameData.GetCurrentPetFoodCount(static_cast<FOOD_TYPES>(m_currentInventorySlot))), 30) * 0.5f), 128+256-60, 30, drawColour);
                 Texture& foodTexture = m_game->m_resourceManager.GetTexture("textures/food.png", 0);
-                DrawTexturePro(foodTexture, { 0, 0, 32, 32 }, { 256, 200, 128, 128 }, { 0, 0 }, 0.0f, drawColour);
+                drawColour = m_currentInventoryTab == 1 ? WHITE : GRAY;
+                DrawTexturePro(foodTexture, m_game->m_gameData.FoodList[static_cast<FOOD_TYPES>(m_currentInventorySlot)], { 256, 200, 128, 128 }, { 0, 0 }, 0.0f, drawColour);
             } break;
             case INVENTORY_PAGES::HATS: {
+                const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::HAT;
+                auto& currentPet = m_game->m_gameData.GetCurrentPet();
+                if (static_cast<int>(currentPet.outfitInventory[viewSlot].size() == 0)) {
+                    m_currentInventorySlot = 0;
+                } else {
+                    if (m_currentInventorySlot >= static_cast<int>(currentPet.outfitInventory[viewSlot].size())+1) {
+                        m_currentInventorySlot = 0;
+                    }
+                    if (m_currentInventorySlot < 0) {
+                        m_currentInventorySlot = static_cast<int>(currentPet.outfitInventory[viewSlot].size());
+                    }
+                }
 
+                if (m_currentInventorySlot == 0) {
+                    rlDrawText("None", 320 - (MeasureText("None", 30) * 0.5f), 250, 30, drawColour);
+                } else {
+                    auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+
+                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId-1];
+                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
+                    if (outfitData.isColourable) {
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint-1];
+                    } else {
+                        drawColour = WHITE;
+                    }
+                    drawColour = m_currentInventoryTab == 1 ? drawColour : ColorTint(drawColour, GRAY);
+                    DrawTexturePro(outfitTexture, outfitData.texturePosition, { 256, 200, 128, 128 }, { 0, 0 }, 0.0f, drawColour);
+                }
             } break;
             case INVENTORY_PAGES::GLASSES: {
+                const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::GLASSES;
+                auto& currentPet = m_game->m_gameData.GetCurrentPet();
+                if (static_cast<int>(currentPet.outfitInventory[viewSlot].size() == 0)) {
+                    m_currentInventorySlot = 0;
+                } else {
+                    if (m_currentInventorySlot >= static_cast<int>(currentPet.outfitInventory[viewSlot].size())+1) {
+                        m_currentInventorySlot = 0;
+                    }
+                    if (m_currentInventorySlot < 0) {
+                        m_currentInventorySlot = static_cast<int>(currentPet.outfitInventory[viewSlot].size());
+                    }
+                }
 
+                if (m_currentInventorySlot == 0) {
+                    rlDrawText("None", 320 - (MeasureText("None", 30) * 0.5f), 250, 30, drawColour);
+                } else {
+                    auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+
+                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId-1];
+                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
+                    if (outfitData.isColourable) {
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint];
+                    } else {
+                        drawColour = WHITE;
+                    }
+                    drawColour = m_currentInventoryTab == 1 ? drawColour : ColorTint(drawColour, GRAY);
+                    DrawTexturePro(outfitTexture, outfitData.texturePosition, { 256, 200, 128, 128 }, { 0, 0 }, 0.0f, drawColour);
+                }
             } break;
             case INVENTORY_PAGES::BACK: {
+                const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::BACK;
+                auto& currentPet = m_game->m_gameData.GetCurrentPet();
+                if (static_cast<int>(currentPet.outfitInventory[viewSlot].size() == 0)) {
+                    m_currentInventorySlot = 0;
+                } else {
+                    if (m_currentInventorySlot >= static_cast<int>(currentPet.outfitInventory[viewSlot].size())+1) {
+                        m_currentInventorySlot = 0;
+                    }
+                    if (m_currentInventorySlot < 0) {
+                        m_currentInventorySlot = static_cast<int>(currentPet.outfitInventory[viewSlot].size());
+                    }
+                }
 
+                if (m_currentInventorySlot == 0) {
+                    rlDrawText("None", 320 - (MeasureText("None", 30) * 0.5f), 250, 30, drawColour);
+                } else {
+                    auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+
+                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId-1];
+                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
+                    if (outfitData.isColourable) {
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint];
+                    } else {
+                        drawColour = WHITE;
+                    }
+                    drawColour = m_currentInventoryTab == 1 ? drawColour : ColorTint(drawColour, GRAY);
+                    DrawTexturePro(outfitTexture, outfitData.texturePosition, { 256, 200, 128, 128 }, { 0, 0 }, 0.0f, drawColour);
+                }
             } break;
-            case INVENTORY_PAGES::ACC: {
+            case INVENTORY_PAGES::ACC1: {
+                const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::ACC1;
+                auto& currentPet = m_game->m_gameData.GetCurrentPet();
+                if (static_cast<int>(currentPet.outfitInventory[viewSlot].size() == 0)) {
+                    m_currentInventorySlot = 0;
+                } else {
+                    if (m_currentInventorySlot >= static_cast<int>(currentPet.outfitInventory[viewSlot].size())+1) {
+                        m_currentInventorySlot = 0;
+                    }
+                    if (m_currentInventorySlot < 0) {
+                        m_currentInventorySlot = static_cast<int>(currentPet.outfitInventory[viewSlot].size());
+                    }
+                }
 
+                if (m_currentInventorySlot == 0) {
+                    rlDrawText("None", 320 - (MeasureText("None", 30) * 0.5f), 250, 30, drawColour);
+                } else {
+                    auto& selectedItem = currentPet.outfitInventory[OUTFIT_SLOTS::ACC1][m_currentInventorySlot-1];
+
+                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId-1];
+                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
+                    if (outfitData.isColourable) {
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint];
+                    } else {
+                        drawColour = WHITE;
+                    }
+                    drawColour = m_currentInventoryTab == 1 ? drawColour : ColorTint(drawColour, GRAY);
+                    DrawTexturePro(outfitTexture, outfitData.texturePosition, { 256, 200, 128, 128 }, { 0, 0 }, 0.0f, drawColour);
+                }
+            } break;
+            case INVENTORY_PAGES::ACC2: {
+                const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::ACC2;
+                auto& currentPet = m_game->m_gameData.GetCurrentPet();
+                if (static_cast<int>(currentPet.outfitInventory[viewSlot].size() == 0)) {
+                    m_currentInventorySlot = 0;
+                } else {
+                    if (m_currentInventorySlot >= static_cast<int>(currentPet.outfitInventory[viewSlot].size())+1) {
+                        m_currentInventorySlot = 0;
+                    }
+                    if (m_currentInventorySlot < 0) {
+                        m_currentInventorySlot = static_cast<int>(currentPet.outfitInventory[viewSlot].size());
+                    }
+                }
+
+                if (m_currentInventorySlot == 0) {
+                    rlDrawText("None", 320 - (MeasureText("None", 30) * 0.5f), 250, 30, drawColour);
+                } else {
+                    auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+
+                    auto& outfitData = m_game->m_gameData.OutfitList[OUTFIT_SLOTS::ACC1][selectedItem.outfitId-1];
+                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
+                    if (outfitData.isColourable) {
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint];
+                    } else {
+                        drawColour = WHITE;
+                    }
+                    drawColour = m_currentInventoryTab == 1 ? drawColour : ColorTint(drawColour, GRAY);
+                    DrawTexturePro(outfitTexture, outfitData.texturePosition, { 256, 200, 128, 128 }, { 0, 0 }, 0.0f, drawColour);
+                }
             } break;
             default: break;
         }

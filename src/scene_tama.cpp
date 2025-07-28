@@ -17,7 +17,7 @@ void SceneTama::OnTerminate(){
 
 void SceneTama::OnUpdate(float deltaTime){
     if (m_game->m_inputController.IsButtonBack) {
-        if (m_tamaui.IsUIShown()) {
+        if (m_tamaui.IsUIShown() && m_tamaui.m_popupMenu == POPUP_TYPES::NONE) {
             m_game->m_sceneManager.OnChangeScene("splash");
             return;
         }
@@ -55,7 +55,7 @@ void SceneTama::OnRender(){
 }
 
 void SceneTama::OnRenderUI(){
-    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png", 0);
+    Texture& cursorTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentCursorPath());//"textures/cursors.png", 0);
 
     m_tamapetai.OnRenderUI();
     m_tamaui.OnRenderUI();

@@ -23,6 +23,16 @@ void TamaPetAI::OnUpdate(float deltaTime) {
             }
         }
     }
+    if (m_foodSpotList.size() > 0) {
+        for (int i = m_foodSpotList.size()-1; i >= 0; --i) {
+            m_foodSpotList[i].currentTime += deltaTime;
+
+            if (m_foodSpotList[i].currentTime >= 1.0f) {
+                m_foodSpotList.erase(m_foodSpotList.begin() + i);
+                continue;
+            }
+        }
+    }
 
     if (m_stinkySpotList.size() > 0) {
         for (int i = m_stinkySpotList.size()-1; i >= 0; --i) {
@@ -290,6 +300,11 @@ void TamaPetAI::OnRenderUI() {
     Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png", 0);
     for (const auto& it : m_interactSpotList) {
         DrawTexturePro(cursorTexture, m_game->m_gameData.Cursors[it.cursorId], { it.position.x, it.position.y - (it.currentTime * 64.0f), 32, 32 }, { 0, 0 }, 0.0f, ColorAlpha(WHITE, 1.0f - it.currentTime));
+    }
+
+    Texture& foodTexture = m_game->m_resourceManager.GetTexture("textures/food.png", 0);
+    for (const auto& it : m_foodSpotList) {
+        DrawTexturePro(foodTexture, m_game->m_gameData.FoodList[it.foodId], { it.position.x, it.position.y - (it.currentTime * 64.0f), 32, 32 }, { 0, 0 }, 0.0f, ColorAlpha(WHITE, 1.0f - it.currentTime));
     }
 
     Texture& poopTexture = m_game->m_resourceManager.GetTexture("textures/misc.png", 0);
@@ -597,6 +612,14 @@ void TamaPetAI::SetNewPetTarget(Vector2 destination) {
 void TamaPetAI::SpawnNewInteractSpot(CURSOR_TYPES cursorId, Vector2 position) {
     position.x += GetRandomValue(-10, 10);
     m_interactSpotList.emplace_back(InteractSpot{ cursorId, 0.0f, position });
+}
+
+void TamaPetAI::SpawnNewFoodSpot(CURSOR_TYPES cursorId, Vector2 position) {
+    position.x += GetRandomValue(-10, 10);
+    FOOD_TYPES foodSlot = static_cast<FOOD_TYPES>(static_cast<int>(cursorId) - static_cast<int>(CURSOR_TYPES::FOOD1));
+    auto& currentPet = m_game->m_gameData.GetCurrentPet();
+    currentPet.foodInventory[foodSlot] -= 1;
+    m_foodSpotList.emplace_back(FoodSpot{ foodSlot, 0.0f, position });
 }
 
 void TamaPetAI::SpawnNewStinkySpot(Vector2 position) {

@@ -23,6 +23,14 @@ struct InteractSpot {
     InteractSpot(CURSOR_TYPES cursorId, float currentTime, Vector2 position) : cursorId(cursorId), currentTime(currentTime), position(position) {}
 };
 
+struct FoodSpot {
+    FOOD_TYPES foodId = FOOD_TYPES::BUG1;
+    float currentTime = 0.0f;
+    Vector2 position = {};
+
+    FoodSpot(FOOD_TYPES foodId, float currentTime, Vector2 position) : foodId(foodId), currentTime(currentTime), position(position) {}
+};
+
 struct StinkySpot {
     float currentTime = 0.0f;
     Vector2 position = {};
@@ -44,6 +52,7 @@ struct TamaPetAI {
 public:
     rlRectangle GetPetPosition();
     void SpawnNewInteractSpot(CURSOR_TYPES cursorId, Vector2 position);
+    void SpawnNewFoodSpot(CURSOR_TYPES cursorId, Vector2 position);
     void SpawnNewStinkySpot(Vector2 position);
     void SpawnNewPoopPile(rlRectangle position);
     std::vector<PoopPile>& GetPoopPileList() {
@@ -77,6 +86,7 @@ private:
     Vector2 m_petTarget = m_petPosition;
     rlRectangle m_petBounds = { 32.0f, 100.0f, 640 - 32, 480 - 100 - 64 };
     std::vector<InteractSpot> m_interactSpotList = {};
+    std::vector<FoodSpot> m_foodSpotList = {};
     std::vector<PoopPile> m_poopPileList = {};
     std::vector<StinkySpot> m_stinkySpotList = {};
 };

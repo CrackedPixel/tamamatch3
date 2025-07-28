@@ -46,7 +46,11 @@ enum struct OUTFIT_SLOTS {
 enum struct CURSOR_TYPES {
     NORMAL,
     INVALID,
-    FOOD,
+    FOOD1,
+    FOOD2,
+    FOOD3,
+    FOOD4,
+    FOOD5,
     SAD,
     DIRTY,
     TANKDIRTY,
@@ -70,4 +74,5 @@ enum struct FOOD_TYPES {
     BUG3,
     BUG4,
     BUG5,
+    COUNT,
 };

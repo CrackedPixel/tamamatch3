@@ -23,6 +23,9 @@ public:
         return & m_tamaui;
     }
 
+public:
+
+
 private:
     TamaUI m_tamaui;
     TamaPetAI m_tamapetai;

@@ -23,6 +23,7 @@ struct GlobalGameData {
     std::unordered_map<PET_STATES, rlRectangle> PetFaces = {};
     std::vector<std::string> WallpaperList;
     std::unordered_map<PET_STAGES, float> growthSpeeds = {};
+    std::unordered_map<FOOD_TYPES, rlRectangle> FoodList = {};
 
     HCINI iniFile;
 
@@ -42,6 +43,11 @@ struct GlobalGameData {
         const int outfitTintCount = INICount("outfit_tint");
         for (int i = 0; i < outfitTintCount; ++i) {
             OutfitTintList.emplace_back(Utils::ColorFromString(INIString("outfit_tint", std::to_string(i+1).c_str(), "0 0 0")));
+        }
+
+        const int foodListCount = INICount("food");
+        for (int i = 0; i < foodListCount; ++i) {
+            FoodList.emplace(static_cast<FOOD_TYPES>(i), Utils::RectFromString(INIString("food", std::to_string(i+1).c_str(), "0 0 32 32")));
         }
 
         // std::string texturePath = "";
@@ -201,9 +207,12 @@ struct GlobalGameData {
         // int tint = 0;
         // int slot = 0;
         PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 9, 17, static_cast<int>(OUTFIT_SLOTS::GLASSES) });
+
+        PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::FOOD, 0, 0, 0 });
         // PetList[activePet].outfitId[OUTFIT_SLOTS::GLASSES] = 9;
         // PetList[activePet].outfitTint[OUTFIT_SLOTS::GLASSES] = 17;
 
+        PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 6, 22, static_cast<int>(OUTFIT_SLOTS::HAT) });
         // PetList[activePet].outfitId[OUTFIT_SLOTS::HAT] = 6;
         // PetList[activePet].outfitTint[OUTFIT_SLOTS::HAT] = 22;
 
@@ -246,12 +255,44 @@ struct GlobalGameData {
         }
     }
 
-    rlRectangle& GetCurrentCursorCoords() {
-        if (Cursors.find(activeCursor) == Cursors.end()) {
-            return Cursors[CURSOR_TYPES::NORMAL];
+    const char* GetCurrentCursorPath() {
+        switch (activeCursor) {
+            case CURSOR_TYPES::FOOD1:
+            case CURSOR_TYPES::FOOD2:
+            case CURSOR_TYPES::FOOD3:
+            case CURSOR_TYPES::FOOD4:
+            case CURSOR_TYPES::FOOD5: {
+                return "textures/food.png";
+            } break;
+            default: return "textures/cursors.png";
         }
+    }
 
-        return Cursors[activeCursor];
+    rlRectangle& GetCurrentCursorCoords() {
+        switch (activeCursor) {
+            case CURSOR_TYPES::FOOD1: {
+                return FoodList[FOOD_TYPES::BUG1];
+            } break;
+            case CURSOR_TYPES::FOOD2: {
+                return FoodList[FOOD_TYPES::BUG2];
+            } break;
+            case CURSOR_TYPES::FOOD3: {
+                return FoodList[FOOD_TYPES::BUG3];
+            } break;
+            case CURSOR_TYPES::FOOD4: {
+                return FoodList[FOOD_TYPES::BUG4];
+            } break;
+            case CURSOR_TYPES::FOOD5: {
+                return FoodList[FOOD_TYPES::BUG5];
+            } break;
+            default: {
+                if (Cursors.find(activeCursor) == Cursors.end()) {
+                    return Cursors[CURSOR_TYPES::NORMAL];
+                }
+
+                return Cursors[activeCursor];
+            }
+        }
     }
 
     Pet& GetCurrentPet() {
@@ -260,6 +301,14 @@ struct GlobalGameData {
 
     float& GetCurrentPetGrowthTime() {
         return growthSpeeds[PetList[activePet].stage];
+    }
+
+    int GetCurrentPetFoodCount(FOOD_TYPES foodType) {
+        if (PetList[activePet].foodInventory.find(foodType) == PetList[activePet].foodInventory.end()) {
+            return 0;
+        }
+
+        return PetList[activePet].foodInventory[foodType];
     }
 
     rlRectangle& GetCurrentFace() {
@@ -279,6 +328,7 @@ struct GlobalGameData {
             case PET_STAGES::TODDLER: return "textures/tadpole2.png";
             case PET_STAGES::ADOLESCENT: return "textures/tadpole3.png";
             case PET_STAGES::ADULT: return "textures/tadpole4.png";
+            default: return "";
         }
     }
 
