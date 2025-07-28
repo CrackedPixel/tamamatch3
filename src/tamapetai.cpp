@@ -114,7 +114,7 @@ void TamaPetAI::OnRender() {
     if (petData.stage == PET_STAGES::EGG) {
         DrawTexturePro(
             petTexture,
-            { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+            { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), 0.0f, m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
             { m_petPosition.x, m_petPosition.y, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
             { 0.0f, 0.0f },
             0.0f,
@@ -152,7 +152,7 @@ void TamaPetAI::OnRender() {
 
         DrawTexturePro(
            petTexture,
-           { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), -m_game->m_gameData.GetCurrentPetHeight() },
+           { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), 0.0f, m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), -m_game->m_gameData.GetCurrentPetHeight() },
            { m_petPosition.x, m_petPosition.y, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
            { 0.0f, 0.0f },
            0.0f,
@@ -214,7 +214,7 @@ void TamaPetAI::OnRender() {
 
         DrawTexturePro(
             petTexture,
-            { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), GetOffsetFromState(), m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
+            { (m_animationStep % MAX_ANIMATION_STEPS) * m_game->m_gameData.GetCurrentPetWidth(), 0.0f, m_petDirection * m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
             { m_petPosition.x, m_petPosition.y, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() },
             { 0.0f, 0.0f },
             0.0f,
@@ -337,10 +337,6 @@ void TamaPetAI::OnRenderUI() {
 
 rlRectangle TamaPetAI::GetPetPosition() {
     return { m_petPosition.x, m_petPosition.y, m_game->m_gameData.GetCurrentPetWidth(), m_game->m_gameData.GetCurrentPetHeight() };
-}
-
-float TamaPetAI::GetOffsetFromState() {
-    return 0.0f;
 }
 
 void TamaPetAI::ProcessAI() {

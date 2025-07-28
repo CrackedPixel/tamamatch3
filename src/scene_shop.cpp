@@ -70,7 +70,7 @@ void SceneShop::OnUpdate(float deltaTime) {
                         } break;
                     }
 
-                        m_wonItem.id = GetRandomValue(1, m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(m_wonItem.slot)].size());
+                    m_wonItem.id = GetRandomValue(1, m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(m_wonItem.slot)].size());
 
                     if (m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(m_wonItem.slot)][m_wonItem.id-1].isColourable) {
                         m_wonItem.tint = GetRandomValue(1, m_game->m_gameData.OutfitTintList.size());
@@ -106,6 +106,7 @@ void SceneShop::OnRender() {
 
 void SceneShop::OnRenderUI() {
     Texture& miscTexture = m_game->m_resourceManager.GetTexture("textures/misc.png");
+    Texture& cursorTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentCursorPath(), 0);
 
     DrawTexturePro(miscTexture, { 0, 32, 64, 64 }, { 20, 10, 64, 64 }, { 0, 0 }, 0.0f, WHITE);
     DrawTexturePro(miscTexture, { 64, 32, 64, 64 }, { 20, 80, 64, 64 }, { 0, 0 }, 0.0f, WHITE);
@@ -146,5 +147,29 @@ void SceneShop::OnRenderUI() {
             }
         } break;
         default: break;
+    }
+
+
+    Vector2 mousePosition = GetMousePosition();
+    mousePosition.x -= 184;
+    mousePosition.y -= 174;
+
+    if (CheckCollisionPointRec(mousePosition, { 0, 0, 640, 480 })) {
+#ifdef PLATFORM_DESKTOP
+        rlHideCursor();
+#endif
+
+        DrawTexturePro(
+            cursorTexture,
+            m_game->m_gameData.GetCurrentCursorCoords(),
+            { mousePosition.x, mousePosition.y, 32, 32 },
+            { 0, 0 },
+            0.0f,
+            WHITE
+            );
+    } else {
+#ifdef PLATFORM_DESKTOP
+        rlShowCursor();
+#endif
     }
 }

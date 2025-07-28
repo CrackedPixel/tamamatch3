@@ -300,9 +300,9 @@ void TamaUI::OnUpdate(float deltaTime) {
                 m_game->ChangeScene("shop", true, 0.5f);
             } break;
             case ICON_ACTION_TYPE::DISPLAY: {
-                // TODO: open display
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_game->m_audioManager->PlaySFX("uiselect");
+                m_game->ChangeScene("collection", true, 0.5f);
             } break;
 
         }
@@ -432,7 +432,6 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
     // mouse
     switch (m_icons[m_hoverId].actionType) {
         case ICON_ACTION_TYPE::STATS: {
-            // TODO: open stats
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_popupMenu = POPUP_TYPES::STATS;
@@ -488,10 +487,10 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             m_game->ChangeScene("shop", true, 0.5f);
         } break;
         case ICON_ACTION_TYPE::DISPLAY: {
-            // TODO: open display
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_game->m_audioManager->PlaySFX("uiselect");
+            m_game->ChangeScene("collection", true, 0.5f);
         } break;
     }
 

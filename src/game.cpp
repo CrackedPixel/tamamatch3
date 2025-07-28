@@ -12,6 +12,7 @@
 #include "scene_credits.hpp"
 #include "scene_tama.hpp"
 #include "scene_shop.hpp"
+#include "scene_collection.hpp"
 
 #ifdef PLATFORM_WEB
 Game* Game::s_instance = nullptr;
@@ -46,9 +47,10 @@ void Game::OnInitialize() {
     m_sceneManager.OnAddScene("credits", new SceneCredits(this));
     m_sceneManager.OnAddScene("tama", new SceneTama(this));
     m_sceneManager.OnAddScene("shop", new SceneShop(this));
+    m_sceneManager.OnAddScene("collection", new SceneCollection(this));
 #ifdef DEBUG_BUILD
     m_gameData.NewGame();
-    m_sceneManager.OnChangeScene("shop");
+    m_sceneManager.OnChangeScene("tama");
 #else
     m_sceneManager.OnChangeScene("splash");
 #endif
