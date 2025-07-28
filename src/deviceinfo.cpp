@@ -54,8 +54,8 @@ bool DeviceInfo::OnHandleInput() {
 }
 
 void DeviceInfo::OnRender() {
-    Texture& deviceTexture = m_game->m_resourceManager.GetTexture("textures/device.png");
-    Texture& deviceButtonTexture = m_game->m_resourceManager.GetTexture("textures/device_button.png");
+    Texture& deviceTexture = m_game->m_resourceManager.GetTexture("textures/device.png", 0);
+    Texture& deviceButtonTexture = m_game->m_resourceManager.GetTexture("textures/device_button.png", 0);
     Font& deviceFont = m_game->m_resourceManager.GetFont("fonts/symbola.ttf", m_deviceButtonFontSize, "🡇🡅➕⮌");
 
     DrawTexture(deviceTexture, 0, 0, WHITE);

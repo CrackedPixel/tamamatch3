@@ -44,9 +44,11 @@ void SceneMenu::OnUpdate(float deltaTime) {
             case 2: { // credits
                 m_game->ChangeScene("credits", true, 1.0f);
             } break;
+#ifdef PLATFORM_DESKTOP
             case 3: { // quit
                 m_game->Quit();
             } break;
+#endif
         }
 
         return;
