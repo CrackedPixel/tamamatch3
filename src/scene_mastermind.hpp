@@ -34,6 +34,7 @@ private:
     static constexpr const int GUESS_HISTORY = 3;
     static constexpr const int MAX_GUESS = 10;
     static constexpr const char* TEXTURE_PATH = "textures/mastermind.png";
+    static constexpr const int GUESS_START_Y = 300;
     const rlRectangle m_eggTexturePos = { 96, 0, 32, 32 };
     const rlRectangle m_angledPadTexturePos = { 0, 0, 70, 26 };
     const rlRectangle m_lilyTexturePos = { 64, 32, 64, 64 };
@@ -44,4 +45,5 @@ private:
     Color m_guessColours[5] = { { 229, 181, 160, 255 }, { 203, 253, 138, 255 }, { 187, 250, 254, 255 }, { 245, 247, 165, 255 }, { 203, 203, 203, 255 } };
     int m_currentGuess = 0;
     int m_selectionId = 0;
+    int m_winningCoins = 0;
 };

@@ -8,6 +8,9 @@ void SceneMastermind::OnInitialize() {
 #else
     m_game->m_transitionManager.FadeIn(0.5f);
 #endif
+
+    m_winningCoins = m_game->m_gameData.INIInt("mastermind", "win", 50);
+
     m_state = MASTERMIND_STATES::NEW;
 }
 
@@ -118,13 +121,32 @@ void SceneMastermind::OnRender() {
         case MASTERMIND_STATES::STARTED: {
             Texture& mastermindTexture = m_game->m_resourceManager.GetTexture(TEXTURE_PATH, 0);
 
-            rlDrawText(TextFormat("%d", m_currentGuess+1), 320 - (140.0f + 20) - 10 - (MeasureText(TextFormat("%d", m_currentGuess+1), 30)), 400.0f, 30, BLACK);
+            rlDrawText("Right colour", 240, 355, 20, BLACK);
+            DrawTexturePro(
+                mastermindTexture,
+                m_lilyTexturePos,
+                { 200, 350, m_lilyTexturePos.width * 0.5f, m_lilyTexturePos.height * 0.5f },
+                { 0, 0 },
+                0.0f,
+                GRAY
+            );
+            rlDrawText("Right colour + spot", 240, 405, 20, BLACK);
+            DrawTexturePro(
+                mastermindTexture,
+                m_lilyTexturePos,
+                { 200, 400, m_lilyTexturePos.width * 0.5f, m_lilyTexturePos.height * 0.5f },
+                { 0, 0 },
+                0.0f,
+                WHITE
+            );
+
+            rlDrawText(TextFormat("%d", m_currentGuess+1), 320 - (140.0f + 20) - 10 - (MeasureText(TextFormat("%d", m_currentGuess+1), 30)), GUESS_START_Y, 30, BLACK);
 
             for (int i = 0; i < 4; ++i) {
                 DrawTexturePro(
                     mastermindTexture,
                     m_angledPadTexturePos,
-                    { 320 - (140.0f + 20) + (i * (m_angledPadTexturePos.width + 10)), 400.0f, m_angledPadTexturePos.width, m_angledPadTexturePos.height },
+                    { 320 - (140.0f + 20) + (i * (m_angledPadTexturePos.width + 10)), GUESS_START_Y, m_angledPadTexturePos.width, m_angledPadTexturePos.height },
                     { 0, 0 },
                     0.0f,
                     WHITE
@@ -134,7 +156,7 @@ void SceneMastermind::OnRender() {
                     DrawTexturePro(
                         mastermindTexture,
                         m_eggTexturePos,
-                        { 320 - (140.0f + 20) + (i * (m_angledPadTexturePos.width + 10)) + 20, 400.0f - 10, m_eggTexturePos.width, m_eggTexturePos.height },
+                        { 320 - (140.0f + 20) + (i * (m_angledPadTexturePos.width + 10)) + 20, GUESS_START_Y - 10, m_eggTexturePos.width, m_eggTexturePos.height },
                         { 0, 0 },
                         0.0f,
                         m_guessColours[m_previousGuesses[m_currentGuess].value[i]]
@@ -177,10 +199,10 @@ void SceneMastermind::OnRender() {
                     DrawTexturePro(
                         mastermindTexture,
                         m_lilyTexturePos,
-                        { 320 - (140.0f + 20) + (5 * (m_angledPadTexturePos.width + 10)) + 20 - offsetX, 50.0f - 10 + offsetY, m_lilyTexturePos.width, m_lilyTexturePos.height },
+                        { 320 - (140.0f + 20) + (4 * (m_angledPadTexturePos.width + 10)) + 20 - offsetX + (i * (m_lilyTexturePos.width * 0.5f)), 50.0f - 10 + offsetY, m_lilyTexturePos.width * 0.5f, m_lilyTexturePos.height * 0.5f },
                         { 0, 0 },
                         0.0f,
-                        i < m_previousResults[guessId].rightColourAndSpot ? WHITE : RED
+                        i < m_previousResults[guessId].rightColourAndSpot ? WHITE : GRAY
                     );
                 }
 
@@ -189,11 +211,17 @@ void SceneMastermind::OnRender() {
             return;
         } break;
         case MASTERMIND_STATES::WIN: {
-            rlDrawText("WIN", 20, 20, 50, RED);
+            DrawRectangleRounded({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, { 111, 180, 68, 255 });
+            DrawRectangleRoundedLinesEx({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, 3, BLACK);
+            rlDrawText("WINNER!", 320 - (MeasureText("WINNER!", 20) * 0.5f), 150, 20, BLACK);
+            rlDrawText(TextFormat("You have won %d coins", m_winningCoins), 320 - (MeasureText(TextFormat("You have won %d coins", m_winningCoins), 20) * 0.5f), 180, 20, BLACK);
             return;
         } break;
         case MASTERMIND_STATES::LOSE: {
-            rlDrawText("LOSE", 20, 20, 50, RED);
+            DrawRectangleRounded({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, { 111, 180, 68, 255 });
+            DrawRectangleRoundedLinesEx({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, 3, BLACK);
+            rlDrawText("LOSE!", 320 - (MeasureText("LOSE!", 20) * 0.5f), 150, 20, BLACK);
+            rlDrawText("Press to try again", 320 - (MeasureText("Press to try again", 20) * 0.5f), 180, 20, BLACK);
             return;
         } break;
     }
@@ -242,6 +270,9 @@ void SceneMastermind::ResetBoard() {
     m_correctAnswer.value[2] = GetRandomValue(0, 4);
     m_correctAnswer.value[3] = GetRandomValue(0, 4);
 
+    printf("%d %d %d %d\n", m_correctAnswer.value[0], m_correctAnswer.value[1], m_correctAnswer.value[2], m_correctAnswer.value[3]);
+    fflush(stdout);
+
     m_previousGuesses[0].value[0] = 0;
 }
 
@@ -274,6 +305,7 @@ void SceneMastermind::SubmitGuess() {
 
     if (m_previousResults[m_currentGuess].rightColourAndSpot == 4) {
         m_state = MASTERMIND_STATES::WIN;
+        m_game->m_gameData.coins += m_winningCoins;
 
         return;
     }
