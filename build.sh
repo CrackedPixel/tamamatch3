@@ -29,6 +29,7 @@ src/tamaui.cpp \
 -D PLATFORM_WEB=1 \
 -D USE_EXTERNAL_GLFW=ON \
 --embed-file resources \
+--embed-file icon.ico \
 -o ./builds/web/tamagacha.html \
 --shell-file ./builds/shell.html
 
