@@ -46,7 +46,7 @@ void Game::OnInitialize() {
     m_sceneManager.OnAddScene("tama", new SceneTama(this));
 #ifdef DEBUG_BUILD
     m_gameData.NewGame();
-    m_sceneManager.OnChangeScene("credits");
+    m_sceneManager.OnChangeScene("tama");
 #else
     m_sceneManager.OnChangeScene("splash");
 #endif

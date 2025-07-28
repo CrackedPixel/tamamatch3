@@ -40,6 +40,7 @@ enum struct OUTFIT_SLOTS {
     SHIRT,
     BACK,
     MISC,
+    COUNT,
 };
 
 enum struct CURSOR_TYPES {

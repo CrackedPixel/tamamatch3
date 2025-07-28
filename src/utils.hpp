@@ -1,7 +1,9 @@
 #pragma once
 
 #include <string>
-// #include <stdio.h>
+#include <vector>
+#include <sstream>
+
 #include "raylib.h"
 
 namespace Utils {
@@ -35,6 +37,18 @@ namespace Utils {
         sscanf(str, "%d %d", &x, &y);
 
         return { static_cast<float>(x), static_cast<float>(y) };
+    }
+
+    inline std::vector<std::string> StringArrayFromString(const char* str) {
+        std::vector<std::string> result;
+        std::istringstream iss(str);
+        std::string word = "";
+
+        while (iss >> word) {
+            result.push_back(word);
+        }
+
+        return result;
     }
 
     inline void ClampRange(float& value) {

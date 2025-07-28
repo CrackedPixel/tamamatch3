@@ -8,11 +8,11 @@
 #include "enums.hpp"
 
 struct Pet {
-    PET_STAGES stage = PET_STAGES::EGG;
+    PET_STAGES stage = PET_STAGES::ADULT;
     PET_STATES state = PET_STATES::HEALTHY;
     std::unordered_map<PET_ATTRIBUTES, float> attributes = {};
-    std::unordered_map<OUTFIT_SLOTS, int> outfitData = {};
-    std::unordered_map<OUTFIT_SLOTS, Color> outfitTint = {};
+    std::unordered_map<OUTFIT_SLOTS, int> outfitId = {};
+    std::unordered_map<OUTFIT_SLOTS, int> outfitTint = {};
     int petTint = 0;
     int wallpaperId = 0;
 
@@ -32,19 +32,59 @@ struct Pet {
     }
 };
 
-struct Item {
-    PET_STAGES requiredStage;
-    int cursorId;
-    int outfitId;
-};
-
-struct OutfitStageData {
-    std::string texturePath;
-    rlRectangle texturePosition;
-    Vector2 offset;
-    Vector2 scale;
-};
-
 struct OutfitData {
-    std::unordered_map<PET_STAGES, OutfitStageData> stageData = {};
+    std::string texturePath = "";
+    rlRectangle texturePosition = {};
+    bool adultOnly = false;
+    Vector2 offsetNewborn = {};
+    Vector2 offsetToddler = {};
+    Vector2 offsetAdolescent = {};
+    Vector2 offsetAdult = {};
+    bool isColourable = false;
+    bool isBehind = false;
+
+    OutfitData(
+        const std::string& texPath,
+        const rlRectangle& rect,
+        const int adultOnly,
+        const Vector2& offsetNewborn,
+        const Vector2& offsetToddler,
+        const Vector2& offsetAdolescent,
+        const Vector2& offsetAdult,
+        int i1,
+        int i2
+        ) : texturePath(texPath),
+        texturePosition(rect),
+        adultOnly(adultOnly),
+        offsetNewborn(offsetNewborn),
+        offsetToddler(offsetToddler),
+        offsetAdolescent(offsetAdolescent),
+        offsetAdult(offsetAdult),
+        isColourable(i1),
+        isBehind(i2)
+    {}
+
+    Vector2* GetOffsetForStage(PET_STAGES stage) {
+        switch (stage) {
+            case PET_STAGES::EGG: {
+                return nullptr;
+            } break;
+
+            case PET_STAGES::NEWBORN: {
+                return &offsetNewborn;
+            } break;
+
+            case PET_STAGES::TODDLER: {
+                return &offsetToddler;
+            } break;
+
+            case PET_STAGES::ADOLESCENT: {
+                return &offsetAdolescent;
+            } break;
+
+            case PET_STAGES::ADULT: {
+                return &offsetAdult;
+            } break;
+        }
+    }
 };

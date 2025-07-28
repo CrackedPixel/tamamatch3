@@ -15,8 +15,8 @@ struct GlobalGameData {
     CURSOR_TYPES activeCursor = CURSOR_TYPES::NORMAL;
     float gameSpeed = 1.0f;
     std::vector<Pet> PetList = {};
-    std::vector<Item> ItemList = {};
-    std::vector<OutfitData> OutfitList = {};
+    std::unordered_map<OUTFIT_SLOTS, std::vector<OutfitData>> OutfitList = {};
+    std::vector<Color> OutfitTintList = {};
     std::unordered_map<CURSOR_TYPES, rlRectangle> Cursors = {};
     std::vector<Color> PetTintList = {};
     std::unordered_map<PET_STAGES, Vector2> PetFaceOffsets = {};
@@ -37,6 +37,58 @@ struct GlobalGameData {
         const int petTintCount = INICount("pet_tint");
         for (int i = 0; i < petTintCount; ++i) {
             PetTintList.emplace_back(Utils::ColorFromString(INIString("pet_tint", std::to_string(i+1).c_str(), "0 0 0")));
+        }
+
+        const int outfitTintCount = INICount("outfit_tint");
+        for (int i = 0; i < outfitTintCount; ++i) {
+            OutfitTintList.emplace_back(Utils::ColorFromString(INIString("outfit_tint", std::to_string(i+1).c_str(), "0 0 0")));
+        }
+
+        // std::string texturePath = "";
+        // rlRectangle texturePosition = {};
+        // PET_STAGES requiredStage;
+        // Vector2 offsetEgg = {};
+        // Vector2 offsetNewborn = {};
+        // Vector2 offsetToddler = {};
+        // Vector2 offsetAdolescent = {};
+        // Vector2 offsetAdult = {};
+        // bool isColourable = false;
+        // bool isBehind = false;
+
+        const int glassesCount = INICount("glasses");
+        for (int i = 0; i < glassesCount; ++i) {
+            std::vector<std::string> outfitData = Utils::StringArrayFromString(INIString("glasses", std::to_string(i+1).c_str(), ""));
+            OutfitData newOutfit(
+                outfitData[0], // texture path
+                rlRectangle{ std::stof(outfitData[1]), std::stof(outfitData[2]), std::stof(outfitData[3]), std::stof(outfitData[4]) }, // texture rect
+                std::stoi(outfitData[5]), // adult only
+                Vector2{ std::stof(outfitData[6]), std::stof(outfitData[7]) }, // offset newborn
+                Vector2{ std::stof(outfitData[8]), std::stof(outfitData[9]) }, // offset toddler
+                Vector2{ std::stof(outfitData[10]), std::stof(outfitData[11]) }, // offset adolescent
+                Vector2{ std::stof(outfitData[12]), std::stof(outfitData[13]) }, // offset adult
+                std::stoi(outfitData[14]), // colourable
+                std::stoi(outfitData[15]) // behind
+            );
+
+            OutfitList[OUTFIT_SLOTS::GLASSES].emplace_back(newOutfit);
+        }
+
+        const int backsCount = INICount("backs");
+        for (int i = 0; i < backsCount; ++i) {
+            std::vector<std::string> outfitData = Utils::StringArrayFromString(INIString("backs", std::to_string(i+1).c_str(), ""));
+            OutfitData newOutfit(
+                outfitData[0], // texture path
+                rlRectangle{ std::stof(outfitData[1]), std::stof(outfitData[2]), std::stof(outfitData[3]), std::stof(outfitData[4]) }, // texture rect
+                std::stoi(outfitData[5]), // adult only
+                Vector2{ std::stof(outfitData[6]), std::stof(outfitData[7]) }, // offset newborn
+                Vector2{ std::stof(outfitData[8]), std::stof(outfitData[9]) }, // offset toddler
+                Vector2{ std::stof(outfitData[10]), std::stof(outfitData[11]) }, // offset adolescent
+                Vector2{ std::stof(outfitData[12]), std::stof(outfitData[13]) }, // offset adult
+                std::stoi(outfitData[14]), // colourable
+                std::stoi(outfitData[15]) // behind
+                );
+
+            OutfitList[OUTFIT_SLOTS::BACK].emplace_back(newOutfit);
         }
 
         growthSpeeds[PET_STAGES::EGG] = INIFloat("speed", "grow_egg", 60.0f);
@@ -89,6 +141,8 @@ struct GlobalGameData {
 
         AddNewPet();
 
+        activePet = 0;
+
         // do we need more?
     }
 
@@ -96,8 +150,22 @@ struct GlobalGameData {
         // TODO: load from file
     }
 
+    void SaveGame() {
+
+    }
+
     void AddNewPet() {
         PetList.emplace_back(PetTintList);
+
+        activePet = PetList.size() - 1;
+
+#ifdef DEBUG_BUILD
+        PetList[activePet].outfitId[OUTFIT_SLOTS::GLASSES] = 9;
+        PetList[activePet].outfitTint[OUTFIT_SLOTS::GLASSES] = 2;
+
+        PetList[activePet].outfitId[OUTFIT_SLOTS::BACK] = 1;
+        PetList[activePet].outfitTint[OUTFIT_SLOTS::BACK] = 2;
+#endif
     }
 
     void EvolveCurrentPet() {
