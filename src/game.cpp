@@ -11,6 +11,7 @@
 #include "scene_menu.hpp"
 #include "scene_credits.hpp"
 #include "scene_tama.hpp"
+#include "scene_shop.hpp"
 
 #ifdef PLATFORM_WEB
 Game* Game::s_instance = nullptr;
@@ -44,9 +45,10 @@ void Game::OnInitialize() {
     m_sceneManager.OnAddScene("menu", new SceneMenu(this));
     m_sceneManager.OnAddScene("credits", new SceneCredits(this));
     m_sceneManager.OnAddScene("tama", new SceneTama(this));
+    m_sceneManager.OnAddScene("shop", new SceneShop(this));
 #ifdef DEBUG_BUILD
     m_gameData.NewGame();
-    m_sceneManager.OnChangeScene("tama");
+    m_sceneManager.OnChangeScene("shop");
 #else
     m_sceneManager.OnChangeScene("splash");
 #endif
@@ -252,11 +254,11 @@ void Game::OnRender() {
         BeginTextureMode(m_renderTexture);
         ClearBackground(WHITE);
         currentScene->OnRender();
-        m_transitionManager.OnRender();
     }
 
     if (currentScene != nullptr) {
         currentScene->OnRenderUI();
+        m_transitionManager.OnRenderUI();
         EndTextureMode();
     }
 
@@ -279,10 +281,12 @@ void Game::OnRender() {
 }
 
 void Game::OnRenderUI() {
-    Scene* currentScene = m_sceneManager.GetCurrentScene();
-    if (currentScene != nullptr) {
-        currentScene->OnRenderUI();
-    }
+    // Scene* currentScene = m_sceneManager.GetCurrentScene();
+    // if (currentScene != nullptr) {
+    //     currentScene->OnRenderUI();
+    // }
+
+    // m_transitionManager.OnRenderUI();
 }
 
 void Game::OnGameLoopStart(){

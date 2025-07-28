@@ -140,7 +140,7 @@ void TamaPetAI::OnRender() {
             Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
             if (offsetPos != nullptr) {
                 Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath, 0);
-                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
+                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]] : m_game->m_gameData.OutfitTintList[0];
 
                 if (m_petDirection == 1) {
                     DrawTexturePro(outfitTexture, { outfitData->texturePosition.x, outfitData->texturePosition.y, outfitData->texturePosition.width, -outfitData->texturePosition.height }, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
@@ -175,7 +175,7 @@ void TamaPetAI::OnRender() {
             Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
             if (offsetPos != nullptr) {
                 Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath, 0);
-                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
+                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]] : m_game->m_gameData.OutfitTintList[0];
 
                 if (m_petDirection == 1) {
                     DrawTexturePro(outfitTexture, { outfitData->texturePosition.x, outfitData->texturePosition.y, outfitData->texturePosition.width, -outfitData->texturePosition.height }, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
@@ -202,7 +202,7 @@ void TamaPetAI::OnRender() {
             Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
             if (offsetPos != nullptr) {
                 Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath, 0);
-                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
+                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]] : m_game->m_gameData.OutfitTintList[0];
 
                 if (m_petDirection == 1) {
                     DrawTexturePro(outfitTexture, outfitData->texturePosition, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
@@ -237,7 +237,7 @@ void TamaPetAI::OnRender() {
             Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
             if (offsetPos != nullptr) {
                 Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath, 0);
-                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
+                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]] : m_game->m_gameData.OutfitTintList[0];
 
                 if (m_petDirection == 1) {
                     DrawTexturePro(outfitTexture, outfitData->texturePosition, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);

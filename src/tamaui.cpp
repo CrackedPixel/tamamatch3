@@ -116,6 +116,58 @@ void TamaUI::OnUpdate(float deltaTime) {
                             currentPet.outfitId[viewSlot] = selectedItem.outfitId;
                             currentPet.outfitTint[viewSlot] = selectedItem.outfitTint;
                         } break;
+                        case INVENTORY_PAGES::ACC1: {
+                            const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::ACC1;
+                            auto& currentPet = m_game->m_gameData.GetCurrentPet();
+
+                            if (m_currentInventorySlot == 0) {
+                                currentPet.outfitId[viewSlot] = 0;
+                                return;
+                            }
+
+                            auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+                            currentPet.outfitId[viewSlot] = selectedItem.outfitId;
+                            currentPet.outfitTint[viewSlot] = selectedItem.outfitTint;
+                        } break;
+                        case INVENTORY_PAGES::ACC2: {
+                            const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::ACC2;
+                            auto& currentPet = m_game->m_gameData.GetCurrentPet();
+
+                            if (m_currentInventorySlot == 0) {
+                                currentPet.outfitId[viewSlot] = 0;
+                                return;
+                            }
+
+                            auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+                            currentPet.outfitId[viewSlot] = selectedItem.outfitId;
+                            currentPet.outfitTint[viewSlot] = selectedItem.outfitTint;
+                        } break;
+                        case INVENTORY_PAGES::GLASSES: {
+                            const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::GLASSES;
+                            auto& currentPet = m_game->m_gameData.GetCurrentPet();
+
+                            if (m_currentInventorySlot == 0) {
+                                currentPet.outfitId[viewSlot] = 0;
+                                return;
+                            }
+
+                            auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+                            currentPet.outfitId[viewSlot] = selectedItem.outfitId;
+                            currentPet.outfitTint[viewSlot] = selectedItem.outfitTint;
+                        } break;
+                        case INVENTORY_PAGES::BACK: {
+                            const OUTFIT_SLOTS viewSlot = OUTFIT_SLOTS::BACK;
+                            auto& currentPet = m_game->m_gameData.GetCurrentPet();
+
+                            if (m_currentInventorySlot == 0) {
+                                currentPet.outfitId[viewSlot] = 0;
+                                return;
+                            }
+
+                            auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
+                            currentPet.outfitId[viewSlot] = selectedItem.outfitId;
+                            currentPet.outfitTint[viewSlot] = selectedItem.outfitTint;
+                        } break;
                     }
                     return;
                 };
@@ -525,10 +577,10 @@ void TamaUI::OnRenderUI() {
                 } else {
                     auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
 
-                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId-1];
+                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId - 1];
                     Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
                     if (outfitData.isColourable) {
-                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint-1];
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint - 1];
                     } else {
                         drawColour = WHITE;
                     }
@@ -555,10 +607,10 @@ void TamaUI::OnRenderUI() {
                 } else {
                     auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
 
-                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId-1];
+                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId - 1];
                     Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
                     if (outfitData.isColourable) {
-                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint];
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint - 1];
                     } else {
                         drawColour = WHITE;
                     }
@@ -585,10 +637,10 @@ void TamaUI::OnRenderUI() {
                 } else {
                     auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
 
-                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId-1];
+                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId - 1];
                     Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
                     if (outfitData.isColourable) {
-                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint];
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint - 1];
                     } else {
                         drawColour = WHITE;
                     }
@@ -615,10 +667,10 @@ void TamaUI::OnRenderUI() {
                 } else {
                     auto& selectedItem = currentPet.outfitInventory[OUTFIT_SLOTS::ACC1][m_currentInventorySlot-1];
 
-                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId-1];
+                    auto& outfitData = m_game->m_gameData.OutfitList[viewSlot][selectedItem.outfitId - 1];
                     Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
                     if (outfitData.isColourable) {
-                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint];
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint - 1];
                     } else {
                         drawColour = WHITE;
                     }
@@ -645,10 +697,10 @@ void TamaUI::OnRenderUI() {
                 } else {
                     auto& selectedItem = currentPet.outfitInventory[viewSlot][m_currentInventorySlot-1];
 
-                    auto& outfitData = m_game->m_gameData.OutfitList[OUTFIT_SLOTS::ACC1][selectedItem.outfitId-1];
+                    auto& outfitData = m_game->m_gameData.OutfitList[OUTFIT_SLOTS::ACC1][selectedItem.outfitId - 1];
                     Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath, 0);
                     if (outfitData.isColourable) {
-                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint];
+                        drawColour = m_game->m_gameData.OutfitTintList[selectedItem.outfitTint - 1];
                     } else {
                         drawColour = WHITE;
                     }

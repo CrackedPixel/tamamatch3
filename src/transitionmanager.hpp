@@ -35,7 +35,7 @@ struct TransitionManager {
         }
     }
 
-    void OnRender() {
+    void OnRenderUI() {
         if (m_fadeState == FADE_STATES::NONE) {
             return;
         }

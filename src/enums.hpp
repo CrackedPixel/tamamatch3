@@ -40,7 +40,7 @@ enum struct OUTFIT_SLOTS {
     BACK,
     ACC1,
     ACC2,
-    COUNT,
+    COUNT = 5,
 };
 
 enum struct CURSOR_TYPES {
@@ -74,5 +74,5 @@ enum struct FOOD_TYPES {
     BUG3,
     BUG4,
     BUG5,
-    COUNT,
+    COUNT = 5,
 };

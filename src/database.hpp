@@ -207,9 +207,9 @@ struct GlobalGameData {
         // int id = 0;
         // int tint = 0;
         // int slot = 0;
-        PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 9, 17, static_cast<int>(OUTFIT_SLOTS::GLASSES) });
-        PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::FOOD, 0, 0, 0 });
-        PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 6, 22, static_cast<int>(OUTFIT_SLOTS::HAT) });
+        // PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 9, 17, static_cast<int>(OUTFIT_SLOTS::GLASSES) });
+        // PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::FOOD, 0, 0, 0 });
+        // PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 6, 22, static_cast<int>(OUTFIT_SLOTS::HAT) });
 #endif
     }
 
@@ -352,7 +352,7 @@ struct GlobalGameData {
     }
 
     OutfitData* GetOutfitDataForSlotItem(OUTFIT_SLOTS slot) {
-        int outfitId = PetList[activePet].outfitId[slot]-1;
+        int outfitId = PetList[activePet].outfitId[slot] - 1;
 
         if (outfitId < 0) {
             return nullptr;
@@ -375,7 +375,7 @@ struct GlobalGameData {
                 if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::GLASSES].size())) {
                     return nullptr;
                 }
-                return &OutfitList[OUTFIT_SLOTS::GLASSES][outfitId];
+                     return &OutfitList[OUTFIT_SLOTS::GLASSES][outfitId];
             } break;
             case OUTFIT_SLOTS::ACC1:
             case OUTFIT_SLOTS::ACC2: {

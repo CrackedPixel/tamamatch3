@@ -43,7 +43,7 @@ enum struct INVENTORY_PAGES {
     BACK,
     ACC1,
     ACC2,
-    COUNT,
+    COUNT = 6,
 };
 
 struct SceneTama;
