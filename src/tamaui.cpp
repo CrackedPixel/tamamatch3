@@ -112,12 +112,14 @@ void TamaUI::OnUpdate(float deltaTime) {
             case ICON_ACTION_TYPE::STATS: {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_popupMenu = POPUP_TYPES::STATS;
+                m_game->m_audioManager->PlaySFX("uiselect");
             } break;
             case ICON_ACTION_TYPE::BANDAID: {
                 // m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 auto& petData = m_game->m_gameData.GetCurrentPet();
                 petData.attributes[PET_ATTRIBUTES::ILLNESS] += 0.3f;
                 m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::ILLNESS, { m_sceneTama->GetPetAI()->GetPetPosition().x, m_sceneTama->GetPetAI()->GetPetPosition().y });
+                m_game->m_audioManager->PlaySFX("heal");
             } break;
             case ICON_ACTION_TYPE::TOY: {
                 // m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
@@ -127,12 +129,14 @@ void TamaUI::OnUpdate(float deltaTime) {
                 // Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::BOREDOM]);
                 // Utils::ClampRange(petData.attributes[PET_ATTRIBUTES::HAPPINESS]);
                 m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TOY, { m_sceneTama->GetPetAI()->GetPetPosition().x, m_sceneTama->GetPetAI()->GetPetPosition().y });
+                m_game->m_audioManager->PlaySFX("boop", 1, 2);
             } break;
             case ICON_ACTION_TYPE::CLEAN: {
                 // m_game->m_gameData.activeCursor = CURSOR_TYPES::DIRTY;
                 auto& petData = m_game->m_gameData.GetCurrentPet();
                 petData.attributes[PET_ATTRIBUTES::HYGIENE] += 0.5f;
                 m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::DIRTY, { m_sceneTama->GetPetAI()->GetPetPosition().x, m_sceneTama->GetPetAI()->GetPetPosition().y });
+                m_game->m_audioManager->PlaySFX("shower");
             } break;
             case ICON_ACTION_TYPE::CLEAN_TANK: {
                 // m_game->m_gameData.activeCursor = CURSOR_TYPES::TANKDIRTY;
@@ -143,36 +147,41 @@ void TamaUI::OnUpdate(float deltaTime) {
                 if (poopList.size() > 0) {
                     m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TANKDIRTY, { poopList[0].position.x, poopList[0].position.y });
                     poopList.erase(poopList.begin());
+                    m_game->m_audioManager->PlaySFX("flush");
                 }
             } break;
 
 
             case ICON_ACTION_TYPE::CAMERA: {
                 m_hideUI = !m_hideUI;
-
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                m_game->m_audioManager->PlaySFX("uiselect");
             } break;
             case ICON_ACTION_TYPE::INVENTORY: {
                 // TODO: open inventory
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_popupMenu = POPUP_TYPES::INVENTORY;
+                m_game->m_audioManager->PlaySFX("uiselect");
             } break;
             case ICON_ACTION_TYPE::MINIGAMES: {
                 // TODO: change scene
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                m_game->m_audioManager->PlaySFX("uiselect");
             } break;
             case ICON_ACTION_TYPE::STORE: {
                 // TODO: open store
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                m_game->m_audioManager->PlaySFX("uiselect");
             } break;
             case ICON_ACTION_TYPE::DISPLAY: {
                 // TODO: open display
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                m_game->m_audioManager->PlaySFX("uiselect");
             } break;
 
         }
 
-        m_game->m_audioManager->PlaySFX("uiselect");
+        // m_game->m_audioManager->PlaySFX("uiselect");
 
         return;
     }
@@ -229,21 +238,20 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
         if (CheckCollisionPointRec(mousePosition, petPosition)) {
             Pet& petData = m_game->m_gameData.GetCurrentPet();
             switch (m_game->m_gameData.activeCursor) {
-                case CURSOR_TYPES::SAD: {
-                    petData.attributes[PET_ATTRIBUTES::HAPPINESS] += 0.45f;
-                    m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::SAD, mousePosition);
-                } break;
                 case CURSOR_TYPES::DIRTY: {
                     petData.attributes[PET_ATTRIBUTES::HYGIENE] += 0.45f;
                     m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::DIRTY, mousePosition);
+                    m_game->m_audioManager->PlaySFX("shower");
                 } break;
                 case CURSOR_TYPES::ILLNESS: {
                     petData.attributes[PET_ATTRIBUTES::ILLNESS] += 0.45f;
                     m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::ILLNESS, mousePosition);
+                    m_game->m_audioManager->PlaySFX("heal");
                 } break;
                 case CURSOR_TYPES::TOY: {
                     petData.attributes[PET_ATTRIBUTES::BOREDOM] -= 0.45f;
                     m_sceneTama->GetPetAI()->SpawnNewInteractSpot(CURSOR_TYPES::TOY, mousePosition);
+                    m_game->m_audioManager->PlaySFX("boop", 1, 2);
                 } break;
                 default: return false;
             }
@@ -262,6 +270,7 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
                         poopPileList[i].position.x, poopPileList[i].position.y
                     });
                     poopPileList.erase(poopPileList.begin() + i);
+                    m_game->m_audioManager->PlaySFX("flush");
                     return true;
                 }
             }
@@ -289,22 +298,27 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_popupMenu = POPUP_TYPES::STATS;
+            m_game->m_audioManager->PlaySFX("uiselect");
         } break;
         case ICON_ACTION_TYPE::BANDAID: {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::ILLNESS;
+            // m_game->m_audioManager->PlaySFX("heal");
         } break;
         case ICON_ACTION_TYPE::TOY: {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::TOY;
+            // m_game->m_audioManager->PlaySFX("boop", 1, 2);
         } break;
         case ICON_ACTION_TYPE::CLEAN: {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::DIRTY;
+            // m_game->m_audioManager->PlaySFX("shower");
         } break;
         case ICON_ACTION_TYPE::CLEAN_TANK: {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::TANKDIRTY;
+            // m_game->m_audioManager->PlaySFX("flush");
         } break;
 
         case ICON_ACTION_TYPE::CAMERA: {
@@ -312,31 +326,36 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
 
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            m_game->m_audioManager->PlaySFX("uiselect");
         } break;
         case ICON_ACTION_TYPE::INVENTORY: {
             // TODO: open inventory
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_popupMenu = POPUP_TYPES::INVENTORY;
+            m_game->m_audioManager->PlaySFX("uiselect");
         } break;
         case ICON_ACTION_TYPE::MINIGAMES: {
             // TODO: change scene
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            m_game->m_audioManager->PlaySFX("uiselect");
         } break;
         case ICON_ACTION_TYPE::STORE: {
             // TODO: open settings
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            m_game->m_audioManager->PlaySFX("uiselect");
         } break;
         case ICON_ACTION_TYPE::DISPLAY: {
             // TODO: open display
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            m_game->m_audioManager->PlaySFX("uiselect");
         } break;
     }
 
-    m_game->m_audioManager->PlaySFX("uiselect");
+    // m_game->m_audioManager->PlaySFX("uiselect");
 
     return true;
 }

@@ -17,7 +17,8 @@ struct AudioManager {
 
     AudioManager(Game* game) : m_game(game) {}
 private:
-    Game* m_game;
-    std::vector<std::string> m_audioPaths;
-    std::unordered_map<std::string, Sound> m_soundPaths;
+    Game* m_game = nullptr;
+    std::vector<std::string> m_audioPaths = {};
+    std::unordered_map<std::string, Sound> m_soundPaths = {};
+    std::unordered_map<std::string, std::string> m_sfxList = {};
 };
