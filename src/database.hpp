@@ -24,6 +24,7 @@ struct GlobalGameData {
     std::vector<std::string> WallpaperList;
     std::unordered_map<PET_STAGES, float> growthSpeeds = {};
     std::unordered_map<FOOD_TYPES, rlRectangle> FoodList = {};
+    int coins = 0;
 
     HCINI iniFile;
 

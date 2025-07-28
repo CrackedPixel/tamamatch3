@@ -243,9 +243,9 @@ void TamaUI::OnUpdate(float deltaTime) {
                 m_game->m_audioManager->PlaySFX("uiselect");
             } break;
             case ICON_ACTION_TYPE::STORE: {
-                // TODO: open store
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_game->m_audioManager->PlaySFX("uiselect");
+                m_game->ChangeScene("shop", true, 0.5f);
             } break;
             case ICON_ACTION_TYPE::DISPLAY: {
                 // TODO: open display
@@ -430,10 +430,10 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             m_game->m_audioManager->PlaySFX("uiselect");
         } break;
         case ICON_ACTION_TYPE::STORE: {
-            // TODO: open settings
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_game->m_audioManager->PlaySFX("uiselect");
+            m_game->ChangeScene("shop", true, 0.5f);
         } break;
         case ICON_ACTION_TYPE::DISPLAY: {
             // TODO: open display
