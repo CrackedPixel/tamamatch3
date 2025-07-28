@@ -50,7 +50,7 @@ void Game::OnInitialize() {
     m_sceneManager.OnAddScene("collection", new SceneCollection(this));
 #ifdef DEBUG_BUILD
     m_gameData.NewGame();
-    m_sceneManager.OnChangeScene("tama");
+    m_sceneManager.OnChangeScene("collection");
 #else
     m_sceneManager.OnChangeScene("splash");
 #endif

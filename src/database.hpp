@@ -182,7 +182,7 @@ struct GlobalGameData {
     void NewGame() {
         PetList.clear();
 
-        AddNewPet();
+        AddNewPet(true);
 
         activePet = 0;
 
@@ -197,8 +197,12 @@ struct GlobalGameData {
 
     }
 
-    void AddNewPet() {
+    void AddNewPet(bool adult = false) {
         PetList.emplace_back(PetTintList);
+
+        if (adult) {
+            PetList[PetList.size() - 1].stage = PET_STAGES::ADULT;
+        }
 
         activePet = PetList.size() - 1;
 
@@ -285,7 +289,11 @@ struct GlobalGameData {
     }
 
     Pet& GetCurrentPet() {
-        return PetList[activePet];
+        return GetPet(activePet);
+    }
+
+    Pet& GetPet(int petId) {
+        return PetList[petId];
     }
 
     float& GetCurrentPetGrowthTime() {
@@ -301,90 +309,128 @@ struct GlobalGameData {
     }
 
     rlRectangle& GetCurrentFace() {
-        switch (PetList[activePet].state) {
-            case PET_STATES::SAD: return PetFaces[PET_STATES::SAD];
-            case PET_STATES::SICK: return PetFaces[PET_STATES::SICK];
-            case PET_STATES::ANGRY: return PetFaces[PET_STATES::ANGRY];
-            case PET_STATES::DED: return PetFaces[PET_STATES::DED];
-            default: return PetFaces[PET_STATES::HEALTHY];
+        return GetFace(activePet);
+    }
+
+    rlRectangle& GetFace(int petId) {
+        switch (PetList[petId].state) {
+        case PET_STATES::SAD: return PetFaces[PET_STATES::SAD];
+        case PET_STATES::SICK: return PetFaces[PET_STATES::SICK];
+        case PET_STATES::ANGRY: return PetFaces[PET_STATES::ANGRY];
+        case PET_STATES::DED: return PetFaces[PET_STATES::DED];
+        default: return PetFaces[PET_STATES::HEALTHY];
         }
     }
 
     const char* GetCurrentPetTexturePath() {
-        switch (PetList[activePet].stage) {
-            case PET_STAGES::EGG: return "textures/tadpole0.png";
-            case PET_STAGES::NEWBORN: return "textures/tadpole1.png";
-            case PET_STAGES::TODDLER: return "textures/tadpole2.png";
-            case PET_STAGES::ADOLESCENT: return "textures/tadpole3.png";
-            case PET_STAGES::ADULT: return "textures/tadpole4.png";
-            default: return "";
+        return GetPetTexturePath(activePet);
+    }
+
+    const char* GetPetTexturePath(int petId) {
+        switch (PetList[petId].stage) {
+        case PET_STAGES::EGG: return "textures/tadpole0.png";
+        case PET_STAGES::NEWBORN: return "textures/tadpole1.png";
+        case PET_STAGES::TODDLER: return "textures/tadpole2.png";
+        case PET_STAGES::ADOLESCENT: return "textures/tadpole3.png";
+        case PET_STAGES::ADULT: return "textures/tadpole4.png";
+        default: return "";
         }
     }
 
     Vector2& GetCurrentFaceOffsets() {
-        return PetFaceOffsets[PetList[activePet].stage];
+        return GetFaceOffsets(activePet);
+    }
+
+    Vector2& GetFaceOffsets(int petId) {
+        return PetFaceOffsets[PetList[petId].stage];
     }
 
     float GetCurrentPetWidth() {
-        switch (PetList[activePet].stage) {
-            case PET_STAGES::EGG: return 32;
-            case PET_STAGES::NEWBORN: return 64;
-            case PET_STAGES::TODDLER: return 128;
-            case PET_STAGES::ADOLESCENT: return 128;
-            case PET_STAGES::ADULT: return 128;
-            default: return 0.0f;
+        return GetPetWidth(activePet);
+    }
+
+    float GetPetWidth(int petId) {
+        switch (PetList[petId].stage) {
+        case PET_STAGES::EGG: return 32;
+        case PET_STAGES::NEWBORN: return 64;
+        case PET_STAGES::TODDLER: return 128;
+        case PET_STAGES::ADOLESCENT: return 128;
+        case PET_STAGES::ADULT: return 128;
+        default: return 0.0f;
         }
     }
 
     float GetCurrentPetHeight() {
-        switch (PetList[activePet].stage) {
-            case PET_STAGES::EGG: return 32;
-            case PET_STAGES::NEWBORN: return 64;
-            case PET_STAGES::TODDLER: return 64;
-            case PET_STAGES::ADOLESCENT: return 64;
-            case PET_STAGES::ADULT: return 128;
-            default: return 0.0f;
+        return GetPetHeight(activePet);
+    }
+
+    float GetPetHeight(int petId) {
+        switch (PetList[petId].stage) {
+        case PET_STAGES::EGG: return 32;
+        case PET_STAGES::NEWBORN: return 64;
+        case PET_STAGES::TODDLER: return 64;
+        case PET_STAGES::ADOLESCENT: return 64;
+        case PET_STAGES::ADULT: return 128;
+        default: return 0.0f;
         }
     }
 
     std::string& GetCurrentWallpaper() {
-        return WallpaperList[PetList[activePet].wallpaperId];
+        return GetWallpaper(activePet);
     }
 
-    OutfitData* GetOutfitDataForSlotItem(OUTFIT_SLOTS slot) {
-        int outfitId = PetList[activePet].outfitId[slot] - 1;
+    std::string& GetWallpaper(int petId) {
+        return WallpaperList[PetList[petId].wallpaperId];
+    }
+
+    OutfitData* GetCurrentOutfitDataForSlotItem(OUTFIT_SLOTS slot) {
+        return GetOutfitDataForSlotItem(slot, activePet);
+    }
+
+    OutfitData* GetOutfitDataForSlotItem(OUTFIT_SLOTS slot, int petId) {
+        int outfitId = PetList[petId].outfitId[slot] - 1;
 
         if (outfitId < 0) {
             return nullptr;
         }
 
         switch (slot) {
-            case OUTFIT_SLOTS::BACK: {
-                if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::BACK].size())) {
-                    return nullptr;
-                }
-                return &OutfitList[OUTFIT_SLOTS::BACK][outfitId];
-            } break;
-            case OUTFIT_SLOTS::HAT: {
-                if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::HAT].size())) {
-                    return nullptr;
-                }
-                return &OutfitList[OUTFIT_SLOTS::HAT][outfitId];
-            } break;
-            case OUTFIT_SLOTS::GLASSES: {
-                if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::GLASSES].size())) {
-                    return nullptr;
-                }
-                     return &OutfitList[OUTFIT_SLOTS::GLASSES][outfitId];
-            } break;
-            case OUTFIT_SLOTS::ACC1:
-            case OUTFIT_SLOTS::ACC2: {
-                if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::ACC1].size())) {
-                    return nullptr;
-                }
-                return &OutfitList[OUTFIT_SLOTS::ACC1][outfitId];
-            } break;
-            default: return nullptr;
+        case OUTFIT_SLOTS::BACK: {
+            if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::BACK].size())) {
+                return nullptr;
+            }
+            return &OutfitList[OUTFIT_SLOTS::BACK][outfitId];
+        } break;
+        case OUTFIT_SLOTS::HAT: {
+            if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::HAT].size())) {
+                return nullptr;
+            }
+            return &OutfitList[OUTFIT_SLOTS::HAT][outfitId];
+        } break;
+        case OUTFIT_SLOTS::GLASSES: {
+            if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::GLASSES].size())) {
+                return nullptr;
+            }
+            return &OutfitList[OUTFIT_SLOTS::GLASSES][outfitId];
+        } break;
+        case OUTFIT_SLOTS::ACC1:
+        case OUTFIT_SLOTS::ACC2: {
+            if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::ACC1].size())) {
+                return nullptr;
+            }
+            return &OutfitList[OUTFIT_SLOTS::ACC1][outfitId];
+        } break;
+        default: return nullptr;
         }
+    }
+
+    bool HasAllAdults() {
+        for (const auto& it : PetList) {
+            if (it.stage != PET_STAGES::ADULT) {
+                return false;
+            }
+        }
+
+        return true;
     }
 };

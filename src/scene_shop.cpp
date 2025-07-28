@@ -109,7 +109,7 @@ void SceneShop::OnRenderUI() {
     Texture& cursorTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentCursorPath(), 0);
 
     DrawTexturePro(miscTexture, { 0, 32, 64, 64 }, { 20, 10, 64, 64 }, { 0, 0 }, 0.0f, WHITE);
-    DrawTexturePro(miscTexture, { 64, 32, 64, 64 }, { 20, 80, 64, 64 }, { 0, 0 }, 0.0f, WHITE);
+    DrawTexturePro(miscTexture, { 64, 0, 64, 64 }, { 20, 80, 64, 64 }, { 0, 0 }, 0.0f, WHITE);
 
     rlDrawText(TextFormat("%d", m_game->m_gameData.coins), 90, 32, 25, BLACK);
     rlDrawText(TextFormat("%d", m_itemPrice), 90, 102, 25, BLACK);

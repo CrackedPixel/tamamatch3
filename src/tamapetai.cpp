@@ -125,7 +125,7 @@ void TamaPetAI::OnRender() {
 
     if (petData.state == PET_STATES::DED) {
         for (int i = 0; i < static_cast<int>(OUTFIT_SLOTS::COUNT); ++i) {
-            auto* outfitData = m_game->m_gameData.GetOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
+            auto* outfitData = m_game->m_gameData.GetCurrentOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
             if (outfitData == nullptr) {
                 continue;
             }
@@ -160,7 +160,7 @@ void TamaPetAI::OnRender() {
         );
 
         for (int i = 0; i < static_cast<int>(OUTFIT_SLOTS::COUNT); ++i) {
-            auto* outfitData = m_game->m_gameData.GetOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
+            auto* outfitData = m_game->m_gameData.GetCurrentOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
             if (outfitData == nullptr) {
                 continue;
             }
@@ -187,7 +187,7 @@ void TamaPetAI::OnRender() {
     } else {
 
         for (int i = 0; i < static_cast<int>(OUTFIT_SLOTS::COUNT); ++i) {
-            auto* outfitData = m_game->m_gameData.GetOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
+            auto* outfitData = m_game->m_gameData.GetCurrentOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
             if (outfitData == nullptr) {
                 continue;
             }
@@ -222,7 +222,7 @@ void TamaPetAI::OnRender() {
         );
 
         for (int i = 0; i < static_cast<int>(OUTFIT_SLOTS::COUNT); ++i) {
-            auto* outfitData = m_game->m_gameData.GetOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
+            auto* outfitData = m_game->m_gameData.GetCurrentOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
             if (outfitData == nullptr) {
                 continue;
             }
