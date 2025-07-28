@@ -18,12 +18,15 @@ void SceneShop::OnUpdate(float deltaTime) {
     if (m_shopState == SHOP_STATES::BUYING) {
         m_game->m_gameData.GetCurrentPet().AddNewInventoryItem(m_wonItem);
         m_shopState = SHOP_STATES::BUY_REVIEW;
+        m_game->m_audioManager->PlaySFX("spend");
+        m_game->m_audioManager->PlaySFX("vending");
         return;
     }
 
     if (m_game->m_inputController.IsButtonBack) {
         switch (m_shopState) {
         case SHOP_STATES::NEW: {
+            m_game->m_audioManager->PlaySFX("uiselect");
             m_game->ChangeScene("tama", true, 0.5f);
             return;
         } break;
@@ -31,6 +34,7 @@ void SceneShop::OnUpdate(float deltaTime) {
 
         } break;
         case SHOP_STATES::BUY_REVIEW: {
+            m_game->m_audioManager->PlaySFX("uiselect");
             m_shopState = SHOP_STATES::NEW;
             return;
         } break;
@@ -41,6 +45,7 @@ void SceneShop::OnUpdate(float deltaTime) {
     if (m_game->m_inputController.IsButtonSelect) {
         switch (m_shopState) {
             case SHOP_STATES::BROKE: {
+                m_game->m_audioManager->PlaySFX("uiselect");
                 m_shopState = SHOP_STATES::NEW;
             } break;
             case SHOP_STATES::NEW: {
@@ -88,6 +93,7 @@ void SceneShop::OnUpdate(float deltaTime) {
 
             } break;
             case SHOP_STATES::BUY_REVIEW: {
+                m_game->m_audioManager->PlaySFX("uiselect");
                 m_shopState = SHOP_STATES::NEW;
                 return;
             } break;
