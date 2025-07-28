@@ -215,6 +215,7 @@ void SceneMastermind::OnRender() {
             DrawRectangleRoundedLinesEx({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, 3, BLACK);
             rlDrawText("WINNER!", 320 - (MeasureText("WINNER!", 20) * 0.5f), 150, 20, BLACK);
             rlDrawText(TextFormat("You have won %d coins", m_winningCoins), 320 - (MeasureText(TextFormat("You have won %d coins", m_winningCoins), 20) * 0.5f), 180, 20, BLACK);
+            m_game->m_audioManager->PlaySFX("earn");
             return;
         } break;
         case MASTERMIND_STATES::LOSE: {
@@ -265,10 +266,10 @@ void SceneMastermind::ResetBoard() {
     m_currentGuess = 0;
     m_selectionId = 0;
 
-    m_correctAnswer.value[0] = GetRandomValue(0, 4);
-    m_correctAnswer.value[1] = GetRandomValue(0, 4);
-    m_correctAnswer.value[2] = GetRandomValue(0, 4);
-    m_correctAnswer.value[3] = GetRandomValue(0, 4);
+    m_correctAnswer.value[0] = GetRandomValue(0, 5);
+    m_correctAnswer.value[1] = GetRandomValue(0, 5);
+    m_correctAnswer.value[2] = GetRandomValue(0, 5);
+    m_correctAnswer.value[3] = GetRandomValue(0, 5);
 
     printf("%d %d %d %d\n", m_correctAnswer.value[0], m_correctAnswer.value[1], m_correctAnswer.value[2], m_correctAnswer.value[3]);
     fflush(stdout);
