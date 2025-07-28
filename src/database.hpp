@@ -182,7 +182,7 @@ struct GlobalGameData {
     void NewGame() {
         PetList.clear();
 
-        AddNewPet(true);
+        AddNewPet();
 
         activePet = 0;
 
@@ -191,18 +191,19 @@ struct GlobalGameData {
 
     void LoadGame() {
         // TODO: load from file
+        HCINI saveINI = cini_create("save.ini");
+
+        cini_free(saveINI);
     }
 
     void SaveGame() {
+        HCINI saveINI = cini_create("save.ini");
 
+        cini_free(saveINI);
     }
 
-    void AddNewPet(bool adult = false) {
+    void AddNewPet() {
         PetList.emplace_back(PetTintList);
-
-        if (adult) {
-            PetList[PetList.size() - 1].stage = PET_STAGES::ADULT;
-        }
 
         activePet = PetList.size() - 1;
 

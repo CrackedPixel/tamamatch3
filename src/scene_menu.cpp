@@ -1,5 +1,7 @@
 #include "scene_menu.hpp"
 
+#include <filesystem>
+
 #include "game.hpp"
 
 void SceneMenu::OnInitialize() {
@@ -19,6 +21,10 @@ void SceneMenu::OnUpdate(float deltaTime) {
             m_selectionId = m_menuList.size() - 1;
         }
 
+        if (m_selectionId == 1 && !HasSaveFile()) {
+            m_selectionId = 0;
+        }
+
         return;
     }
 
@@ -27,6 +33,10 @@ void SceneMenu::OnUpdate(float deltaTime) {
 
         if (m_selectionId >= static_cast<int>(m_menuList.size())) {
             m_selectionId = 0;
+        }
+
+        if (m_selectionId == 1 && !HasSaveFile()) {
+            m_selectionId = 2;
         }
 
         return;
@@ -73,8 +83,13 @@ void SceneMenu::OnRender() {
     for (size_t i = 0; i < m_menuList.size(); ++i) {
         highlightColour = m_selectionId == static_cast<int>(i) ? Color{ 175, 246, 132, 255 } : Color{ 191, 240, 161, 255 };
         fontColour = m_selectionId == static_cast<int>(i) ? Color{ 45, 170, 117, 255 } : BLACK;
+        if (i == 1 && !HasSaveFile()) {
+            fontColour = GRAY;
+            highlightColour = LIGHTGRAY;
+        }
         DrawRectangleRounded({ 224, START_Y + (SPACE_Y * i) - (38 * 0.25f), 188, 38 }, 0.4f, 0, highlightColour);
         DrawRectangleRoundedLinesEx({ 224, START_Y + (SPACE_Y * i) - (38 * 0.25f), 188, 38 }, 0.4f, 0, 2, BLACK);
+
         rlDrawText(m_menuList[i].c_str(), 320 - (MeasureText(m_menuList[i].c_str(), FONT_SIZE) * 0.5f), START_Y + (SPACE_Y * i), FONT_SIZE, fontColour);
     }
 
@@ -95,10 +110,14 @@ void SceneMenu::OnRender() {
             { 0, 0 },
             0.0f,
             WHITE
-            );
+        );
     } else {
 #ifdef PLATFORM_DESKTOP
         rlShowCursor();
 #endif
     }
+}
+
+bool SceneMenu::HasSaveFile() {
+    return std::filesystem::exists("save.ini");
 }

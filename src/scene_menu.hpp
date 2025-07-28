@@ -13,6 +13,9 @@ struct SceneMenu : public Scene {
     void OnRender();
 
 private:
+    bool HasSaveFile();
+
+private:
     static constexpr const int FONT_SIZE = 20;
     static constexpr const int START_Y = 250;
     static constexpr const float SPACE_Y = FONT_SIZE * 2.5f;
