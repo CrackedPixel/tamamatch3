@@ -207,20 +207,8 @@ struct GlobalGameData {
         // int tint = 0;
         // int slot = 0;
         PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 9, 17, static_cast<int>(OUTFIT_SLOTS::GLASSES) });
-
         PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::FOOD, 0, 0, 0 });
-        // PetList[activePet].outfitId[OUTFIT_SLOTS::GLASSES] = 9;
-        // PetList[activePet].outfitTint[OUTFIT_SLOTS::GLASSES] = 17;
-
         PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 6, 22, static_cast<int>(OUTFIT_SLOTS::HAT) });
-        // PetList[activePet].outfitId[OUTFIT_SLOTS::HAT] = 6;
-        // PetList[activePet].outfitTint[OUTFIT_SLOTS::HAT] = 22;
-
-        // PetList[activePet].outfitId[OUTFIT_SLOTS::BACK] = 1;
-        // PetList[activePet].outfitTint[OUTFIT_SLOTS::BACK] = 2;
-
-        // PetList[activePet].outfitId[OUTFIT_SLOTS::ACC1] = 4;
-        // PetList[activePet].outfitId[OUTFIT_SLOTS::ACC2] = 9;
 #endif
     }
 
