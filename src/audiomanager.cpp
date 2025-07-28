@@ -75,6 +75,10 @@ void AudioManager::OnUpdate(float deltaTime) {
 }
 
 void AudioManager::PlayTrack(std::string trackPath) {
+    if (!m_musicEnabled) {
+        return;
+    }
+
     for (auto& it : m_audioPaths) {
         MusicWrapper& currentTrack = m_game->m_resourceManager.GetMusic(it);
 
@@ -102,6 +106,10 @@ void AudioManager::PlayTrack(std::string trackPath) {
 }
 
 void AudioManager::PlaySFX(std::string sfxName, int min, int max) {
+    if (!m_sfxEnabled) {
+        return;
+    }
+
     if (min != 0 && max != 0) {
         int sfxVariation = GetRandomValue(min, max);
         std::string sfxKey = sfxName + std::to_string(sfxVariation);
@@ -120,5 +128,17 @@ void AudioManager::PlaySFX(std::string sfxName, int min, int max) {
 
     if (m_soundPaths.find(sfxName) != m_soundPaths.end()) {
         rlPlaySound(m_soundPaths[sfxName]);
+    }
+}
+
+void AudioManager::StopMusic() {
+    for (auto& it : m_audioPaths) {
+        MusicWrapper& currentTrack = m_game->m_resourceManager.GetMusic(it);
+        if (
+            currentTrack.state == MUSIC_STATES::PLAYING
+            || currentTrack.state == MUSIC_STATES::FADE_IN
+            ) {
+            currentTrack.state = MUSIC_STATES::FADE_OUT;
+        }
     }
 }

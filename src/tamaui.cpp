@@ -56,6 +56,10 @@ void TamaUI::OnUpdate(float deltaTime) {
             m_hideUI = false;
             return;
         }
+
+        m_popupMenu = POPUP_TYPES::PAUSE_MENU;
+        m_pauseMenuItem = 0;
+        return;
     }
 
     if (m_popupMenu == POPUP_TYPES::INVENTORY) {
@@ -188,6 +192,33 @@ void TamaUI::OnUpdate(float deltaTime) {
         }
     }
 
+    if (m_popupMenu == POPUP_TYPES::PAUSE_MENU) {
+        if (m_game->m_inputController.IsButtonBack) {
+            m_popupMenu = POPUP_TYPES::NONE;
+            return;
+        }
+
+        if (m_game->m_inputController.IsButtonUp) {
+            m_pauseMenuItem -= 1;
+
+            if (m_pauseMenuItem == -1) {
+                m_pauseMenuItem = 0;
+            }
+
+            return;
+        }
+
+        if (m_game->m_inputController.IsButtonDown) {
+            m_pauseMenuItem += 1;
+
+            if (m_pauseMenuItem == 4) {
+                m_pauseMenuItem = 3;
+            }
+
+            return;
+        }
+    }
+
     if (m_game->m_inputController.IsButtonSelect) {
         switch (m_popupMenu) {
             case POPUP_TYPES::STATS: {
@@ -195,7 +226,29 @@ void TamaUI::OnUpdate(float deltaTime) {
                 return;
             } break;
             case POPUP_TYPES::PAUSE_MENU: {
-
+                switch (m_pauseMenuItem) {
+                    case 0: { // resume
+                        m_popupMenu = POPUP_TYPES::NONE;
+                        m_game->m_audioManager->PlaySFX("uiselect");
+                        return;
+                    } break;
+                    case 1: { // toggle music
+                        m_game->m_audioManager->m_musicEnabled = !m_game->m_audioManager->m_musicEnabled;
+                        if (!m_game->m_audioManager->m_musicEnabled) {
+                            m_game->m_audioManager->StopMusic();
+                        } else {
+                            m_game->m_audioManager->PlayTrack("music/menu.ogg");
+                        }
+                    } break;
+                    case 2: { // toggle sfx
+                        m_game->m_audioManager->m_sfxEnabled = !m_game->m_audioManager->m_sfxEnabled;
+                    } break;
+                    case 3: { // main menu + save
+                        m_game->m_gameData.SaveGame();
+                        m_game->ChangeScene("menu");
+                    } break;
+                }
+                return;
             } break;
             case POPUP_TYPES::EVOLVE: {
                 m_game->m_gameData.EvolveCurrentPet();
@@ -529,7 +582,13 @@ void TamaUI::OnRenderUI() {
         }
     } break;
     case POPUP_TYPES::PAUSE_MENU: {
+        DrawTexturePro(popupTexture, { 0, 0, 128, 128 }, { 192, 112, 256, 256 }, { 0, 0 }, 0.0f, WHITE);
 
+        rlDrawText("PAUSE", 192 + (128 - (MeasureText("PAUSE", 30) * 0.5f)), 140, 30, BLACK);
+
+        for (int i = 0; i < 4; ++i) {
+            rlDrawText(m_pauseMenuOptions[i], 192 + 20, 200 + (i * 30), 30, i == m_pauseMenuItem ? BLACK : GRAY);
+        }
     } break;
     case POPUP_TYPES::INVENTORY: {
         DrawTexturePro(popupTexture, { 0, 0, 128, 128 }, { 192, 112, 256, 256 }, { 0, 0 }, 0.0f, WHITE);

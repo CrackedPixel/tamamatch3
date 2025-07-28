@@ -20,12 +20,12 @@ void SceneTama::OnUpdate(float deltaTime){
         return;
     }
 
-    if (m_game->m_inputController.IsButtonBack) {
-        if (m_tamaui.IsUIShown() && m_tamaui.m_popupMenu == POPUP_TYPES::NONE) {
-            m_game->ChangeScene("menu", true, 1.0f);
-            return;
-        }
-    }
+    // if (m_game->m_inputController.IsButtonBack) {
+    //     if (m_tamaui.IsUIShown() && m_tamaui.m_popupMenu == POPUP_TYPES::NONE) {
+    //         m_game->ChangeScene("menu", true, 1.0f);
+    //         return;
+    //     }
+    // }
 
     m_tamaui.OnUpdate(deltaTime);
     m_tamapetai.OnUpdate(deltaTime);

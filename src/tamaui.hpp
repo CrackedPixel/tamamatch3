@@ -76,9 +76,11 @@ private:
     std::unordered_map<std::string, std::string> m_promptsList;
     Color m_barsColour = LIGHTGRAY;
     std::vector<const char*> m_inventoryPageTitles = { "Food", "Hats", "Glasses", "Backs", "Acc 1", "Acc 2" };
+    std::vector<const char*> m_pauseMenuOptions = { "Resume", "Toggle Music", "Toggle SFX", "Main Menu" };
     INVENTORY_PAGES m_currentInventoryPage = INVENTORY_PAGES::FOOD;
     int m_currentInventoryTab = 0;
     int m_currentInventorySlot = 0;
+    int m_pauseMenuItem = 0;
 
 public:
     POPUP_TYPES m_popupMenu = POPUP_TYPES::NONE;
