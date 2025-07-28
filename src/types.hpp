@@ -7,12 +7,26 @@
 #include "raylib.h"
 #include "enums.hpp"
 
+struct PetInventoryItem {
+    int outfitId;
+    int outfitTint;
+};
+
+struct GumballItem {
+    ITEM_TYPES itemType;
+    int id = 0;
+    int tint = 0;
+    int slot = 0;
+};
+
 struct Pet {
     PET_STAGES stage = PET_STAGES::TODDLER;
     PET_STATES state = PET_STATES::HEALTHY;
     std::unordered_map<PET_ATTRIBUTES, float> attributes = {};
     std::unordered_map<OUTFIT_SLOTS, int> outfitId = {};
     std::unordered_map<OUTFIT_SLOTS, int> outfitTint = {};
+    std::unordered_map<OUTFIT_SLOTS, std::unordered_map<std::string, PetInventoryItem>> outfitInventory;
+    std::unordered_map<FOOD_TYPES, int> foodInventory;
     int petTint = 0;
     int wallpaperId = 0;
 
@@ -29,6 +43,20 @@ struct Pet {
         // TODO: randomize?
         petTint = GetRandomValue(0, petTintList.size() - 1);
         wallpaperId = GetRandomValue(0, 1);
+    }
+
+    void AddNewInventoryItem(GumballItem newItem) {
+        switch (newItem.itemType) {
+            case ITEM_TYPES::FOOD: {
+                foodInventory[static_cast<FOOD_TYPES>(newItem.id)] += 1;
+            } break;
+            case ITEM_TYPES::OUTFIT: {
+                std::string outfitKey = std::to_string(newItem.id) + "_" + std::to_string(newItem.tint);
+                outfitInventory[static_cast<OUTFIT_SLOTS>(newItem.slot)][outfitKey].outfitId = newItem.id;
+                outfitInventory[static_cast<OUTFIT_SLOTS>(newItem.slot)][outfitKey].outfitTint = newItem.tint;
+            } break;
+            default: return;
+        }
     }
 };
 

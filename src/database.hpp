@@ -196,17 +196,22 @@ struct GlobalGameData {
         activePet = PetList.size() - 1;
 
 #ifdef DEBUG_BUILD
-        PetList[activePet].outfitId[OUTFIT_SLOTS::GLASSES] = 9;
-        PetList[activePet].outfitTint[OUTFIT_SLOTS::GLASSES] = 17;
+        // ITEM_TYPES itemType;
+        // int id = 0;
+        // int tint = 0;
+        // int slot = 0;
+        PetList[activePet].AddNewInventoryItem({ ITEM_TYPES::OUTFIT, 9, 17, static_cast<int>(OUTFIT_SLOTS::GLASSES) });
+        // PetList[activePet].outfitId[OUTFIT_SLOTS::GLASSES] = 9;
+        // PetList[activePet].outfitTint[OUTFIT_SLOTS::GLASSES] = 17;
 
-        PetList[activePet].outfitId[OUTFIT_SLOTS::HAT] = 6;
-        PetList[activePet].outfitTint[OUTFIT_SLOTS::HAT] = 22;
+        // PetList[activePet].outfitId[OUTFIT_SLOTS::HAT] = 6;
+        // PetList[activePet].outfitTint[OUTFIT_SLOTS::HAT] = 22;
 
-        PetList[activePet].outfitId[OUTFIT_SLOTS::BACK] = 1;
-        PetList[activePet].outfitTint[OUTFIT_SLOTS::BACK] = 2;
+        // PetList[activePet].outfitId[OUTFIT_SLOTS::BACK] = 1;
+        // PetList[activePet].outfitTint[OUTFIT_SLOTS::BACK] = 2;
 
-        PetList[activePet].outfitId[OUTFIT_SLOTS::ACC1] = 4;
-        PetList[activePet].outfitId[OUTFIT_SLOTS::ACC2] = 9;
+        // PetList[activePet].outfitId[OUTFIT_SLOTS::ACC1] = 4;
+        // PetList[activePet].outfitId[OUTFIT_SLOTS::ACC2] = 9;
 #endif
     }
 

@@ -98,8 +98,8 @@ bool TamaPetAI::OnHandleInput(Vector2 mousePosition) {
 void TamaPetAI::OnRender() {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
 
-    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath());
-    Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png");
+    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath(), 0);
+    Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png", 0);
 
     if (petData.stage == PET_STAGES::EGG) {
         DrawTexturePro(
@@ -129,7 +129,7 @@ void TamaPetAI::OnRender() {
 
             Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
             if (offsetPos != nullptr) {
-                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath);
+                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath, 0);
                 Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
 
                 if (m_petDirection == 1) {
@@ -164,7 +164,7 @@ void TamaPetAI::OnRender() {
 
             Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
             if (offsetPos != nullptr) {
-                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath);
+                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath, 0);
                 Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
 
                 if (m_petDirection == 1) {
@@ -191,7 +191,7 @@ void TamaPetAI::OnRender() {
 
             Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
             if (offsetPos != nullptr) {
-                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath);
+                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath, 0);
                 Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
 
                 if (m_petDirection == 1) {
@@ -226,7 +226,7 @@ void TamaPetAI::OnRender() {
 
             Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
             if (offsetPos != nullptr) {
-                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath);
+                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath, 0);
                 Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
 
                 if (m_petDirection == 1) {
@@ -287,17 +287,17 @@ void TamaPetAI::OnRender() {
 }
 
 void TamaPetAI::OnRenderUI() {
-    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png");
+    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png", 0);
     for (const auto& it : m_interactSpotList) {
         DrawTexturePro(cursorTexture, m_game->m_gameData.Cursors[it.cursorId], { it.position.x, it.position.y - (it.currentTime * 64.0f), 32, 32 }, { 0, 0 }, 0.0f, ColorAlpha(WHITE, 1.0f - it.currentTime));
     }
 
-    Texture& poopTexture = m_game->m_resourceManager.GetTexture("textures/misc.png");
+    Texture& poopTexture = m_game->m_resourceManager.GetTexture("textures/misc.png", 0);
     for (const auto& it : m_poopPileList) {
         DrawTexturePro(poopTexture, { 0, 0, 32, 32 }, { it.position.x, it.position.y, 32, 32 }, { 0, 0 }, 0.0f, WHITE);
     }
 
-    Texture& stinkyTexture = m_game->m_resourceManager.GetTexture("textures/stinky.png");
+    Texture& stinkyTexture = m_game->m_resourceManager.GetTexture("textures/stinky.png", 0);
     for (const auto& it : m_stinkySpotList) {
         DrawTexturePro(stinkyTexture, { (m_animationStep % 3) * 32.0f, 0, 32, 39 }, { it.position.x, it.position.y - (it.currentTime * 64.0f), 32, 32 }, { 0, 0 }, 0.0f, ColorAlpha(WHITE, 1.0f - it.currentTime));
     }

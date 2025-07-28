@@ -55,7 +55,7 @@ void SceneTama::OnRender(){
 }
 
 void SceneTama::OnRenderUI(){
-    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png");
+    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png", 0);
 
     m_tamapetai.OnRenderUI();
     m_tamaui.OnRenderUI();

@@ -39,7 +39,7 @@ void SceneSplash::OnRender(){
 }
 
 void SceneSplash::OnRenderUI() {
-    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png");
+    Texture& cursorTexture = m_game->m_resourceManager.GetTexture("textures/cursors.png", 0);
 
     Vector2 mousePosition = GetMousePosition();
     mousePosition.x -= 184;

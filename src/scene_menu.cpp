@@ -57,7 +57,7 @@ void SceneMenu::OnRender() {
     // TODO: render background
     Texture& logoTexture = m_game->m_resourceManager.GetTexture("textures/logo.png");
     Texture& wallpaperTexture = m_game->m_resourceManager.GetTexture("textures/wall1.png");
-    Texture& frogeTexture = m_game->m_resourceManager.GetTexture("textures/frogeanimation.png");
+    Texture& frogeTexture = m_game->m_resourceManager.GetTexture("textures/frogeanimation.png", 0);
 
     int animationIndex = static_cast<int>(GetTime() * 2.0f) % 16;
 

@@ -61,4 +61,13 @@ enum struct ITEM_TYPES {
     HYGIENE,
     TANK,
     ILLNESS,
+    OUTFIT,
+};
+
+enum struct FOOD_TYPES {
+    BUG1,
+    BUG2,
+    BUG3,
+    BUG4,
+    BUG5,
 };

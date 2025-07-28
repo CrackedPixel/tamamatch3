@@ -68,7 +68,9 @@ void TamaUI::OnUpdate(float deltaTime) {
 
             } break;
             case POPUP_TYPES::INVENTORY: {
-
+                // TODO: inventory menu management
+                m_popupMenu = POPUP_TYPES::NONE;
+                return;
             } break;
             case POPUP_TYPES::EVOLVE: {
                 m_game->m_gameData.EvolveCurrentPet();
@@ -108,7 +110,6 @@ void TamaUI::OnUpdate(float deltaTime) {
         // device select
         switch (m_icons[m_selectedId].actionType) {
             case ICON_ACTION_TYPE::STATS: {
-                // TODO: open stats
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_popupMenu = POPUP_TYPES::STATS;
             } break;
@@ -154,6 +155,7 @@ void TamaUI::OnUpdate(float deltaTime) {
             case ICON_ACTION_TYPE::INVENTORY: {
                 // TODO: open inventory
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+                m_popupMenu = POPUP_TYPES::INVENTORY;
             } break;
             case ICON_ACTION_TYPE::MINIGAMES: {
                 // TODO: change scene
@@ -315,6 +317,7 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             // TODO: open inventory
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
+            m_popupMenu = POPUP_TYPES::INVENTORY;
         } break;
         case ICON_ACTION_TYPE::MINIGAMES: {
             // TODO: change scene
@@ -371,7 +374,36 @@ void TamaUI::OnRenderUI() {
 
     } break;
     case POPUP_TYPES::INVENTORY: {
+        DrawTexturePro(popupTexture, { 0, 0, 128, 128 }, { 192, 112, 256, 256 }, { 0, 0 }, 0.0f, WHITE);
 
+        Color drawColour;
+        drawColour = m_currentInventoryTab == 0 ? BLACK : GRAY;
+        rlDrawText(m_inventoryPageTitles[static_cast<int>(m_currentInventoryPage)], 192 + (128 - (MeasureText(m_inventoryPageTitles[static_cast<int>(m_currentInventoryPage)], 30) * 0.5f)), 140, 30, drawColour);
+        rlDrawText("<", 192 + 20, 140, 30, drawColour);
+        rlDrawText(">", 192 + 256 - 30, 140, 30, drawColour);
+
+        drawColour = m_currentInventoryTab == 1 ? BLACK : GRAY;
+        rlDrawText("<", 192 + 20, 250, 30, drawColour);
+        rlDrawText(">", 192 + 256 - 30, 250, 30, drawColour);
+        //  { "Food", "Hats", "Glasses", "Backs", "Acc" };
+        switch (m_currentInventoryPage) {
+            case INVENTORY_PAGES::FOOD: {
+                // rlDrawText("FOOD", 192 + 50, 140, 30, BLACK);
+            } break;
+            case INVENTORY_PAGES::HATS: {
+
+            } break;
+            case INVENTORY_PAGES::GLASSES: {
+
+            } break;
+            case INVENTORY_PAGES::BACK: {
+
+            } break;
+            case INVENTORY_PAGES::ACC: {
+
+            } break;
+            default: break;
+        }
     } break;
     case POPUP_TYPES::EVOLVE: {
         DrawTexturePro(popupTexture, { 0, 0, 128, 128 }, { 192, 112, 256, 256 }, { 0, 0 }, 0.0f, WHITE);
@@ -385,7 +417,7 @@ void TamaUI::OnRenderUI() {
         return;
     }
 
-    Texture& iconsTexture = m_game->m_resourceManager.GetTexture(TEXTURE_PATH);
+    Texture& iconsTexture = m_game->m_resourceManager.GetTexture(TEXTURE_PATH, 0);
 
     Color bgColour;
     rlRectangle destination = { 0.0f, 0.0f, 64, 64 };
@@ -439,8 +471,8 @@ bool TamaUI::IsUIShown() {
 
 void TamaUI::DrawPetAtSpot(rlRectangle destination) {
     Pet& petData = m_game->m_gameData.GetCurrentPet();
-    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath());
-    Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png");
+    Texture& petTexture = m_game->m_resourceManager.GetTexture(m_game->m_gameData.GetCurrentPetTexturePath(), 0);
+    Texture& faceTexture = m_game->m_resourceManager.GetTexture("textures/faces.png", 0);
 
     float widthFactor = m_game->m_gameData.GetCurrentPetWidth() / 64;
     float widthHeightFactor = m_game->m_gameData.GetCurrentPetWidth() / m_game->m_gameData.GetCurrentPetHeight();
