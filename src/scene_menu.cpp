@@ -55,14 +55,23 @@ void SceneMenu::OnUpdate(float deltaTime) {
 
 void SceneMenu::OnRender() {
     // TODO: render background
-    // TODO: render menu
-    Color drawColour;
-    for (size_t i = 0; i < m_menuList.size(); ++i) {
-        drawColour = m_selectionId == static_cast<int>(i) ? RED : BLACK;
-        rlDrawText(m_menuList[i].c_str(), 320 - (MeasureText(m_menuList[i].c_str(), FONT_SIZE) * 0.5f), START_Y + (SPACE_Y * i), FONT_SIZE, drawColour);
-    }
-}
+    Texture& logoTexture = m_game->m_resourceManager.GetTexture("textures/logo.png");
+    Texture& wallpaperTexture = m_game->m_resourceManager.GetTexture("textures/wall1.png");
+    Texture& frogeTexture = m_game->m_resourceManager.GetTexture("textures/frogeanimation.png");
 
-bool SceneMenu::OnHandleInput(Vector2 mousePos) {
-    return false;
+    int animationIndex = static_cast<int>(GetTime() * 2.0f) % 16;
+
+    DrawTexture(wallpaperTexture, 0, 0, WHITE);
+    DrawTexture(logoTexture, 0, 0, WHITE);
+    DrawTexturePro(frogeTexture, { (animationIndex % 4) * 128.0f, (animationIndex / 4) * 128.0f, 128, 128 }, { 500, 350, 128, 128 }, { 0, 0 }, 0.0f, WHITE);
+
+    Color highlightColour;
+    Color fontColour;
+    for (size_t i = 0; i < m_menuList.size(); ++i) {
+        highlightColour = m_selectionId == static_cast<int>(i) ? Color{ 175, 246, 132, 255 } : Color{ 191, 240, 161, 255 };
+        fontColour = m_selectionId == static_cast<int>(i) ? Color{ 45, 170, 117, 255 } : BLACK;
+        DrawRectangleRounded({ 224, START_Y + (SPACE_Y * i) - (38 * 0.25f), 188, 38 }, 0.4f, 0, highlightColour);
+        DrawRectangleRoundedLinesEx({ 224, START_Y + (SPACE_Y * i) - (38 * 0.25f), 188, 38 }, 0.4f, 0, 2, BLACK);
+        rlDrawText(m_menuList[i].c_str(), 320 - (MeasureText(m_menuList[i].c_str(), FONT_SIZE) * 0.5f), START_Y + (SPACE_Y * i), FONT_SIZE, fontColour);
+    }
 }

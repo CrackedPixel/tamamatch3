@@ -31,8 +31,9 @@ void SceneSplash::OnUpdate(float deltaTime){
 }
 
 void SceneSplash::OnRender(){
-    ClearBackground({ 180, 180, 180, 255 });
-    Texture& logoTexture = m_game->m_resourceManager.GetTexture("textures/logo.png", 0);
+    DrawRectangle(0, 0, 640, 480, { 180, 180, 180, 255 });
+
+    Texture& logoTexture = m_game->m_resourceManager.GetTexture("textures/notmarmalade.png", 0);
 
     DrawTexturePro(logoTexture, { 0, 0, 46, 51 }, { 274, 189, 92, 102 }, { 0, 0 }, 0.0f, WHITE);
     rlDrawText("2025 gamejam", 320 - (MeasureText("2025 gamejam", 20) * 0.5f), 300, 20, BLACK);

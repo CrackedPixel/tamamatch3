@@ -30,6 +30,7 @@ struct TamaIcon {
 
 enum struct POPUP_TYPES {
     NONE,
+    STATS,
     PAUSE_MENU,
     INVENTORY,
     EVOLVE,

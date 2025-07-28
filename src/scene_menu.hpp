@@ -11,12 +11,11 @@ struct SceneMenu : public Scene {
     void OnInitialize();
     void OnUpdate(float deltaTime);
     void OnRender();
-    bool OnHandleInput(Vector2 mousePos);
 
 private:
-    static constexpr const int FONT_SIZE = 30;
-    static constexpr const int START_Y = 200;
-    static constexpr const float SPACE_Y = FONT_SIZE;
+    static constexpr const int FONT_SIZE = 20;
+    static constexpr const int START_Y = 250;
+    static constexpr const float SPACE_Y = FONT_SIZE * 2.5f;
     std::vector<std::string> m_menuList = { "New Game", "Load Game", "Credits", "Quit" };
     int m_selectionId = 0;
 };
