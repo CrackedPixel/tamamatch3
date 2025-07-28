@@ -5,6 +5,8 @@
 void SceneShop::OnInitialize() {
     m_shopState = SHOP_STATES::NEW;
     m_game->m_transitionManager.FadeIn(0.5f);
+
+    m_itemPrice = m_game->m_gameData.INIInt("shop", "item_price", 10);
 }
 
 void SceneShop::OnUpdate(float deltaTime) {
@@ -38,7 +40,17 @@ void SceneShop::OnUpdate(float deltaTime) {
 
     if (m_game->m_inputController.IsButtonSelect) {
         switch (m_shopState) {
+            case SHOP_STATES::BROKE: {
+                m_shopState = SHOP_STATES::NEW;
+            } break;
             case SHOP_STATES::NEW: {
+                if (m_game->m_gameData.coins < m_itemPrice) {
+                    m_shopState = SHOP_STATES::BROKE;
+                    return;
+                }
+
+                m_game->m_gameData.coins -= m_itemPrice;
+
                 if (GetRandomValue(0, 3) == 0) {
                     m_wonItem.itemType = ITEM_TYPES::OUTFIT;
 
@@ -58,9 +70,9 @@ void SceneShop::OnUpdate(float deltaTime) {
                         } break;
                     }
 
-                    m_wonItem.id = GetRandomValue(1, m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(m_wonItem.slot)].size());
+                        m_wonItem.id = GetRandomValue(1, m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(m_wonItem.slot)].size());
 
-                    if (m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(m_wonItem.slot)][m_wonItem.id].isColourable) {
+                    if (m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(m_wonItem.slot)][m_wonItem.id-1].isColourable) {
                         m_wonItem.tint = GetRandomValue(1, m_game->m_gameData.OutfitTintList.size());
                     } else {
                         m_wonItem.tint = 0;
@@ -93,13 +105,22 @@ void SceneShop::OnRender() {
 }
 
 void SceneShop::OnRenderUI() {
-    Texture& coinTexture = m_game->m_resourceManager.GetTexture("textures/misc.png");
+    Texture& miscTexture = m_game->m_resourceManager.GetTexture("textures/misc.png");
 
-    DrawTexturePro(coinTexture, { 0, 32, 64, 64 }, { 10, 10, 64, 64 }, { 0, 0 }, 0.0f, WHITE);
+    DrawTexturePro(miscTexture, { 0, 32, 64, 64 }, { 20, 10, 64, 64 }, { 0, 0 }, 0.0f, WHITE);
+    DrawTexturePro(miscTexture, { 64, 32, 64, 64 }, { 20, 80, 64, 64 }, { 0, 0 }, 0.0f, WHITE);
+
+    rlDrawText(TextFormat("%d", m_game->m_gameData.coins), 90, 32, 25, BLACK);
+    rlDrawText(TextFormat("%d", m_itemPrice), 90, 102, 25, BLACK);
 
     switch (m_shopState) {
         case SHOP_STATES::NEW: {
 
+        } break;
+        case SHOP_STATES::BROKE: {
+            DrawRectangleRounded({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, { 111, 180, 68, 255 });
+            DrawRectangleRoundedLinesEx({ 320 - (380 * 0.5f), 130, 380, 230 }, 0.2f, 1, 3, BLACK);
+            rlDrawText("Insufficient coins", 320 - (MeasureText("Insufficient coins", 40) * 0.5f), 150, 40, BLACK);
         } break;
         case SHOP_STATES::BUYING: {
 

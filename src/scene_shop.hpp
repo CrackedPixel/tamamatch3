@@ -21,4 +21,5 @@ struct SceneShop : public Scene {
 private:
     SHOP_STATES m_shopState = SHOP_STATES::NEW;
     GumballItem m_wonItem = {};
+    int m_itemPrice = 10;
 };
