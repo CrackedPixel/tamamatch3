@@ -115,26 +115,27 @@ void TamaPetAI::OnRender() {
 
     if (petData.state == PET_STATES::DED) {
         for (int i = 0; i < static_cast<int>(OUTFIT_SLOTS::COUNT); ++i) {
-            if (petData.outfitId[static_cast<OUTFIT_SLOTS>(i)] > 0) {
-                auto& outfitData = m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(i)].at(petData.outfitId[static_cast<OUTFIT_SLOTS>(i)]-1);
-                if (!outfitData.isBehind) {
-                    continue;
-                }
+            auto* outfitData = m_game->m_gameData.GetOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
+            if (outfitData == nullptr) {
+                continue;
+            }
+            if (!outfitData->isBehind) {
+                continue;
+            }
 
-                if (outfitData.adultOnly && petData.stage != PET_STAGES::ADULT) {
-                    continue;
-                }
+            if (outfitData->adultOnly && petData.stage != PET_STAGES::ADULT) {
+                continue;
+            }
 
-                Vector2* offsetPos = outfitData.GetOffsetForStage(petData.stage);
-                if (offsetPos != nullptr) {
-                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath);
-                    Color& outfitTint = outfitData.isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
+            Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
+            if (offsetPos != nullptr) {
+                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath);
+                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
 
-                    if (m_petDirection == 1) {
-                        DrawTexturePro(outfitTexture, { outfitData.texturePosition.x, outfitData.texturePosition.y, outfitData.texturePosition.width, -outfitData.texturePosition.height }, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData.texturePosition.width, outfitData.texturePosition.height }, { 0, 0 }, 0, outfitTint);
-                    } else {
-                        DrawTexturePro(outfitTexture, { outfitData.texturePosition.x, outfitData.texturePosition.y, -outfitData.texturePosition.width, -outfitData.texturePosition.height }, { m_petPosition.x - offsetPos->x + (m_game->m_gameData.GetCurrentPetWidth() - outfitData.texturePosition.width), m_petPosition.y + offsetPos->y, outfitData.texturePosition.width, outfitData.texturePosition.height }, { 0, 0 }, 0, outfitTint);
-                    }
+                if (m_petDirection == 1) {
+                    DrawTexturePro(outfitTexture, { outfitData->texturePosition.x, outfitData->texturePosition.y, outfitData->texturePosition.width, -outfitData->texturePosition.height }, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
+                } else {
+                    DrawTexturePro(outfitTexture, { outfitData->texturePosition.x, outfitData->texturePosition.y, -outfitData->texturePosition.width, -outfitData->texturePosition.height }, { m_petPosition.x - offsetPos->x + (m_game->m_gameData.GetCurrentPetWidth() - outfitData->texturePosition.width), m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
                 }
             }
         }
@@ -149,52 +150,54 @@ void TamaPetAI::OnRender() {
         );
 
         for (int i = 0; i < static_cast<int>(OUTFIT_SLOTS::COUNT); ++i) {
-            if (petData.outfitId[static_cast<OUTFIT_SLOTS>(i)] > 0) {
-                auto& outfitData = m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(i)].at(petData.outfitId[static_cast<OUTFIT_SLOTS>(i)]-1);
-                if (outfitData.isBehind) {
-                    continue;
-                }
+            auto* outfitData = m_game->m_gameData.GetOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
+            if (outfitData == nullptr) {
+                continue;
+            }
+            if (outfitData->isBehind) {
+                continue;
+            }
 
-                if (outfitData.adultOnly && petData.stage != PET_STAGES::ADULT) {
-                    continue;
-                }
+            if (outfitData->adultOnly && petData.stage != PET_STAGES::ADULT) {
+                continue;
+            }
 
-                Vector2* offsetPos = outfitData.GetOffsetForStage(petData.stage);
-                if (offsetPos != nullptr) {
-                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath);
-                    Color& outfitTint = outfitData.isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
+            Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
+            if (offsetPos != nullptr) {
+                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath);
+                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
 
-                    if (m_petDirection == 1) {
-                        DrawTexturePro(outfitTexture, { outfitData.texturePosition.x, outfitData.texturePosition.y, outfitData.texturePosition.width, -outfitData.texturePosition.height }, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData.texturePosition.width, outfitData.texturePosition.height }, { 0, 0 }, 0, outfitTint);
-                    } else {
-                        DrawTexturePro(outfitTexture, { outfitData.texturePosition.x, outfitData.texturePosition.y, -outfitData.texturePosition.width, -outfitData.texturePosition.height }, { m_petPosition.x - offsetPos->x + (m_game->m_gameData.GetCurrentPetWidth() - outfitData.texturePosition.width), m_petPosition.y + offsetPos->y, outfitData.texturePosition.width, outfitData.texturePosition.height }, { 0, 0 }, 0, outfitTint);
-                    }
+                if (m_petDirection == 1) {
+                    DrawTexturePro(outfitTexture, { outfitData->texturePosition.x, outfitData->texturePosition.y, outfitData->texturePosition.width, -outfitData->texturePosition.height }, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
+                } else {
+                    DrawTexturePro(outfitTexture, { outfitData->texturePosition.x, outfitData->texturePosition.y, -outfitData->texturePosition.width, -outfitData->texturePosition.height }, { m_petPosition.x - offsetPos->x + (m_game->m_gameData.GetCurrentPetWidth() - outfitData->texturePosition.width), m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
                 }
             }
         }
     } else {
 
         for (int i = 0; i < static_cast<int>(OUTFIT_SLOTS::COUNT); ++i) {
-            if (petData.outfitId[static_cast<OUTFIT_SLOTS>(i)] > 0) {
-                auto& outfitData = m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(i)].at(petData.outfitId[static_cast<OUTFIT_SLOTS>(i)]-1);
-                if (!outfitData.isBehind) {
-                    continue;
-                }
+            auto* outfitData = m_game->m_gameData.GetOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
+            if (outfitData == nullptr) {
+                continue;
+            }
+            if (!outfitData->isBehind) {
+                continue;
+            }
 
-                if (outfitData.adultOnly && petData.stage != PET_STAGES::ADULT) {
-                    continue;
-                }
+            if (outfitData->adultOnly && petData.stage != PET_STAGES::ADULT) {
+                continue;
+            }
 
-                Vector2* offsetPos = outfitData.GetOffsetForStage(petData.stage);
-                if (offsetPos != nullptr) {
-                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath);
-                    Color& outfitTint = outfitData.isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
+            Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
+            if (offsetPos != nullptr) {
+                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath);
+                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
 
-                    if (m_petDirection == 1) {
-                        DrawTexturePro(outfitTexture, outfitData.texturePosition, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData.texturePosition.width, outfitData.texturePosition.height }, { 0, 0 }, 0, outfitTint);
-                    } else {
-                        DrawTexturePro(outfitTexture, { outfitData.texturePosition.x, outfitData.texturePosition.y, -outfitData.texturePosition.width, outfitData.texturePosition.height }, { m_petPosition.x - offsetPos->x + (m_game->m_gameData.GetCurrentPetWidth() - outfitData.texturePosition.width), m_petPosition.y + offsetPos->y, outfitData.texturePosition.width, outfitData.texturePosition.height }, { 0, 0 }, 0, outfitTint);
-                    }
+                if (m_petDirection == 1) {
+                    DrawTexturePro(outfitTexture, outfitData->texturePosition, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
+                } else {
+                    DrawTexturePro(outfitTexture, { outfitData->texturePosition.x, outfitData->texturePosition.y, -outfitData->texturePosition.width, outfitData->texturePosition.height }, { m_petPosition.x - offsetPos->x + (m_game->m_gameData.GetCurrentPetWidth() - outfitData->texturePosition.width), m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
                 }
             }
         }
@@ -209,26 +212,27 @@ void TamaPetAI::OnRender() {
         );
 
         for (int i = 0; i < static_cast<int>(OUTFIT_SLOTS::COUNT); ++i) {
-            if (petData.outfitId[static_cast<OUTFIT_SLOTS>(i)] > 0) {
-                auto& outfitData = m_game->m_gameData.OutfitList[static_cast<OUTFIT_SLOTS>(i)].at(petData.outfitId[static_cast<OUTFIT_SLOTS>(i)]-1);
-                if (outfitData.isBehind) {
-                    continue;
-                }
+            auto* outfitData = m_game->m_gameData.GetOutfitDataForSlotItem(static_cast<OUTFIT_SLOTS>(i));
+            if (outfitData == nullptr) {
+                continue;
+            }
+            if (outfitData->isBehind) {
+                continue;
+            }
 
-                if (outfitData.adultOnly && petData.stage != PET_STAGES::ADULT) {
-                    continue;
-                }
+            if (outfitData->adultOnly && petData.stage != PET_STAGES::ADULT) {
+                continue;
+            }
 
-                Vector2* offsetPos = outfitData.GetOffsetForStage(petData.stage);
-                if (offsetPos != nullptr) {
-                    Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData.texturePath);
-                    Color& outfitTint = outfitData.isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
+            Vector2* offsetPos = outfitData->GetOffsetForStage(petData.stage);
+            if (offsetPos != nullptr) {
+                Texture& outfitTexture = m_game->m_resourceManager.GetTexture(outfitData->texturePath);
+                Color& outfitTint = outfitData->isColourable ? m_game->m_gameData.OutfitTintList[petData.outfitTint[static_cast<OUTFIT_SLOTS>(i)]-1] : m_game->m_gameData.OutfitTintList[0];
 
-                    if (m_petDirection == 1) {
-                        DrawTexturePro(outfitTexture, outfitData.texturePosition, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData.texturePosition.width, outfitData.texturePosition.height }, { 0, 0 }, 0, outfitTint);
-                    } else {
-                        DrawTexturePro(outfitTexture, { outfitData.texturePosition.x, outfitData.texturePosition.y, -outfitData.texturePosition.width, outfitData.texturePosition.height }, { m_petPosition.x - offsetPos->x + (m_game->m_gameData.GetCurrentPetWidth() - outfitData.texturePosition.width), m_petPosition.y + offsetPos->y, outfitData.texturePosition.width, outfitData.texturePosition.height }, { 0, 0 }, 0, outfitTint);
-                    }
+                if (m_petDirection == 1) {
+                    DrawTexturePro(outfitTexture, outfitData->texturePosition, { m_petPosition.x + offsetPos->x, m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
+                } else {
+                    DrawTexturePro(outfitTexture, { outfitData->texturePosition.x, outfitData->texturePosition.y, -outfitData->texturePosition.width, outfitData->texturePosition.height }, { m_petPosition.x - offsetPos->x + (m_game->m_gameData.GetCurrentPetWidth() - outfitData->texturePosition.width), m_petPosition.y + offsetPos->y, outfitData->texturePosition.width, outfitData->texturePosition.height }, { 0, 0 }, 0, outfitTint);
                 }
             }
         }

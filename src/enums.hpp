@@ -37,9 +37,9 @@ enum struct PET_ATTRIBUTES {
 enum struct OUTFIT_SLOTS {
     HAT,
     GLASSES,
-    SHIRT,
     BACK,
-    MISC,
+    ACC1,
+    ACC2,
     COUNT,
 };
 

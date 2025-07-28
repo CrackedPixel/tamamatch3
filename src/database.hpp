@@ -264,4 +264,29 @@ struct GlobalGameData {
     std::string& GetCurrentWallpaper() {
         return WallpaperList[PetList[activePet].wallpaperId];
     }
+
+    OutfitData* GetOutfitDataForSlotItem(OUTFIT_SLOTS slot) {
+        int outfitId = PetList[activePet].outfitId[slot]-1;
+
+        if (outfitId < 0) {
+            return nullptr;
+        }
+
+        switch (slot) {
+            case OUTFIT_SLOTS::BACK: {
+                return &OutfitList[OUTFIT_SLOTS::BACK][outfitId];
+            } break;
+            case OUTFIT_SLOTS::HAT: {
+                return &OutfitList[OUTFIT_SLOTS::HAT][outfitId];
+            } break;
+            case OUTFIT_SLOTS::GLASSES: {
+                return &OutfitList[OUTFIT_SLOTS::GLASSES][outfitId];
+            } break;
+            case OUTFIT_SLOTS::ACC1:
+            case OUTFIT_SLOTS::ACC2: {
+                return &OutfitList[OUTFIT_SLOTS::ACC1][outfitId];
+            } break;
+            default: return nullptr;
+        }
+    }
 };
