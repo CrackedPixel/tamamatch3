@@ -8,7 +8,7 @@
 #include "enums.hpp"
 
 struct Pet {
-    PET_STAGES stage = PET_STAGES::ADULT;
+    PET_STAGES stage = PET_STAGES::TODDLER;
     PET_STATES state = PET_STATES::HEALTHY;
     std::unordered_map<PET_ATTRIBUTES, float> attributes = {};
     std::unordered_map<OUTFIT_SLOTS, int> outfitId = {};

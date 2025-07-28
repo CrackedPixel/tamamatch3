@@ -73,6 +73,24 @@ struct GlobalGameData {
             OutfitList[OUTFIT_SLOTS::GLASSES].emplace_back(newOutfit);
         }
 
+        const int hatsCount = INICount("hats");
+        for (int i = 0; i < hatsCount; ++i) {
+            std::vector<std::string> outfitData = Utils::StringArrayFromString(INIString("hats", std::to_string(i+1).c_str(), ""));
+            OutfitData newOutfit(
+                outfitData[0], // texture path
+                rlRectangle{ std::stof(outfitData[1]), std::stof(outfitData[2]), std::stof(outfitData[3]), std::stof(outfitData[4]) }, // texture rect
+                std::stoi(outfitData[5]), // adult only
+                Vector2{ std::stof(outfitData[6]), std::stof(outfitData[7]) }, // offset newborn
+                Vector2{ std::stof(outfitData[8]), std::stof(outfitData[9]) }, // offset toddler
+                Vector2{ std::stof(outfitData[10]), std::stof(outfitData[11]) }, // offset adolescent
+                Vector2{ std::stof(outfitData[12]), std::stof(outfitData[13]) }, // offset adult
+                std::stoi(outfitData[14]), // colourable
+                std::stoi(outfitData[15]) // behind
+                );
+
+            OutfitList[OUTFIT_SLOTS::HAT].emplace_back(newOutfit);
+        }
+
         const int backsCount = INICount("backs");
         for (int i = 0; i < backsCount; ++i) {
             std::vector<std::string> outfitData = Utils::StringArrayFromString(INIString("backs", std::to_string(i+1).c_str(), ""));
@@ -89,6 +107,24 @@ struct GlobalGameData {
                 );
 
             OutfitList[OUTFIT_SLOTS::BACK].emplace_back(newOutfit);
+        }
+
+        const int accCount = INICount("accs");
+        for (int i = 0; i < accCount; ++i) {
+            std::vector<std::string> outfitData = Utils::StringArrayFromString(INIString("accs", std::to_string(i+1).c_str(), ""));
+            OutfitData newOutfit(
+                outfitData[0], // texture path
+                rlRectangle{ std::stof(outfitData[1]), std::stof(outfitData[2]), std::stof(outfitData[3]), std::stof(outfitData[4]) }, // texture rect
+                std::stoi(outfitData[5]), // adult only
+                Vector2{ std::stof(outfitData[6]), std::stof(outfitData[7]) }, // offset newborn
+                Vector2{ std::stof(outfitData[8]), std::stof(outfitData[9]) }, // offset toddler
+                Vector2{ std::stof(outfitData[10]), std::stof(outfitData[11]) }, // offset adolescent
+                Vector2{ std::stof(outfitData[12]), std::stof(outfitData[13]) }, // offset adult
+                std::stoi(outfitData[14]), // colourable
+                std::stoi(outfitData[15]) // behind
+            );
+
+            OutfitList[OUTFIT_SLOTS::ACC1].emplace_back(newOutfit);
         }
 
         growthSpeeds[PET_STAGES::EGG] = INIFloat("speed", "grow_egg", 60.0f);
@@ -161,10 +197,16 @@ struct GlobalGameData {
 
 #ifdef DEBUG_BUILD
         PetList[activePet].outfitId[OUTFIT_SLOTS::GLASSES] = 9;
-        PetList[activePet].outfitTint[OUTFIT_SLOTS::GLASSES] = 2;
+        PetList[activePet].outfitTint[OUTFIT_SLOTS::GLASSES] = 17;
+
+        PetList[activePet].outfitId[OUTFIT_SLOTS::HAT] = 6;
+        PetList[activePet].outfitTint[OUTFIT_SLOTS::HAT] = 22;
 
         PetList[activePet].outfitId[OUTFIT_SLOTS::BACK] = 1;
         PetList[activePet].outfitTint[OUTFIT_SLOTS::BACK] = 2;
+
+        PetList[activePet].outfitId[OUTFIT_SLOTS::ACC1] = 4;
+        PetList[activePet].outfitId[OUTFIT_SLOTS::ACC2] = 9;
 #endif
     }
 
@@ -274,16 +316,28 @@ struct GlobalGameData {
 
         switch (slot) {
             case OUTFIT_SLOTS::BACK: {
+                if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::BACK].size())) {
+                    return nullptr;
+                }
                 return &OutfitList[OUTFIT_SLOTS::BACK][outfitId];
             } break;
             case OUTFIT_SLOTS::HAT: {
+                if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::HAT].size())) {
+                    return nullptr;
+                }
                 return &OutfitList[OUTFIT_SLOTS::HAT][outfitId];
             } break;
             case OUTFIT_SLOTS::GLASSES: {
+                if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::GLASSES].size())) {
+                    return nullptr;
+                }
                 return &OutfitList[OUTFIT_SLOTS::GLASSES][outfitId];
             } break;
             case OUTFIT_SLOTS::ACC1:
             case OUTFIT_SLOTS::ACC2: {
+                if (outfitId > static_cast<int>(OutfitList[OUTFIT_SLOTS::ACC1].size())) {
+                    return nullptr;
+                }
                 return &OutfitList[OUTFIT_SLOTS::ACC1][outfitId];
             } break;
             default: return nullptr;
