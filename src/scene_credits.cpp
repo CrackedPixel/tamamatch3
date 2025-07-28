@@ -36,7 +36,7 @@ void SceneCredits::OnRender() {
     Texture& creditsTexture = m_game->m_resourceManager.GetTexture("textures/credits.png");
 
     DrawTexture(wallpaperTexture, 0, 0, WHITE);
-    DrawRectangle(0, 0, 640, 480, ColorAlpha(GREEN, 0.2f));
+    DrawRectangle(0, 0, 640, 480, ColorAlpha(GREEN, 0.25f));
     DrawTexture(creditsTexture, 0, 0 - m_offsetY, WHITE);
 }
 
