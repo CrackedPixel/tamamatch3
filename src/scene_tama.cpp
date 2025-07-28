@@ -22,7 +22,7 @@ void SceneTama::OnUpdate(float deltaTime){
 
     if (m_game->m_inputController.IsButtonBack) {
         if (m_tamaui.IsUIShown() && m_tamaui.m_popupMenu == POPUP_TYPES::NONE) {
-            m_game->m_sceneManager.OnChangeScene("splash");
+            m_game->ChangeScene("menu", true, 1.0f);
             return;
         }
     }

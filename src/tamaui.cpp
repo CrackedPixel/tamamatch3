@@ -292,17 +292,17 @@ void TamaUI::OnUpdate(float deltaTime) {
             case ICON_ACTION_TYPE::MINIGAMES: {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_game->m_audioManager->PlaySFX("uiselect");
-                m_game->ChangeScene("mastermind", true, 0.5f);
+                m_game->ChangeScene("mastermind", true, 1.0f);
             } break;
             case ICON_ACTION_TYPE::STORE: {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_game->m_audioManager->PlaySFX("uiselect");
-                m_game->ChangeScene("shop", true, 0.5f);
+                m_game->ChangeScene("shop", true, 1.0f);
             } break;
             case ICON_ACTION_TYPE::DISPLAY: {
                 m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
                 m_game->m_audioManager->PlaySFX("uiselect");
-                m_game->ChangeScene("collection", true, 0.5f);
+                m_game->ChangeScene("collection", true, 1.0f);
             } break;
 
         }
@@ -478,19 +478,19 @@ bool TamaUI::OnHandleInput(rlRectangle petPosition) {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_game->m_audioManager->PlaySFX("uiselect");
-            m_game->ChangeScene("mastermind", true, 0.5f);
+            m_game->ChangeScene("mastermind", true, 1.0f);
         } break;
         case ICON_ACTION_TYPE::STORE: {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_game->m_audioManager->PlaySFX("uiselect");
-            m_game->ChangeScene("shop", true, 0.5f);
+            m_game->ChangeScene("shop", true, 1.0f);
         } break;
         case ICON_ACTION_TYPE::DISPLAY: {
             m_selectedId = m_hoverId;
             m_game->m_gameData.activeCursor = CURSOR_TYPES::NORMAL;
             m_game->m_audioManager->PlaySFX("uiselect");
-            m_game->ChangeScene("collection", true, 0.5f);
+            m_game->ChangeScene("collection", true, 1.0f);
         } break;
     }
 

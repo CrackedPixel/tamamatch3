@@ -27,7 +27,7 @@ void SceneShop::OnUpdate(float deltaTime) {
         switch (m_shopState) {
         case SHOP_STATES::NEW: {
             m_game->m_audioManager->PlaySFX("uiselect");
-            m_game->ChangeScene("tama", true, 0.5f);
+            m_game->ChangeScene("tama", true, 1.0f);
             return;
         } break;
         case SHOP_STATES::BUYING: {

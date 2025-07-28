@@ -13,6 +13,7 @@
 #include "scene_tama.hpp"
 #include "scene_shop.hpp"
 #include "scene_collection.hpp"
+#include "scene_mastermind.hpp"
 
 #ifdef PLATFORM_WEB
 Game* Game::s_instance = nullptr;
@@ -48,9 +49,10 @@ void Game::OnInitialize() {
     m_sceneManager.OnAddScene("tama", new SceneTama(this));
     m_sceneManager.OnAddScene("shop", new SceneShop(this));
     m_sceneManager.OnAddScene("collection", new SceneCollection(this));
+    m_sceneManager.OnAddScene("mastermind", new SceneMastermind(this));
 #ifdef DEBUG_BUILD
     m_gameData.NewGame();
-    m_sceneManager.OnChangeScene("collection");
+    m_sceneManager.OnChangeScene("mastermind");
 #else
     m_sceneManager.OnChangeScene("splash");
 #endif

@@ -21,11 +21,11 @@ void SceneSplash::OnUpdate(float deltaTime){
     }
 
     if (m_currentTimer >= 7.0f) {
-        m_game->ChangeScene("menu", true, 0.5f);
+        m_game->ChangeScene("menu", true, 1.0f);
     }
 
     if (m_game->m_inputController.IsButtonSelect) {
-        m_game->ChangeScene("menu", true, 0.75f);
+        m_game->ChangeScene("menu", true, 1.0f);
     }
 }
 
