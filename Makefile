@@ -24,9 +24,9 @@ SRC = \
 # Include directories ONLY (do NOT list .hpp files here)
 INCLUDES = -I./src \
 	-I./external \
-	-I/home/aj/Documents/raylib/win/release/include
+	-I./external/raylib_win/src
 
-LIBDIRS = -L/home/aj/Documents/raylib/win/release/lib
+LIBDIRS = -L./external/raylib_win/src
 
 LIBS = -lraylib -lgdi32 -lwinmm
 

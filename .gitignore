@@ -5,4 +5,5 @@ builds/
 *.o
 *.exe
 resources/textures/castle.png
+.idea
 
