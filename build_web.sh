@@ -19,8 +19,8 @@ em++ \
     src/tamaui.cpp \
 -I./src/ \
 -I./external/ \
--I./external/raylib_web/src \
--L./external/raylib_web/src \
+-I./external/raylib_web/ \
+-L./external/raylib_web/ \
 -lraylib.web \
 -s USE_GLFW=3 \
 -s SINGLE_FILE \
